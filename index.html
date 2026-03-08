@@ -303,114 +303,53 @@ body.th-retro .glow{animation:glow 1.2s infinite,pixelFlicker 2s infinite}
 
 <script>
 const ACHIEVEMENTS = [
-  {id:"first_module",icon:"🔓",title:"ПЕРВЫЙ ВЗЛОМ",     desc:"Открыл первый модуль",       xp:50},
-  {id:"math_done",   icon:"🧮",title:"ЧИСЛОДРОБ",        desc:"Завершил математику",         xp:100},
-  {id:"python_done", icon:"🐍",title:"SNAKE CHARMER",    desc:"Завершил Python",             xp:150},
-  {id:"first_model", icon:"🤖",title:"ПЕРВЫЙ ИНФИЛЬТРАТ",desc:"Обучил первую модель",        xp:200},
-  {id:"five_modules",icon:"⚡",title:"МИДЛ-ХАКЕР",       desc:"5 модулей закрыто",           xp:300},
-  {id:"all_done",    icon:"💀",title:"GHOST IN THE DATA",desc:"Все модули пройдены",         xp:1000},
-  {id:"career_done", icon:"🏙️",title:"CORP INFILTRATOR", desc:"Карьерный блок пройден",      xp:500},
+  {id:"first_module",icon:"🔓",title:"ПЕРВЫЙ ВЗЛОМ",     desc:"Открыл первый модуль",        xp:50},
+  {id:"math_done",   icon:"🧮",title:"ЧИСЛОДРОБ",        desc:"Завершил математику",          xp:100},
+  {id:"python_done", icon:"🐍",title:"SNAKE CHARMER",    desc:"Завершил Python",              xp:150},
+  {id:"viz_done",    icon:"📊",title:"VISUALIZER",       desc:"Освоил визуализацию",          xp:100},
+  {id:"first_model", icon:"🤖",title:"ПЕРВЫЙ ИНФИЛЬТРАТ",desc:"Обучил первую модель",         xp:200},
+  {id:"five_modules",icon:"⚡",title:"МИДЛ-ХАКЕР",       desc:"5 модулей закрыто",            xp:300},
+  {id:"cases_done",  icon:"🔬",title:"FIELD OPERATIVE",  desc:"Прошёл реальные кейсы",        xp:400},
+  {id:"all_done",    icon:"💀",title:"GHOST IN THE DATA",desc:"Все модули пройдены",          xp:1000},
+  {id:"career_done", icon:"🏙️",title:"CORP INFILTRATOR", desc:"Карьерный блок пройден",       xp:500},
 ];
 
 const MODULES = [
  {id:"math",code:"M-01",icon:"∑",xp:100,color:"#7c6dfa",
-  title:"МАТЕМАТИКА — НЕОБХОДИМЫЙ МИНИМУМ",
-  subtitle:"Линейная алгебра, матстат, вероятность — только рабочие инструменты",
+  title:"МАТЕМАТИКА — РАБОЧИЙ МИНИМУМ",
+  subtitle:"Только то, что реально встречается в коде ML-моделей",
   sections:[
-   {title:"Линейная алгебра для ML",visual:"math",
-    theory:`Чувак, тебе не нужна линейная алгебра из университета. Нужно 3 вещи:
+   {title:"Статистика — 5 концептов",visual:"stats",
+    theory:`Чувак, забудь про университетскую математику. Вот что реально нужно:
 
-<b>Вектор</b> — это просто список чисел. Строка в таблице клиентов — это вектор.
-[возраст=35, доход=80000, кредиты=2] → вектор размерности 3
-
-<b>Матрица</b> — таблица векторов. Твой датасет — это матрица.
-
-<b>Скалярное произведение</b> — умножаем элементы и складываем.
-[1,2,3] · [4,5,6] = 1×4 + 2×5 + 3×6 = 32
-В ML это основа линейной регрессии и нейросетей.
-
-<b>Норма вектора</b> — "длина" вектора: ||v|| = √(v₁² + v₂² + ...)
-Используется в регуляризации (L1, L2).`,
-    code:`import numpy as np
-
-# Вектор = массив numpy
-v1 = np.array([1, 2, 3])
-v2 = np.array([4, 5, 6])
-
-# Скалярное произведение
-dot = np.dot(v1, v2)
-print(f"Скалярное произведение: {dot}")  # 32
-
-# Матрица = 2D массив
-X = np.array([
-    [1, 2, 3],   # клиент 1
-    [4, 5, 6],   # клиент 2
-    [7, 8, 9]    # клиент 3
-])
-print(f"Форма матрицы: {X.shape}")  # (3, 3)
-
-# Умножение матриц — основа предсказания в ML
-W = np.array([[0.5], [0.3], [0.2]])
-predictions = X @ W    # предсказания
-print(f"Предсказания:\\n{predictions}")`,
-    realcase:`В линейной регрессии предсказание = X @ w, где X — матрица признаков, w — веса модели. Каждый раз когда модель делает predict() — она умножает матрицы.
-
-Понимание этого помогает дебажить ошибки размерностей (самая частая ошибка новичков):
-ValueError: shapes (100,8) and (9,1) not aligned → значит пропущен один признак.`,
-    task:`Создай матрицу 4×3 из случайных чисел (np.random.rand).
-Найди среднее по каждому столбцу (np.mean с axis=0).
-Стандартизируй матрицу: вычти среднее, раздели на std.
-Это Z-score нормализация — делают в каждом ML проекте перед обучением.`,
-    solution:`import numpy as np
-
-# Случайная матрица 4x3
-X = np.random.rand(4, 3)
-print("Матрица X:")
-print(X.round(3))
-
-# Среднее и std по столбцам
-col_means = np.mean(X, axis=0)
-col_stds  = np.std(X, axis=0)
-print(f"\\nСредние: {col_means.round(3)}")
-print(f"Std:     {col_stds.round(3)}")
-
-# Z-score нормализация
-X_norm = (X - col_means) / col_stds
-print("\\nНормализованная матрица:")
-print(X_norm.round(2))
-# Проверка: среднее должно быть ~0
-print(f"Среднее после нормализации: {X_norm.mean(axis=0).round(10)}")`},
-   {title:"Статистика — только 5 концептов",visual:"stats",
-    theory:`<b>1. Среднее vs Медиана</b>
+<b>1. Среднее vs Медиана</b>
 Среднее врёт при выбросах. Медиана — нет.
 Зарплаты: [50k, 55k, 60k, 65k, 500k]
 → среднее = 146k, медиана = 60k
-Медиана честнее показывает «типичную» зарплату.
+Используй медиану при работе с доходами, ценами, временем.
 
 <b>2. Стандартное отклонение (std)</b>
-Насколько данные «разбросаны» вокруг среднего.
-Маленький std → кучкуются. Большой std → хаос.
+Насколько данные разбросаны вокруг среднего.
+Маленький std → данные кучкуются. Большой std → хаос.
+Используется в нормализации, обнаружении выбросов.
 
 <b>3. Корреляция Пирсона</b>
-От -1 до +1. Насколько два признака «движутся вместе».
-Рост и вес: ~0.8 (сильная положительная).
-Температура и продажи шуб: ~-0.7 (отрицательная).
+От -1 до +1. Насколько два признака движутся вместе.
+|corr| > 0.8 → скорее всего один из двух лишний в модели.
 
-<b>4. Нормальное распределение (колокол)</b>
-68% данных в пределах ±1σ, 95% в ±2σ.
+<b>4. Нормальное распределение</b>
+68% данных в ±1σ, 95% в ±2σ.
+Важно: многие ML-алгоритмы работают лучше, если признаки нормально распределены.
 
 <b>5. p-value (интуитивно)</b>
-p &lt; 0.05 → «это не случайность, есть реальный эффект».
+p &lt; 0.05 → эффект не случайный, есть реальная связь.
 Используется в A/B тестах.`,
     code:`import numpy as np
+import pandas as pd
 from scipy import stats
 
-# Данные зарплат с выбросом (CEO)
-salaries = np.concatenate([
-    np.random.normal(60000, 10000, 99),
-    [500000]
-])
-
+# Данные зарплат с CEO-выбросом
+salaries = np.concatenate([np.random.normal(60000, 10000, 99), [500000]])
 print(f"Среднее: {salaries.mean():.0f}")
 print(f"Медиана: {np.median(salaries):.0f}")
 print(f"Std:     {salaries.std():.0f}")
@@ -419,51 +358,51 @@ print(f"Std:     {salaries.std():.0f}")
 heights = np.array([165, 170, 175, 180, 185])
 weights = np.array([60,  68,  75,  80,  85 ])
 corr, p = stats.pearsonr(heights, weights)
-print(f"\\nКорреляция рост-вес: {corr:.2f}")
-print(f"p-value: {p:.4f} ({'значимо' if p < 0.05 else 'незначимо'})")
+print(f"\nКорреляция рост-вес: {corr:.2f} (p={p:.4f})")
+print(f"Значимо: {p < 0.05}")
 
 # Нормальное распределение
 data = np.random.normal(0, 1, 10000)
-w1 = np.mean(np.abs(data) < 1) * 100
-w2 = np.mean(np.abs(data) < 2) * 100
-print(f"\\nВ ±1σ: {w1:.1f}% (ожидаем 68%)")
-print(f"В ±2σ: {w2:.1f}% (ожидаем 95%)")`,
-    realcase:`В банке анализируют доход клиентов. Среднее = 150k (искажено богатыми), медиана = 65k. Кредитный скоринг строят на основе медианы — честнее отражает типичного клиента.
+print(f"\nВ ±1σ: {np.mean(np.abs(data) < 1)*100:.1f}% (ожидаем 68%)")
+print(f"В ±2σ: {np.mean(np.abs(data) < 2)*100:.1f}% (ожидаем 95%)")`,
+    realcase:`В банке анализируют доход клиентов. Среднее = 150k (искажено богатыми), медиана = 65k. Кредитный скоринг строят на основе медианы.
 
-Корреляции используют для отбора признаков: если два признака коррелируют > 0.95 — один лишний, убирают.`,
-    task:`Загрузи Titanic: import seaborn as sns; df = sns.load_dataset('titanic')
-1) Среднее и медиану возраста
-2) Корреляцию между возрастом и стоимостью билета
-3) T-test: есть ли значимая разница в возрасте между выжившими и нет?`,
+Корреляции используют для отбора признаков: если два признака коррелируют > 0.95 — один лишний, убирают чтобы избежать мультиколлинеарности.`,
+    task:`Загрузи Titanic: df = sns.load_dataset('titanic')
+1) Среднее и медиану возраста — почему они различаются?
+2) Std возраста по классам (groupby pclass + std)
+3) Корреляция возраста и стоимости билета
+4) Интерпретируй результат: что это говорит о пассажирах?`,
     solution:`import seaborn as sns
+import numpy as np
 from scipy import stats
 
 df = sns.load_dataset('titanic')
 
 print(f"Средний возраст:  {df['age'].mean():.1f}")
 print(f"Медиана возраста: {df['age'].median():.1f}")
+print("→ Среднее выше: молодые перевешивают, но есть пожилые выбросы\n")
+
+print("Std по классам:")
+print(df.groupby('pclass')['age'].std().round(1))
 
 mask = df['age'].notna() & df['fare'].notna()
 corr, p = stats.pearsonr(df.loc[mask,'age'], df.loc[mask,'fare'])
-print(f"\\nКорреляция возраст-билет: {corr:.3f} (p={p:.3f})")
-
-survived = df[df['survived']==1]['age'].dropna()
-died     = df[df['survived']==0]['age'].dropna()
-t, pval  = stats.ttest_ind(survived, died)
-print(f"\\nВозраст выживших: {survived.mean():.1f}")
-print(f"Возраст погибших: {died.mean():.1f}")
-print(f"Разница значима: {pval < 0.05} (p={pval:.3f})")`}
+print(f"\nКорреляция возраст-билет: {corr:.3f} (p={p:.3f})")
+print("→ Слабая положит. связь: постарше — чаще дороже класс")
+`}
   ]},
  {id:"python",code:"M-02",icon:"🐍",xp:150,color:"#fa6d9a",
   title:"PYTHON — РАБОЧИЙ ИНСТРУМЕНТ",
-  subtitle:"pandas, numpy, matplotlib — три библиотеки = 80% работы DS",
-  sections:[{title:"pandas — работа с таблицами",visual:"pandas",
-   theory:`Чувак, pandas — это Excel на стероидах.
+  subtitle:"pandas, numpy — две библиотеки = 80% работы DS",
+  sections:[
+   {title:"pandas — работа с таблицами",visual:"pandas",
+    theory:`Чувак, pandas — это Excel на стероидах.
 
 <b>Загрузка данных:</b>
 pd.read_csv('file.csv')
 pd.read_excel('file.xlsx')
-sns.load_dataset('titanic')   # встроенные датасеты
+sns.load_dataset('titanic')   # встроенные датасеты для учёбы
 
 <b>Первый взгляд (делаешь ВСЕГДА первым делом):</b>
 df.head()          — первые 5 строк
@@ -472,129 +411,470 @@ df.describe()      — статистика по числовым
 df.isnull().sum()  — количество NaN
 
 <b>Фильтрация:</b>
-df[df['age'] &gt; 30]
-df[(df['age'] &gt; 30) &amp; (df['sex'] == 'male')]
+df[df['age'] > 30]
+df[(df['age'] > 30) & (df['sex'] == 'male')]
 
 <b>Группировка (GROUP BY как в SQL):</b>
 df.groupby('sex')['survived'].mean()
-df.groupby(['sex','pclass'])['fare'].median()`,
-   code:`import pandas as pd
+
+<b>Работа с типами и датами:</b>
+df['date'] = pd.to_datetime(df['date'])
+df['month'] = df['date'].dt.month
+df['year']  = df['date'].dt.year
+df['dow']   = df['date'].dt.dayofweek  # 0=пн, 6=вс`,
+    code:`import pandas as pd
 import seaborn as sns
 
 df = sns.load_dataset('titanic')
 
-print("=== ФОРМА И ТИПЫ ===")
-print(df.shape)
+# Базовый осмотр
+print("Форма:", df.shape)
+print("\nПропуски:")
+print(df.isnull().sum()[df.isnull().sum() > 0])
 
-print("\\n=== ПРОПУСКИ ===")
-missing = df.isnull().sum()
-print(missing[missing > 0].sort_values(ascending=False))
+# Фильтрация и группировка
+print("\nВыживаемость по полу:")
+print(df.groupby('sex')['survived'].mean().round(3))
 
-print("\\n=== ВЫЖИВАЕМОСТЬ ПО ПОЛУ ===")
-result = df.groupby('sex')['survived'].agg(['mean','count'])
-result.columns = ['выжило_%','всего']
-result['выжило_%'] = (result['выжило_%'] * 100).round(1)
-print(result)
-
-print("\\n=== МЕДИАНА ЦЕНЫ ПО КЛАССУ ===")
+print("\nМедиана цены билета по классу:")
 print(df.groupby('pclass')['fare'].median().round(2))
 
-print("\\n=== ФИЛЬТР: молодые богатые ===")
-rich = df[(df['age'] < 30) & (df['fare'] > 100)]
-print(f"Таких: {len(rich)}, выжило: {rich['survived'].mean():.0%}")`,
-   realcase:`Аналитик в ритейле каждое утро запускает скрипт: загружает продажи за вчера, делает groupby по магазинам и категориям, фильтрует выбросы. Это чистый pandas без ML — и это уже ценная работа.`,
-   task:`Загрузи 'diamonds' через sns.load_dataset('diamonds').
+# Работа с датами (пример)
+dates = pd.DataFrame({
+    'date': pd.date_range('2024-01-01', periods=10, freq='ME'),
+    'sales': [120, 135, 98, 142, 156, 130, 118, 145, 167, 189]
+})
+dates['month'] = dates['date'].dt.month
+dates['quarter'] = dates['date'].dt.quarter
+dates['is_q4'] = dates['quarter'] == 4
+print("\nПродажи с фичами из дат:")
+print(dates[['date','sales','month','quarter','is_q4']].head(6))`,
+    realcase:`Аналитик в ритейле каждое утро запускает скрипт: загружает продажи за вчера, делает groupby по магазинам, добавляет признаки из даты (день недели, праздник, неделя месяца). Это чистый pandas без ML — и это уже ценная работа.`,
+    task:`Загрузи 'diamonds' через sns.load_dataset('diamonds').
 1) Топ-3 огранки (cut) по средней цене
-2) Корреляция между carat и price
-3) Создай признак price_per_carat = price / carat
-4) Какой color даёт самый высокий price_per_carat?`,
-   solution:`import seaborn as sns
+2) Создай признак price_per_carat = price / carat
+3) Какой color даёт самый высокий price_per_carat?
+4) Добавь категорию размера: 'small' если carat < 0.5, 'medium' < 1.5, иначе 'large'`,
+    solution:`import seaborn as sns
+import pandas as pd
 
 df = sns.load_dataset('diamonds')
 
 top = df.groupby('cut')['price'].mean().sort_values(ascending=False).head(3)
-print("Топ-3 cut:"); print(top.round(0))
-
-print(f"\\nКорреляция carat-price: {df['carat'].corr(df['price']):.3f}")
+print("Топ-3 cut по цене:"); print(top.round(0))
 
 df['price_per_carat'] = df['price'] / df['carat']
 best = df.groupby('color')['price_per_carat'].mean().sort_values(ascending=False)
-print("\\nPrice per carat по color:"); print(best.round(0))`}]},
- {id:"eda",code:"M-03",icon:"🔍",xp:150,color:"#6dfabc",
-  title:"EDA — РАЗВЕДКА ДАННЫХ",
-  subtitle:"Первое что делает DS на любом проекте — понять данные",
-  sections:[{title:"Чеклист EDA — 7 шагов",visual:"eda",
-   theory:`EDA — ты получаешь датасет и пытаешься понять его ДО модели.
+print("\nPrice per carat по color:"); print(best.round(0))
+
+df['size_cat'] = pd.cut(df['carat'],
+    bins=[0, 0.5, 1.5, float('inf')],
+    labels=['small','medium','large'])
+print("\nРаспределение по размеру:"); print(df['size_cat'].value_counts())
+`}
+  ]},
+ {id:"visualization",code:"M-03",icon:"📊",xp:150,color:"#6db8fa",
+  title:"ВИЗУАЛИЗАЦИЯ ДАННЫХ",
+  subtitle:"matplotlib + seaborn — без графиков DS слепой",
+  sections:[
+   {title:"5 графиков которые нужны всегда",visual:"vizual",
+    theory:`Чувак, визуализация — это не красота. Это инструмент понимания.
+
+<b>Когда какой график:</b>
+
+<b>Histogram</b> — распределение одного числового признака
+→ Симметрично? Скошено вправо? Есть пики?
+→ Используй: df['age'].hist() или sns.histplot()
+
+<b>Boxplot</b> — сравнение распределений по группам + выбросы
+→ Сразу видно медиану, квартили и выбросы
+→ Используй: sns.boxplot(x='class', y='fare', data=df)
+
+<b>Scatter plot</b> — связь двух числовых признаков
+→ Есть ли линейная зависимость?
+→ Используй: sns.scatterplot(x='age', y='fare', data=df)
+
+<b>Correlation heatmap</b> — матрица корреляций всех признаков
+→ Находишь коллинеарные признаки, связь с таргетом
+→ Используй: sns.heatmap(df.corr(), annot=True)
+
+<b>Countplot / barplot</b> — распределение категориального признака
+→ Дисбаланс классов сразу виден
+→ Используй: sns.countplot(x='survived', data=df)
+
+<b>Правило: каждый EDA начинается с этих 5 графиков.</b>`,
+    code:`import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+
+df = sns.load_dataset('titanic')
+
+fig, axes = plt.subplots(2, 3, figsize=(15, 9))
+fig.suptitle('EDA Dashboard — Titanic', fontsize=14, y=1.02)
+
+# 1. Histogram — распределение возраста
+axes[0,0].set_title('Распределение возраста')
+df['age'].dropna().plot.hist(ax=axes[0,0], bins=25, color='#7c6dfa', alpha=0.8)
+axes[0,0].axvline(df['age'].median(), color='red', linestyle='--', label=f"Медиана: {df['age'].median():.0f}")
+axes[0,0].legend()
+
+# 2. Boxplot — цена билета по классу
+axes[0,1].set_title('Цена билета по классу')
+sns.boxplot(data=df, x='pclass', y='fare', ax=axes[0,1], palette='viridis')
+
+# 3. Scatter — возраст vs цена
+axes[0,2].set_title('Возраст vs Цена билета')
+sns.scatterplot(data=df, x='age', y='fare', hue='survived',
+                ax=axes[0,2], alpha=0.5, palette={0:'#fa6d9a', 1:'#6dfabc'})
+
+# 4. Correlation heatmap
+axes[1,0].set_title('Корреляционная матрица')
+num_cols = df[['age','fare','sibsp','parch','survived']].dropna()
+sns.heatmap(num_cols.corr(), annot=True, fmt='.2f', ax=axes[1,0],
+            cmap='RdBu_r', center=0, vmin=-1, vmax=1)
+
+# 5. Countplot — выживаемость (баланс классов)
+axes[1,1].set_title('Баланс классов (выжил/нет)')
+sns.countplot(data=df, x='survived', ax=axes[1,1],
+              palette={0:'#fa6d9a', 1:'#6dfabc'})
+axes[1,1].set_xticklabels(['Погиб', 'Выжил'])
+for p in axes[1,1].patches:
+    axes[1,1].annotate(f'{int(p.get_height())}',
+        (p.get_x() + p.get_width()/2., p.get_height()),
+        ha='center', va='bottom')
+
+# 6. Barplot — выживаемость по полу
+axes[1,2].set_title('Выживаемость по полу')
+surv_sex = df.groupby('sex')['survived'].mean().reset_index()
+sns.barplot(data=surv_sex, x='sex', y='survived', ax=axes[1,2],
+            palette=['#fa6d9a','#6db8fa'])
+axes[1,2].set_ylabel('Доля выживших')
+axes[1,2].yaxis.set_major_formatter(plt.FuncFormatter(lambda x,_: f'{x:.0%}'))
+
+plt.tight_layout()
+plt.savefig('titanic_eda.png', dpi=120, bbox_inches='tight')
+plt.show()
+print("Dashboard сохранён: titanic_eda.png")`,
+    realcase:`В любой презентации для бизнеса — сначала 3-5 графиков. Stakeholder не читает таблицы. Heatmap корреляций за 5 секунд показывает: какие признаки связаны с оттоком. Boxplot сразу говорит: у каких клиентов аномально высокий чек.`,
+    task:`Загрузи sns.load_dataset('tips') — данные чаевых в ресторане.
+1) Histogram total_bill — симметрично ли распределение?
+2) Boxplot total_bill по дням недели (day)
+3) Scatter total_bill vs tip — есть ли линейная зависимость?
+4) Corr heatmap числовых колонок
+5) Barplot — средние чаевые по полу (sex) и времени дня (time)`,
+    solution:`import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = sns.load_dataset('tips')
+fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+
+df['total_bill'].plot.hist(ax=axes[0,0], bins=20, color='#7c6dfa', alpha=0.8, title='Распред. счёта')
+axes[0,0].axvline(df['total_bill'].median(), color='red', linestyle='--')
+
+sns.boxplot(data=df, x='day', y='total_bill', ax=axes[0,1])
+axes[0,1].set_title('Счёт по дням')
+
+sns.scatterplot(data=df, x='total_bill', y='tip', hue='sex', ax=axes[0,2])
+axes[0,2].set_title('Счёт vs Чаевые')
+
+num = df[['total_bill','tip','size']].corr()
+sns.heatmap(num, annot=True, fmt='.2f', ax=axes[1,0], cmap='RdBu_r', center=0)
+axes[1,0].set_title('Корреляции')
+
+tip_by = df.groupby(['sex','time'])['tip'].mean().reset_index()
+sns.barplot(data=tip_by, x='sex', y='tip', hue='time', ax=axes[1,1])
+axes[1,1].set_title('Чаевые по полу и времени')
+
+df['tip_pct'] = df['tip'] / df['total_bill'] * 100
+sns.boxplot(data=df, x='time', y='tip_pct', ax=axes[1,2])
+axes[1,2].set_title('% чаевых: обед vs ужин')
+
+plt.tight_layout(); plt.show()
+print(f"Корреляция счёт-чаевые: {df['total_bill'].corr(df['tip']):.3f}")
+`}
+  ]},
+ {id:"eda",code:"M-04",icon:"🔍",xp:175,color:"#6dfabc",
+  title:"EDA + ЧИСТКА ДАННЫХ",
+  subtitle:"Пропуски, выбросы, категории, даты — 80% реальной работы DS",
+  sections:[
+   {title:"Чеклист EDA — 7 шагов",visual:"eda",
+    theory:`EDA — ты получаешь датасет и пытаешься понять его ДО модели.
 
 <b>Чувак, без EDA ты слеп.</b> Модель на грязных данных = мусор с красивой точностью.
 
 <b>Чеклист EDA:</b>
 1. Shape и типы — сколько строк, что за колонки
-2. Пропуски — где их нет, там им и не место
+2. Пропуски — где, сколько, как заполнять
 3. Дубликаты — одна строка = один раз
-4. Распределения — как выглядят числовые данные
-5. Выбросы — аномально большие/малые значения
-6. Корреляции — какие признаки связаны с таргетом
+4. Распределения — histogram для каждого числового
+5. Выбросы — IQR метод или 3σ правило
+6. Корреляции — heatmap всех числовых
 7. Категориальные — уникальные значения, опечатки
 
-<b>Самые частые проблемы в реальных датасетах:</b>
-- Пропуски (NaN) там где их не ждёшь
-- Даты записаны как строки ("2024-01-15")
-- Числа записаны как строки ("1,234.56")
-- Одно значение в разных форматах ("Москва", "москва")`,
-   code:`import pandas as pd
+<b>Самые частые проблемы в реальных данных:</b>
+→ Даты записаны как строки ("2024-01-15") → pd.to_datetime()
+→ Числа как строки ("1,234.56") → pd.to_numeric(errors='coerce')
+→ Опечатки в категориях ("Москва", "москва", "МОСКВА")
+→ Смешанные типы в одной колонке`,
+    code:`import pandas as pd
 import seaborn as sns
+import numpy as np
 
 df = sns.load_dataset('titanic')
 
-print("1. БАЗОВАЯ ИНФОРМАЦИЯ")
+print("=== 1. ФОРМА И ТИПЫ ===")
 print(f"Строк: {df.shape[0]}, Колонок: {df.shape[1]}")
+print(df.dtypes.value_counts())
 
-print("\\n2. ПРОПУСКИ")
-missing = df.isnull().sum()
-pct = (missing / len(df) * 100).round(1)
-miss_df = pd.DataFrame({'count': missing, '%': pct})
-print(miss_df[miss_df['count'] > 0].sort_values('%', ascending=False))
+print("\n=== 2. ПРОПУСКИ ===")
+miss = pd.DataFrame({'count': df.isnull().sum(), 'pct': df.isnull().mean()*100})
+print(miss[miss['count']>0].sort_values('pct', ascending=False).round(1))
 
-print("\\n3. ДУБЛИКАТЫ")
+print("\n=== 3. ДУБЛИКАТЫ ===")
 print(f"Дубликатов: {df.duplicated().sum()}")
 
-print("\\n4. СТАТИСТИКА ЧИСЛОВЫХ")
+print("\n=== 4. СТАТИСТИКА ===")
 print(df.describe().round(2))
 
-print("\\n5. ВЫБРОСЫ (IQR метод)")
+print("\n=== 5. ВЫБРОСЫ (IQR) ===")
 for col in ['age', 'fare']:
     Q1, Q3 = df[col].quantile([0.25, 0.75])
     IQR = Q3 - Q1
     out = df[(df[col] < Q1-1.5*IQR) | (df[col] > Q3+1.5*IQR)]
-    print(f"{col}: {len(out)} выбросов")`,
-   realcase:`DS в банке получает выгрузку транзакций за квартал. Первое что делает — EDA. Находит: 15% пустых значений в merchant_category, даты в 3 разных форматах, суммы иногда отрицательные. Без EDA — модель скоринга выдаёт бред.`,
-   task:`Загрузи 'tips': df = sns.load_dataset('tips')
-1) Форма, типы, пропуски, дубликаты
-2) Описательная статистика total_bill
-3) Выбросы в total_bill и tip (IQR)
-4) Корреляция total_bill и tip
-5) Средний tip% по дням: tip / total_bill * 100`,
-   solution:`import seaborn as sns
+    print(f"  {col}: {len(out)} выбросов ({len(out)/len(df)*100:.1f}%)")`,
+    realcase:`DS в банке получает выгрузку транзакций. Первое: EDA. Находит: 15% пустых значений в merchant_category, суммы иногда отрицательные (возвраты), merchant_name содержит опечатки ("МакДональдс" и "макдоналдс"). Без EDA — модель скоринга выдаёт бред.`,
+    task:`Загрузи 'tips': df = sns.load_dataset('tips')
+1) Полный EDA чеклист (7 шагов)
+2) Найди выбросы в total_bill
+3) Создай фичу из категории: one-hot encoding для 'day'
+4) Нормализуй total_bill (Z-score)`,
+    solution:`import seaborn as sns
+import pandas as pd
+import numpy as np
 
 df = sns.load_dataset('tips')
-print("Форма:", df.shape)
+print("Shape:", df.shape)
 print("Пропуски:", df.isnull().sum().sum())
-print(df['total_bill'].describe().round(2))
+print("Дубликаты:", df.duplicated().sum())
+print(df.describe().round(2))
 
-for col in ['total_bill','tip']:
-    Q1,Q3 = df[col].quantile([0.25,0.75])
-    IQR = Q3-Q1
-    n = len(df[(df[col]<Q1-1.5*IQR)|(df[col]>Q3+1.5*IQR)])
-    print(f"Выбросы {col}: {n}")
+# Выбросы
+Q1,Q3 = df['total_bill'].quantile([.25,.75])
+IQR = Q3-Q1
+out = df[(df['total_bill']<Q1-1.5*IQR)|(df['total_bill']>Q3+1.5*IQR)]
+print(f"Выбросы total_bill: {len(out)}")
 
-print(f"Корреляция: {df['total_bill'].corr(df['tip']):.3f}")
-df['tip_pct'] = df['tip']/df['total_bill']*100
-print(df.groupby('day')['tip_pct'].mean().round(1).sort_values(ascending=False))`}]},
- {id:"linear",code:"M-04",icon:"📈",xp:200,color:"#6db8fa",
+# One-hot encoding
+day_dummies = pd.get_dummies(df['day'], prefix='day')
+df = pd.concat([df, day_dummies], axis=1)
+print("\nНовые колонки:", list(day_dummies.columns))
+
+# Z-score нормализация
+df['total_bill_norm'] = (df['total_bill']-df['total_bill'].mean())/df['total_bill'].std()
+print(f"Нормализация: mean={df['total_bill_norm'].mean():.2f}, std={df['total_bill_norm'].std():.2f}")
+`},
+   {title:"Обработка пропусков и категорий",visual:"eda",
+    theory:`<b>Пропуски — три стратегии:</b>
+
+1. <b>Удалить строки</b> — если пропусков < 1% и случайны
+   df.dropna(subset=['age'])
+
+2. <b>Заполнить медианой/модой</b> — числовые/категориальные
+   df['age'].fillna(df['age'].median(), inplace=True)
+   df['embarked'].fillna(df['embarked'].mode()[0], inplace=True)
+
+3. <b>Заполнить по группам</b> — если пропуск зависит от другого признака
+   df['age'] = df.groupby('pclass')['age'].transform(lambda x: x.fillna(x.median()))
+
+<b>Категориальные переменные — три подхода:</b>
+
+<b>get_dummies (One-Hot)</b> — для номинальных (нет порядка)
+pd.get_dummies(df['city'])
+→ Москва=[1,0,0], СПб=[0,1,0], Казань=[0,0,1]
+
+<b>OrdinalEncoder</b> — для порядковых (есть порядок)
+['низкий','средний','высокий'] → [0, 1, 2]
+
+<b>LabelEncoder</b> — только для таргета, не для признаков!
+
+<b>Дисбаланс классов:</b>
+Если класс 1 = 5%, класс 0 = 95% → accuracy всегда 95% (модель просто угадывает 0).
+Решение: class_weight='balanced' в любом sklearn классификаторе.`,
+    code:`import pandas as pd
+import seaborn as sns
+import numpy as np
+from sklearn.preprocessing import OrdinalEncoder
+
+df = sns.load_dataset('titanic')
+
+# --- ПРОПУСКИ ---
+print("До обработки:", df.isnull().sum()[df.isnull().sum()>0].to_dict())
+
+# Числовые — медиана по группам
+df['age'] = df.groupby('pclass')['age'].transform(
+    lambda x: x.fillna(x.median())
+)
+# Категориальные — мода
+df['embarked'] = df['embarked'].fillna(df['embarked'].mode()[0])
+# Колонки с >40% пропусков — удалить
+df.drop(columns=['deck'], inplace=True)
+
+print("После:", df.isnull().sum()[df.isnull().sum()>0].to_dict())
+
+# --- КАТЕГОРИИ ---
+# One-Hot для номинальных
+df = pd.get_dummies(df, columns=['sex','embarked'], drop_first=True)
+
+# Ordinal для порядковых
+from sklearn.preprocessing import OrdinalEncoder
+df_diamond = sns.load_dataset('diamonds')
+enc = OrdinalEncoder(categories=[['Fair','Good','Very Good','Premium','Ideal']])
+df_diamond['cut_ord'] = enc.fit_transform(df_diamond[['cut']])
+print("\nOrdinal encoding cut:", df_diamond[['cut','cut_ord']].drop_duplicates().sort_values('cut_ord'))
+
+# --- ДИСБАЛАНС КЛАССОВ ---
+print(f"\nДисбаланс в Titanic:")
+print(df['survived'].value_counts(normalize=True).round(3))
+print("→ Решение: RandomForestClassifier(class_weight='balanced')")`,
+    realcase:`В задаче обнаружения фрода: 0.1% мошеннических транзакций. Если обучить модель без учёта дисбаланса — она скажет "всё нормально" на 100% транзакций и получит 99.9% accuracy. Реальный Recall=0. Решение: class_weight='balanced' или stratify в train_test_split.`,
+    task:`1) Titanic: заполни пропуски в 'age' медианой по классу и полу (groupby(['pclass','sex']))
+2) Сравни распределения age до и после заполнения
+3) Закодируй 'embarked' через get_dummies
+4) Имитируй дисбаланс: возьми 90% выживших класса 0 и 10% класса 1. Обучи LogReg с и без class_weight='balanced'. Сравни Recall.`,
+    solution:`import seaborn as sns
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import LabelEncoder
+
+df = sns.load_dataset('titanic')
+
+# 1. Заполняем age медианой по классу+полу
+df['age'] = df.groupby(['pclass','sex'])['age'].transform(
+    lambda x: x.fillna(x.median()))
+print(f"Пропусков age после: {df['age'].isnull().sum()}")
+
+# 3. One-hot embarked
+df = pd.get_dummies(df, columns=['embarked','sex'], drop_first=True)
+
+# 4. Дисбаланс классов
+df2 = df.dropna(subset=['age','fare'])
+X = df2[['age','fare','pclass']]
+y = df2['survived']
+
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42,stratify=y)
+
+for label, cw in [('Без балансировки', None), ('С balanced', 'balanced')]:
+    m = LogisticRegression(class_weight=cw, max_iter=1000)
+    m.fit(Xtr, ytr)
+    print(f"\n{label}:")
+    print(classification_report(yte, m.predict(Xte), target_names=['погиб','выжил']))
+`}
+  ]},
+ {id:"sql",code:"M-05",icon:"🗄️",xp:200,color:"#6dfabc",
+  title:"SQL В PYTHON — РАБОЧАЯ СВЯЗКА",
+  subtitle:"pandas + SQLite + реальные запросы — без этого не нанимают",
+  sections:[{title:"SQL изнутри Python: pandas, SQLite, реальные запросы",visual:"sql",
+   theory:`Чувак, DS не пишет SQL отдельно. Он запускает SQL прямо из Python и результат кладёт в DataFrame.
+
+<b>Три способа работы с SQL в Python:</b>
+1. pandas.read_sql() — самый простой. Запрос → DataFrame
+2. SQLite в памяти — база прямо в Python, ничего не устанавливать
+3. sqlalchemy + psycopg2 — для production PostgreSQL/MySQL
+
+<b>Топ-5 конструкций которые спрашивают на собеседовании:</b>
+SELECT / FROM / WHERE — базовая выборка
+GROUP BY + HAVING — агрегация с фильтром
+JOIN (LEFT, INNER) — объединение таблиц
+Window Functions — RANK, ROW_NUMBER, LAG
+CTE (WITH ...) — читаемые сложные запросы
+
+<b>Без SQL Junior DS не нанимают.</b>`,
+   code:`import pandas as pd
+import sqlite3
+
+conn = sqlite3.connect(':memory:')
+conn.execute("CREATE TABLE users (user_id INT, name TEXT, city TEXT)")
+conn.execute("CREATE TABLE orders (order_id INT, user_id INT, amount REAL, order_date TEXT)")
+conn.executemany("INSERT INTO users VALUES (?,?,?)", [
+    (1,'Иван','Москва'),(2,'Мария','СПб'),(3,'Алексей','Москва'),(4,'Елена','Казань')
+])
+conn.executemany("INSERT INTO orders VALUES (?,?,?,?)", [
+    (1,1,1500,'2024-01-15'),(2,1,500,'2024-01-20'),(3,2,2000,'2024-01-18'),
+    (4,3,800,'2024-02-01'),(5,3,3000,'2024-02-10'),(6,4,1200,'2024-02-05')
+])
+conn.commit()
+
+# GROUP BY + LEFT JOIN
+q1 = """
+    SELECT u.city,
+           COUNT(o.order_id)       AS orders_count,
+           ROUND(SUM(o.amount),0)  AS total_revenue,
+           ROUND(AVG(o.amount),0)  AS avg_order
+    FROM users u
+    LEFT JOIN orders o ON u.user_id = o.user_id
+    GROUP BY u.city
+    ORDER BY total_revenue DESC
+"""
+print("=== Выручка по городам ===")
+print(pd.read_sql(q1, conn))
+
+# CTE + Window Function RANK
+q2 = """
+    WITH totals AS (
+        SELECT u.name, u.city, SUM(o.amount) AS total
+        FROM users u JOIN orders o ON u.user_id = o.user_id
+        GROUP BY u.user_id
+    )
+    SELECT name, city, total, RANK() OVER (ORDER BY total DESC) AS rank
+    FROM totals
+"""
+print("\n=== Топ клиенты (CTE + RANK) ===")
+print(pd.read_sql(q2, conn))
+
+# LAG — динамика заказов
+q3 = """
+    SELECT user_id, amount, order_date,
+           LAG(amount) OVER (PARTITION BY user_id ORDER BY order_date) AS prev_order,
+           amount - LAG(amount) OVER (PARTITION BY user_id ORDER BY order_date) AS delta
+    FROM orders
+"""
+print("\n=== Динамика заказов (LAG) ===")
+print(pd.read_sql(q3, conn))`,
+   realcase:`В Яндексе, Avito, Ozon каждый DS начинает задачу с SQL-запроса к prod-базе. Выгружает нужные данные в DataFrame, потом строит модель. На собеседовании дают 2-3 SQL-задачи: GROUP BY + JOIN + window function. Без SQL — нет данных. Без данных — нет модели.`,
+   task:`Создай SQLite базу с users и orders.
+1) Пользователи со средним чеком > 1000
+2) Последний заказ каждого пользователя (MAX по дате)
+3) CTE: сумма по user_id → топ-3
+4) В DataFrame добавь колонку VIP = 'YES' если total > 2000`,
+   solution:`import pandas as pd, sqlite3
+
+conn = sqlite3.connect(':memory:')
+conn.execute("CREATE TABLE users (user_id INT, name TEXT, city TEXT)")
+conn.execute("CREATE TABLE orders (order_id INT, user_id INT, amount REAL, order_date TEXT)")
+conn.executemany("INSERT INTO users VALUES (?,?,?)",
+    [(1,'Иван','Москва'),(2,'Мария','СПб'),(3,'Алексей','Москва'),(4,'Елена','Казань')])
+conn.executemany("INSERT INTO orders VALUES (?,?,?,?)",
+    [(1,1,1500,'2024-01-15'),(2,1,500,'2024-01-20'),(3,2,2000,'2024-01-18'),
+     (4,3,800,'2024-02-01'),(5,3,3000,'2024-02-10'),(6,4,1200,'2024-02-05')])
+conn.commit()
+
+df = pd.read_sql("SELECT user_id, ROUND(AVG(amount),0) avg FROM orders GROUP BY user_id HAVING avg > 1000", conn)
+print("Ср.чек > 1000:\n", df.to_string(index=False))
+
+df2 = pd.read_sql("SELECT user_id, MAX(order_date) last FROM orders GROUP BY user_id", conn)
+print("\nПоследние заказы:\n", df2.to_string(index=False))
+
+q = """WITH t AS (SELECT u.name, SUM(o.amount) total FROM users u JOIN orders o ON u.user_id=o.user_id GROUP BY u.user_id) SELECT * FROM t ORDER BY total DESC LIMIT 3"""
+df3 = pd.read_sql(q, conn)
+df3['VIP'] = df3['total'].apply(lambda x: 'YES' if x > 2000 else 'no')
+print("\nТоп-3 + VIP:\n", df3.to_string(index=False))`}]},
+ {id:"linear",code:"M-06",icon:"📈",xp:200,color:"#6db8fa",
   title:"ЛИНЕЙНЫЕ МОДЕЛИ",
   subtitle:"Линейная и логистическая регрессия — фундамент всего ML",
-  sections:[{title:"Линейная регрессия — предсказываем числа",visual:"regression",
+  sections:[{title:"Регрессия и классификация",visual:"regression",
    theory:`Чувак, линейная регрессия — это формула:
 <b>ŷ = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</b>
 
@@ -603,99 +883,207 @@ print(df.groupby('day')['tip_pct'].mean().round(1).sort_values(ascending=False))
 <b>Как модель находит веса?</b>
 Минимизирует MSE = 1/n × Σ(ŷᵢ - yᵢ)²
 
-<b>Когда применять:</b>
-✅ Предсказание цены квартиры
-✅ Предсказание продаж
-✅ Предсказание времени доставки
-❌ «Выживет / не выживет» — это классификация
+<b>Логистическая регрессия</b> — для классификации (да/нет).
+Выход — вероятность от 0 до 1. Порог 0.5 → класс.
 
 <b>Метрики регрессии:</b>
-MAE — средняя абсолютная ошибка (понятна людям)
+MAE — средняя абсолютная ошибка (понятна бизнесу)
 RMSE — штрафует большие ошибки сильнее
-R² — от 0 до 1, насколько модель лучше «угадывания среднего»`,
-   code:`from sklearn.datasets import fetch_california_housing
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, r2_score
-import pandas as pd
-
-data = fetch_california_housing(as_frame=True)
-df = data.frame
-
-X = df.drop('MedHouseVal', axis=1)
-y = df['MedHouseVal']
-
-# Train/test split — ОБЯЗАТЕЛЬНО
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-print(f"Train: {X_train.shape}, Test: {X_test.shape}")
-
-model = LinearRegression()
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-
-print(f"\\nMAE: {mean_absolute_error(y_test, y_pred):.3f}")
-print(f"R²:  {r2_score(y_test, y_pred):.3f}")
-
-coef = pd.Series(model.coef_, index=X.columns)
-print("\\nВеса признаков:")
-print(coef.sort_values(ascending=False).round(4))`,
-   realcase:`Агентство недвижимости использует линейную регрессию для оценки квартир. Признаки: расстояние до центра, площадь, этаж, год постройки. Точность ±12% — хватает для предварительной оценки без выезда оценщика.`,
-   task:`Используй California Housing.
-1) Обучи линейную регрессию на 3 признаках: MedInc, AveRooms, HouseAge
-2) Сравни R² с моделью на ВСЕХ признаках
-3) Какой признак имеет наибольший вес (по абсолютному значению)?`,
-   solution:`from sklearn.datasets import fetch_california_housing
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
-import numpy as np
-
-data = fetch_california_housing(as_frame=True)
-df = data.frame
-X = df.drop('MedHouseVal', axis=1)
-y = df['MedHouseVal']
-Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
-
-f3 = ['MedInc','AveRooms','HouseAge']
-m3 = LinearRegression().fit(Xtr[f3], ytr)
-mall = LinearRegression().fit(Xtr, ytr)
-
-print(f"R² (3 признака): {r2_score(yte, m3.predict(Xte[f3])):.3f}")
-print(f"R² (все):        {r2_score(yte, mall.predict(Xte)):.3f}")
-
-import pandas as pd
-coefs = pd.Series(mall.coef_, index=X.columns).abs().sort_values(ascending=False)
-print(f"\\nСамый важный: {coefs.index[0]} ({coefs.iloc[0]:.4f})")`}]},
- {id:"classification",code:"M-05",icon:"🎯",xp:200,color:"#facc6d",
-  title:"КЛАССИФИКАЦИЯ",
-  subtitle:"Логрег, Decision Tree, Random Forest — задачи да/нет",
-  sections:[{title:"От логрега до случайного леса",visual:"classification",
-   theory:`<b>Логистическая регрессия</b> — предсказывает вероятность класса 0 или 1.
-Выход — число от 0 до 1. Если &gt; 0.5 → класс 1.
-Применения: спам, мошенничество, диагноз, churn.
-
-<b>Decision Tree</b> — дерево «если-то-иначе».
-✅ Понятен людям, не нужна нормализация
-❌ Переобучается — выучивает шум
-
-<b>Random Forest</b> — 100+ деревьев, голосование.
-✅ Точнее, устойчивее к шуму
-❌ Менее интерпретируем
+R² — от 0 до 1, насколько модель лучше «угадывания среднего»
 
 <b>Метрики классификации:</b>
-Accuracy — % правильных (врёт при дисбалансе классов!)
 Precision — из предсказанных «1», сколько правда «1»
 Recall — из реальных «1», сколько нашли
 F1 — баланс precision и recall
 ROC-AUC — 0.5=случайно, 1.0=идеал`,
-   code:`import seaborn as sns
+   code:`from sklearn.datasets import fetch_california_housing
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, r2_score, classification_report
+import pandas as pd
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+
+# --- РЕГРЕССИЯ ---
+data = fetch_california_housing(as_frame=True)
+df = data.frame
+X = df.drop('MedHouseVal', axis=1)
+y = df['MedHouseVal']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+model = LinearRegression()
+model.fit(Xtr, ytr)
+y_pred = model.predict(Xte)
+
+print(f"=== Линейная регрессия (California Housing) ===")
+print(f"MAE: {mean_absolute_error(yte, y_pred):.3f}")
+print(f"R²:  {r2_score(yte, y_pred):.3f}")
+
+coef = pd.Series(model.coef_, index=X.columns).sort_values(key=abs, ascending=False)
+print("\nВажность признаков (по весу):")
+print(coef.round(4).head(5))
+
+# --- КЛАССИФИКАЦИЯ ---
+df_t = sns.load_dataset('titanic')
+df_t = df_t[['survived','pclass','sex','age','fare']].dropna()
+df_t['sex'] = LabelEncoder().fit_transform(df_t['sex'])
+
+X2 = df_t.drop('survived', axis=1)
+y2 = df_t['survived']
+Xtr2, Xte2, ytr2, yte2 = train_test_split(X2, y2, test_size=.2, random_state=42)
+
+lr = LogisticRegression(max_iter=1000)
+lr.fit(Xtr2, ytr2)
+print(f"\n=== Логистическая регрессия (Titanic) ===")
+print(classification_report(yte2, lr.predict(Xte2), target_names=['погиб','выжил']))`,
+   realcase:`Агентство недвижимости использует линейную регрессию для оценки квартир. Признаки: площадь, этаж, расстояние до центра, год постройки. Точность ±12% — хватает для предварительной оценки без выезда оценщика.`,
+   task:`1) California Housing: обучи линейную регрессию на 3 признаках (MedInc, AveRooms, HouseAge)
+2) Сравни R² с моделью на всех признаках — насколько 3 признака хуже?
+3) Titanic: обучи логрег с class_weight='balanced'
+4) Сравни F1 для выживших с и без balanced`,
+   solution:`from sklearn.datasets import fetch_california_housing
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, classification_report
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+
+data = fetch_california_housing(as_frame=True)
+df = data.frame
+X = df.drop('MedHouseVal',axis=1); y = df['MedHouseVal']
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+f3 = ['MedInc','AveRooms','HouseAge']
+print(f"R² (3 признака): {r2_score(yte, LinearRegression().fit(Xtr[f3],ytr).predict(Xte[f3])):.3f}")
+print(f"R² (все):        {r2_score(yte, LinearRegression().fit(Xtr,ytr).predict(Xte)):.3f}")
+
+df_t = sns.load_dataset('titanic')[['survived','pclass','sex','age','fare']].dropna()
+df_t['sex'] = LabelEncoder().fit_transform(df_t['sex'])
+X2 = df_t.drop('survived',axis=1); y2 = df_t['survived']
+Xtr2,Xte2,ytr2,yte2 = train_test_split(X2,y2,test_size=.2,random_state=42,stratify=y2)
+for cw in [None, 'balanced']:
+    m = LogisticRegression(class_weight=cw,max_iter=1000).fit(Xtr2,ytr2)
+    print(f"\nclass_weight={cw}:")
+    print(classification_report(yte2, m.predict(Xte2), target_names=['погиб','выжил']))
+`}]},
+ {id:"validation",code:"M-07",icon:"🛡️",xp:200,color:"#6dfabc",
+  title:"ВАЛИДАЦИЯ И OVERFITTING",
+  subtitle:"Как не обмануть себя — cross-validation, bias-variance tradeoff",
+  sections:[{title:"Переобучение — главный враг DS",visual:"validation",
+   theory:`<b>Overfitting (переобучение)</b> — модель выучила тренировочные данные наизусть, но на новых данных работает плохо.
+
+Аналогия: студент зазубрил ответы на конкретные вопросы, не понял тему.
+
+<b>Диагностика:</b>
+Train accuracy = 99%
+Test  accuracy = 65%
+→ Классическое переобучение. Gap = 34%.
+
+<b>Лечение:</b>
+1. Больше данных — лучшее лекарство
+2. Регуляризация L1/L2 — штрафуем сложность модели
+3. Меньше признаков — убираем шум
+4. max_depth, min_samples_leaf — ограничения для деревьев
+
+<b>5-Fold Cross-Validation — честная оценка:</b>
+Делим данные на 5 частей.
+Обучаем 5 раз, каждый раз валидируемся на другой части.
+Итог = среднее по 5 запускам ± std.
+CV AUC: 0.85 ± 0.02 → стабильная модель ✅
+CV AUC: 0.85 ± 0.12 → нестабильная, проблема ❌
+
+<b>Важно: Валидацию делаем ДО выбора модели. Не после.</b>`,
+   code:`import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score, train_test_split, learning_curve
+from sklearn.datasets import make_classification
+import matplotlib.pyplot as plt
+
+X, y = make_classification(n_samples=1000, n_features=20,
+                            n_informative=5, n_redundant=10, random_state=42)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+models = {
+    'DT (без лимита)':  DecisionTreeClassifier(random_state=42),
+    'DT (max_depth=5)': DecisionTreeClassifier(max_depth=5, random_state=42),
+    'Random Forest':    RandomForestClassifier(n_estimators=100, random_state=42),
+}
+for name, model in models.items():
+    model.fit(Xtr, ytr)
+    tr = model.score(Xtr, ytr)
+    te = model.score(Xte, yte)
+    cv = cross_val_score(model, X, y, cv=5, scoring='roc_auc')
+    print(f"{name}:")
+    print(f"  Train={tr:.3f} | Test={te:.3f} | Gap={tr-te:.3f}")
+    print(f"  CV AUC: {cv.mean():.3f} ± {cv.std():.3f}")
+    overfit = "⚠️ ПЕРЕОБУЧЕНИЕ" if tr-te > 0.1 else "✅ норм"
+    print(f"  {overfit}")`,
+   realcase:`DS в Яндексе обучил модель ранжирования. Train MAP@10 = 0.95, Test = 0.71 — явное переобучение. Решение: ограничили глубину дерева, убрали 200 редких признаков. Test вырос до 0.88.`,
+   task:`1) make_classification(n_samples=500, n_features=50, n_informative=5)
+2) Decision Tree без ограничений — train и test score
+3) Подбери max_depth от 1 до 20, построй график Train/Test vs depth
+4) Найди оптимальный depth: максимальный test при минимальном gap`,
+   solution:`import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_classification
+
+X,y = make_classification(n_samples=500,n_features=50,n_informative=5,random_state=42)
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+depths = range(1,21)
+train_sc, test_sc = [], []
+for d in depths:
+    dt = DecisionTreeClassifier(max_depth=d,random_state=42)
+    dt.fit(Xtr,ytr)
+    train_sc.append(dt.score(Xtr,ytr))
+    test_sc.append(dt.score(Xte,yte))
+
+best_d = depths[np.argmax(test_sc)]
+print(f"Оптимальная глубина: {best_d}, test={max(test_sc):.3f}")
+print(f"Без ограничений: train={train_sc[-1]:.3f}, test={test_sc[-1]:.3f}")
+
+plt.figure(figsize=(10,5))
+plt.plot(depths, train_sc, label='Train', color='#7c6dfa')
+plt.plot(depths, test_sc, label='Test', color='#fa6d9a')
+plt.axvline(best_d, color='#6dfabc', linestyle='--', label=f'Оптимум depth={best_d}')
+plt.xlabel('max_depth'); plt.ylabel('Accuracy')
+plt.title('Overfitting: Train vs Test по глубине дерева')
+plt.legend(); plt.grid(True, alpha=0.3); plt.show()
+`}]},
+ {id:"classification",code:"M-08",icon:"🎯",xp:200,color:"#facc6d",
+  title:"КЛАССИФИКАЦИЯ",
+  subtitle:"Логрег, Decision Tree, Random Forest — задачи да/нет",
+  sections:[{title:"От логрега до случайного леса",visual:"classification",
+   theory:`<b>Логистическая регрессия</b> — предсказывает вероятность класса 0 или 1.
+Применения: спам, мошенничество, диагноз, churn.
+
+<b>Decision Tree</b> — дерево «если-то-иначе».
+✅ Понятен людям, не нужна нормализация
+❌ Переобучается — именно поэтому мы изучили Валидацию ДО этого
+
+<b>Random Forest</b> — 100+ деревьев, голосование большинства.
+✅ Точнее, устойчивее к шуму, встроенная важность признаков
+❌ Медленнее, менее интерпретируем
+
+<b>Метрики — что выбрать зависит от задачи:</b>
+Спам-фильтр → Precision важнее (не хотим пропустить важное письмо)
+Рак → Recall важнее (лучше ложная тревога, чем пропустить болезнь)
+Churn → F1 (баланс)
+Fraud → ROC-AUC + Recall
+
+<b>Дисбаланс классов (помним из M-04):</b>
+Всегда используй class_weight='balanced' если классы не равны.
+Всегда используй stratify=y в train_test_split.`,
+   code:`import seaborn as sns
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score
+import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 df = sns.load_dataset('titanic')
@@ -704,26 +1092,26 @@ df['sex'] = LabelEncoder().fit_transform(df['sex'])
 
 X = df.drop('survived', axis=1)
 y = df['survived']
-Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+# stratify — сохраняем пропорции классов
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
 
 models = {
-    'Logistic Regression': LogisticRegression(max_iter=1000),
-    'Decision Tree':       DecisionTreeClassifier(max_depth=5, random_state=42),
-    'Random Forest':       RandomForestClassifier(n_estimators=100, random_state=42),
+    'Logistic Regression': LogisticRegression(max_iter=1000, class_weight='balanced'),
+    'Decision Tree':       DecisionTreeClassifier(max_depth=5, random_state=42, class_weight='balanced'),
+    'Random Forest':       RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced'),
 }
 for name, m in models.items():
     m.fit(Xtr, ytr)
+    cv  = cross_val_score(m, X, y, cv=5, scoring='roc_auc')
     auc = roc_auc_score(yte, m.predict_proba(Xte)[:,1])
-    print(f"\\n{name}  |  AUC: {auc:.3f}")
-    print(classification_report(yte, m.predict(Xte),
-          target_names=['погиб','выжил']))`,
-   realcase:`Тинькофф использует Random Forest для одобрения кредитов. 200+ признаков: история платежей, возраст, доход. Recall важнее Precision — лучше отказать надёжному, чем дать кредит мошеннику.`,
-   task:`Датасет: Breast Cancer (встроен в sklearn).
-from sklearn.datasets import load_breast_cancer
-1) Обучи Random Forest
-2) Топ-5 важных признаков (feature_importances_)
-3) Матрица ошибок (confusion_matrix)
-4) Что важнее в медицинской задаче — precision или recall? Почему?`,
+    print(f"\n{name}  CV={cv.mean():.3f}±{cv.std():.3f}  TestAUC={auc:.3f}")
+    print(classification_report(yte, m.predict(Xte), target_names=['погиб','выжил']))`,
+   realcase:`Тинькофф использует Random Forest для одобрения кредитов. 200+ признаков. Recall важнее Precision — лучше отказать надёжному, чем дать кредит мошеннику. class_weight обязателен: одобренных кредитов всегда больше.`,
+   task:`Загрузи Breast Cancer из sklearn.
+1) Обучи RF с class_weight='balanced' и stratify
+2) Топ-5 признаков по feature_importances_
+3) Confusion matrix
+4) Обоснуй: что важнее — Precision или Recall? Почему?`,
    solution:`from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -731,17 +1119,17 @@ from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
 
 data = load_breast_cancer()
-Xtr,Xte,ytr,yte = train_test_split(data.data,data.target,test_size=.2,random_state=42)
+Xtr,Xte,ytr,yte = train_test_split(data.data,data.target,test_size=.2,random_state=42,stratify=data.target)
+rf = RandomForestClassifier(n_estimators=100,random_state=42,class_weight='balanced')
+rf.fit(Xtr,ytr)
 
-rf = RandomForestClassifier(n_estimators=100, random_state=42)
-rf.fit(Xtr, ytr)
-
-imp = pd.Series(rf.feature_importances_, index=data.feature_names)
-print("Топ-5:"); print(imp.sort_values(ascending=False).head(5).round(3))
-print("\\nConfusion Matrix:"); print(confusion_matrix(yte, rf.predict(Xte)))
-print(classification_report(yte, rf.predict(Xte)))
-# Важнее RECALL: лучше ложный диагноз, чем пропущенная опухоль`}]},
- {id:"boosting",code:"M-06",icon:"⚡",xp:250,color:"#fa9b6d",
+imp = pd.Series(rf.feature_importances_,index=data.feature_names).sort_values(ascending=False)
+print("Топ-5 признаков:"); print(imp.head(5).round(3))
+print("\nConfusion Matrix:"); print(confusion_matrix(yte, rf.predict(Xte)))
+print(classification_report(yte,rf.predict(Xte)))
+print("→ Recall важнее: лучше ложный диагноз опухоли, чем пропустить реальную")
+`}]},
+ {id:"boosting",code:"M-09",icon:"⚡",xp:250,color:"#fa9b6d",
   title:"GRADIENT BOOSTING",
   subtitle:"XGBoost, LightGBM, CatBoost — оружие победителей Kaggle",
   sections:[{title:"Почему бустинг побеждает на табличных данных",visual:"boosting",
@@ -752,16 +1140,18 @@ print(classification_report(yte, rf.predict(Xte)))
 ...и так 100-1000 раз.
 
 <b>Три брата-бустера:</b>
-XGBoost — классика, стабилен
-LightGBM — быстрее, меньше памяти, для больших данных
+XGBoost — классика, стабилен, хорошая документация
+LightGBM — быстрее, меньше памяти, для больших данных (>1M строк)
 CatBoost — нативная обработка категорий, создан Яндексом
 
-<b>Главные гиперпараметры:</b>
+<b>Главные гиперпараметры (знаем из M-07 про овerfitting):</b>
 n_estimators — количество деревьев (100–1000)
-max_depth — глубина (3–8, больше = переобучение)
+max_depth — глубина (3–8, больше = переобучение — помним!)
 learning_rate — шаг (0.01–0.3, меньше = точнее но медленнее)
 
-<b>SHAP</b> — объяснение модели. Показывает вклад каждого признака в предсказание. Это твоя суперсила на презентациях.`,
+<b>SHAP — объяснение модели.</b>
+Показывает вклад каждого признака в конкретное предсказание.
+Это твоя суперсила на презентациях для бизнеса.`,
    code:`import seaborn as sns
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -778,11 +1168,11 @@ df['embarked'] = LabelEncoder().fit_transform(df['embarked'])
 
 X = df.drop('survived', axis=1)
 y = df['survived']
-Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
 
-xgb = XGBClassifier(n_estimators=200, max_depth=4,
-                     learning_rate=0.1, eval_metric='logloss',
-                     random_state=42, verbosity=0)
+xgb = XGBClassifier(n_estimators=200, max_depth=4, learning_rate=0.1,
+                     scale_pos_weight=(y==0).sum()/(y==1).sum(),  # учёт дисбаланса
+                     eval_metric='logloss', random_state=42, verbosity=0)
 xgb.fit(Xtr, ytr)
 
 auc = roc_auc_score(yte, xgb.predict_proba(Xte)[:,1])
@@ -791,39 +1181,43 @@ print(f"Test AUC: {auc:.3f}")
 print(f"CV  AUC:  {cv.mean():.3f} ± {cv.std():.3f}")
 
 imp = pd.Series(xgb.feature_importances_, index=X.columns)
-print("\\nВажность признаков:")
+print("\nВажность признаков:")
 print(imp.sort_values(ascending=False).round(3))`,
-   realcase:`Сбер, Тинькофф, ВТБ — все три используют LightGBM/CatBoost в кредитном скоринге. CatBoost особенно популярен в России: создан командой Яндекса, лучше работает «из коробки» на категориальных признаках.`,
-   task:`Скачай с Kaggle 'Telco Customer Churn'.
-1) Обучи XGBoost на предсказание оттока (Churn)
-2) Сравни с Random Forest по ROC-AUC
+   realcase:`Сбер, Тинькофф, ВТБ — все используют LightGBM/CatBoost в кредитном скоринге. CatBoost особенно популярен: создан командой Яндекса, лучше работает на категориальных признаках без предварительной кодировки.`,
+   task:`Используй sns.load_dataset('titanic') (встроенный — не нужно скачивать).
+1) Обучи XGBoost c scale_pos_weight для дисбаланса
+2) Сравни с Random Forest из M-08 по CV AUC
 3) Топ-3 признака по важности
-4) Что бизнес должен сделать, зная эти признаки?`,
-   solution:`import pandas as pd
+4) Что делать бизнесу зная эти признаки?`,
+   solution:`import seaborn as sns
 from xgboost import XGBClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelEncoder
+import pandas as pd
 
-df = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')
-df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
-df.dropna(inplace=True)
-df['Churn'] = (df['Churn'] == 'Yes').astype(int)
-df.drop('customerID', axis=1, inplace=True)
-for col in df.select_dtypes(include='object').columns:
-    df[col] = LabelEncoder().fit_transform(df[col])
+df = sns.load_dataset('titanic')
+df = df[['survived','pclass','sex','age','fare','sibsp','parch','embarked']].copy()
+df['age'].fillna(df['age'].median(),inplace=True)
+df['embarked'].fillna('S',inplace=True)
+for col in ['sex','embarked']: df[col]=LabelEncoder().fit_transform(df[col])
+X=df.drop('survived',axis=1); y=df['survived']
+Xtr,Xte,ytr,yte=train_test_split(X,y,test_size=.2,random_state=42,stratify=y)
 
-X = df.drop('Churn',axis=1); y = df['Churn']
-Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+xgb=XGBClassifier(n_estimators=200,max_depth=4,learning_rate=0.1,scale_pos_weight=(y==0).sum()/(y==1).sum(),eval_metric='logloss',verbosity=0,random_state=42)
+rf=RandomForestClassifier(n_estimators=100,class_weight='balanced',random_state=42)
 
-for name, m in [('XGBoost', XGBClassifier(n_estimators=200,random_state=42,eval_metric='logloss',verbosity=0)),
-                ('RF', RandomForestClassifier(n_estimators=200,random_state=42))]:
-    m.fit(Xtr,ytr); print(f"{name}: AUC={roc_auc_score(yte,m.predict_proba(Xte)[:,1]):.3f}")
+for name,m in [('XGBoost',xgb),('RF',rf)]:
+    m.fit(Xtr,ytr)
+    cv=cross_val_score(m,X,y,cv=5,scoring='roc_auc')
+    print(f"{name}: AUC={roc_auc_score(yte,m.predict_proba(Xte)[:,1]):.3f} CV={cv.mean():.3f}±{cv.std():.3f}")
 
-imp = pd.Series(XGBClassifier(n_estimators=200,random_state=42,eval_metric='logloss',verbosity=0).fit(Xtr,ytr).feature_importances_,index=X.columns)
-print("Топ-3:", imp.sort_values(ascending=False).head(3).index.tolist())`}]},
- {id:"unsupervised",code:"M-07",icon:"🔮",xp:200,color:"#c46dfa",
+imp=pd.Series(xgb.feature_importances_,index=X.columns).sort_values(ascending=False)
+print("\nТоп-3:",imp.head(3).index.tolist())
+print("→ Бизнес: женщины и 1-й класс выживали чаще — таргетируй страховые продукты")
+`}]},
+ {id:"unsupervised",code:"M-10",icon:"🔮",xp:200,color:"#c46dfa",
   title:"КЛАСТЕРИЗАЦИЯ",
   subtitle:"K-Means, PCA — находим скрытые паттерны без таргета",
   sections:[{title:"Обучение без учителя",visual:"clustering",
@@ -838,11 +1232,11 @@ print("Топ-3:", imp.sort_values(ascending=False).head(3).index.tolist())`}]},
 Как выбрать K? → Elbow Method (метод локтя).
 
 <b>PCA (Principal Component Analysis):</b>
-Снижение размерности. 100 признаков → 2–3 компоненты.
-Использование: визуализация, ускорение обучения, удаление шума.
+Снижение размерности. 100 признаков → 2–3 компоненты для визуализации.
 
-<b>ОБЯЗАТЕЛЬНО нормализовать перед кластеризацией!</b>
+<b>ОБЯЗАТЕЛЬНО нормализовать перед K-Means!</b>
 Иначе признак с большим масштабом задавит остальные.
+(Помним из M-04: StandardScaler)
 
 <b>Применения в бизнесе:</b>
 — Сегментация клиентов (маркетинг)
@@ -853,6 +1247,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 np.random.seed(42)
 data = {
@@ -861,34 +1256,28 @@ data = {
     'spending': np.concatenate([np.random.normal(70,10,60), np.random.normal(50,20,80), np.random.normal(35,8,60)])
 }
 df = pd.DataFrame(data)
+X_sc = StandardScaler().fit_transform(df)
 
-# Нормализация — ОБЯЗАТЕЛЬНО
-scaler = StandardScaler()
-X_sc = scaler.fit_transform(df)
+# Elbow method
+inertias = [KMeans(k, random_state=42, n_init=10).fit(X_sc).inertia_ for k in range(2,8)]
+print("Elbow (inertia):", [round(x) for x in inertias])
+# → Ищи 'локоть' — где снижение резко замедляется
 
-# Elbow Method
-print("Inertia (меньше = лучше, ищем 'локоть'):")
-for k in range(2, 8):
-    km = KMeans(k, random_state=42, n_init=10)
-    print(f"K={k}: {km.fit(X_sc).inertia_:.0f}")
-
-# Финальная кластеризация
 km = KMeans(3, random_state=42, n_init=10)
 df['cluster'] = km.fit_predict(X_sc)
-
-print("\\nПрофиль кластеров:")
+print("\nПрофиль кластеров:")
 print(df.groupby('cluster')[['age','income','spending']].mean().round(0))
 
-# PCA визуализация
+# PCA для визуализации
 pca = PCA(n_components=2)
 X2d = pca.fit_transform(X_sc)
-print(f"\\nPCA объясняет: {pca.explained_variance_ratio_.sum():.1%}")`,
+print(f"\nPCA объясняет: {pca.explained_variance_ratio_.sum():.1%}")`,
    realcase:`Ozon сегментирует 50M покупателей. Кластер 1: молодые, низкий доход, электроника — рассрочка. Кластер 2: женщины 35+, высокий доход — премиум одежда. Разные кластеры = разные баннеры, скидки, emails.`,
-   task:`Загрузи Mall Customers (Kaggle) или используй синтетические данные из примера.
-1) Сегментация по Age, Income, Spending
-2) Оптимальное K через Elbow Method
-3) Опиши каждый кластер бизнес-языком
-4) Какой кластер наиболее ценен?`,
+   task:`1) Создай синтетические данные или загрузи Mall Customers
+2) Нормализуй (StandardScaler — помним почему!)
+3) Elbow Method для K от 2 до 8
+4) Кластеризуй с оптимальным K
+5) Опиши каждый кластер бизнес-языком — кто эти люди?`,
    solution:`import pandas as pd, numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -903,113 +1292,34 @@ print("Elbow:", [round(x) for x in inertias])
 km = KMeans(4, random_state=42, n_init=10)
 df['cluster'] = km.fit_predict(X_sc)
 print(df.groupby('cluster').mean().round(0))
-print("Самый ценный: высокий доход + высокие расходы → VIP клиенты")`}]},
- {id:"validation",code:"M-08",icon:"🛡️",xp:200,color:"#6dfabc",
-  title:"ВАЛИДАЦИЯ И OVERFITTING",
-  subtitle:"Как не обмануть себя: cross-validation, bias-variance tradeoff",
-  sections:[{title:"Переобучение — главный враг DS",visual:"validation",
-   theory:`<b>Overfitting (переобучение)</b> — модель выучила тренировочные данные наизусть, но на новых данных работает плохо.
-
-Аналогия: студент зазубрил ответы на конкретные вопросы, не понял тему.
-
-<b>Диагностика:</b>
-Train accuracy = 99%
-Test  accuracy = 65%
-→ Классическое переобучение!
-
-<b>Лечение:</b>
-1. Больше данных — лучшее лекарство
-2. Регуляризация L1/L2 — штрафуем сложность
-3. Меньше признаков — убираем шум
-4. max_depth, min_samples_leaf — для деревьев
-
-<b>5-Fold Cross-Validation:</b>
-Делим данные на 5 частей.
-Обучаем 5 раз, каждый раз валидируемся на другой части.
-Итог = среднее по 5 запускам. Честнее чем один split.
-
-<b>Bias-Variance Tradeoff:</b>
-Высокий Bias → Underfitting (слишком простая модель)
-Высокая Variance → Overfitting (слишком сложная)
-Цель: найти баланс.`,
-   code:`import numpy as np
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.datasets import make_classification
-
-X, y = make_classification(n_samples=1000, n_features=20,
-                            n_informative=5, n_redundant=10, random_state=42)
-
-models = {
-    'DT (без лимита)':  DecisionTreeClassifier(random_state=42),
-    'DT (max_depth=5)': DecisionTreeClassifier(max_depth=5, random_state=42),
-    'Random Forest':    RandomForestClassifier(n_estimators=100, random_state=42),
-}
-
-Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
-
-for name, model in models.items():
-    model.fit(Xtr, ytr)
-    tr_sc = model.score(Xtr, ytr)
-    te_sc = model.score(Xte, yte)
-    cv    = cross_val_score(model, X, y, cv=5, scoring='roc_auc')
-    print(f"\\n{name}:")
-    print(f"  Train={tr_sc:.3f} | Test={te_sc:.3f} | Gap={tr_sc-te_sc:.3f}")
-    print(f"  CV AUC: {cv.mean():.3f} ± {cv.std():.3f}")`,
-   realcase:`DS в Яндексе обучил модель ранжирования. Train MAP@10 = 0.95, Test = 0.71 — явное переобучение. Решение: ограничили глубину дерева, убрали 200 редких признаков. Test вырос до 0.88.`,
-   task:`1) Сгенерируй: make_classification(n_samples=500, n_features=50, n_informative=5)
-2) Обучи Decision Tree без ограничений — train и test score
-3) Подбери max_depth от 1 до 20, найди оптимальный
-4) Сравни с Random Forest
-5) Что происходит с train и test при увеличении глубины?`,
-   solution:`import numpy as np
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import make_classification
-
-X,y = make_classification(n_samples=500,n_features=50,n_informative=5,random_state=42)
-Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
-
-print("Подбор max_depth:")
-best_d, best_te = 0, 0
-for d in range(1, 21):
-    dt = DecisionTreeClassifier(max_depth=d, random_state=42)
-    dt.fit(Xtr,ytr)
-    tr,te = dt.score(Xtr,ytr), dt.score(Xte,yte)
-    if te > best_te: best_d, best_te = d, te
-    if d in [1,3,5,7,10,15,20]: print(f"  depth={d}: train={tr:.2f}, test={te:.2f}")
-
-print(f"\\nОптимальная глубина: {best_d}, test={best_te:.3f}")
-
-rf = RandomForestClassifier(n_estimators=100,random_state=42)
-rf.fit(Xtr,ytr)
-print(f"Random Forest: train={rf.score(Xtr,ytr):.3f}, test={rf.score(Xte,yte):.3f}")`}]},
- {id:"pipeline",code:"M-09",icon:"🔧",xp:200,color:"#fa6d6d",
+print("\nИнтерпретация: высокий доход + высокие расходы → VIP клиенты")
+`}]},
+ {id:"pipeline",code:"M-11",icon:"🔧",xp:200,color:"#fa6d6d",
   title:"SKLEARN PIPELINE",
   subtitle:"Правильный способ строить ML модели — без data leakage",
   sections:[{title:"Pipeline — один объект, вся логика",visual:"pipeline",
    theory:`<b>Pipeline</b> — цепочка трансформаций + модель в одном объекте.
 
-<b>БЕЗ Pipeline (опасно):</b>
-scaler.fit(X_train)
+<b>БЕЗ Pipeline — опасно (data leakage):</b>
+scaler.fit(X_train)           # ← fit только на train ✅
 X_train_sc = scaler.transform(X_train)
 X_test_sc = scaler.transform(X_test)
-→ Легко ошибиться → data leakage
+# Легко забыть и сделать scaler.fit(X_test) → data leakage!
 
-<b>С Pipeline (правильно):</b>
+<b>С Pipeline — безопасно и чисто:</b>
 pipe = Pipeline([('scaler', ...), ('model', ...)])
 pipe.fit(X_train, y_train)
-pipe.predict(X_test)  # всё автоматически
+pipe.predict(X_test)  # всё автоматически, leakage невозможен
 
-<b>Data Leakage</b> — информация из test попадает в обучение. Модель кажется точной, но в production провалится. Самая коварная ошибка в ML.
+<b>Data Leakage</b> — информация из test попадает в обучение.
+Модель кажется точной, в production — провал.
+Самая коварная ошибка в ML.
 
-<b>Почему Pipeline обязателен:</b>
+<b>Почему Pipeline обязателен в prod:</b>
 1. Защита от data leakage
-2. Один объект = вся логика модели
-3. Легко деплоить: joblib.dump(pipeline, 'model.pkl')
-4. Работает с GridSearchCV / RandomizedSearchCV`,
+2. Один объект = вся логика (препроцессинг + модель)
+3. joblib.dump(pipeline, 'model.pkl') → деплой за одну строку
+4. Работает с RandomizedSearchCV`,
    code:`import seaborn as sns
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -1018,15 +1328,16 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.metrics import classification_report
+import joblib
 
 df = sns.load_dataset('titanic')
 df = df[['survived','pclass','sex','age','fare','embarked']].copy()
 X = df.drop('survived', axis=1)
 y = df['survived']
-Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
 
-num_t = Pipeline([('imp', SimpleImputer(strategy='median')),
-                  ('sc',  StandardScaler())])
+# Препроцессинг для разных типов колонок
+num_t = Pipeline([('imp', SimpleImputer(strategy='median')), ('sc', StandardScaler())])
 cat_t = Pipeline([('imp', SimpleImputer(strategy='most_frequent')),
                   ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False))])
 pre = ColumnTransformer([
@@ -1035,24 +1346,26 @@ pre = ColumnTransformer([
 ])
 
 full_pipe = Pipeline([('pre', pre),
-                      ('clf', RandomForestClassifier(random_state=42))])
+                      ('clf', RandomForestClassifier(random_state=42, class_weight='balanced'))])
 
-params = {
-    'clf__n_estimators':    [50, 100, 200],
-    'clf__max_depth':       [3, 5, 7, None],
-    'clf__min_samples_leaf':[1, 2, 5]
-}
-search = RandomizedSearchCV(full_pipe, params, n_iter=12,
-                             cv=5, scoring='roc_auc', random_state=42)
+params = {'clf__n_estimators': [50,100,200], 'clf__max_depth': [3,5,7,None]}
+search = RandomizedSearchCV(full_pipe, params, n_iter=8, cv=5, scoring='roc_auc', random_state=42)
 search.fit(Xtr, ytr)
+
 print(f"CV AUC: {search.best_score_:.3f}")
-print(classification_report(yte, search.predict(Xte)))`,
-   realcase:`В production Pipeline — стандарт. Сохраняется через joblib.dump(pipeline, 'model.pkl'), загружается на сервер. Весь препроцессинг (нормализация, OneHot) работает автоматически для каждого нового запроса.`,
-   task:`1) Любой датасет с числовыми и категориальными признаками
-2) Построй ColumnTransformer для разных типов
-3) Полный Pipeline: препроцессинг + XGBoost
-4) RandomizedSearchCV (10+ итераций)
-5) Сохрани лучшую модель через joblib, загрузи обратно`,
+print(f"Лучшие параметры: {search.best_params_}")
+print(classification_report(yte, search.predict(Xte)))
+
+# Деплой — одна строка
+joblib.dump(search.best_estimator_, 'titanic_model.pkl')
+loaded = joblib.load('titanic_model.pkl')
+print(f"\nЗагруженная модель AUC: {loaded.score(Xte,yte):.3f}")`,
+   realcase:`В production Pipeline — стандарт. Загружается на сервер одним файлом .pkl. Весь препроцессинг (нормализация, OneHot, заполнение пропусков) работает автоматически для каждого нового запроса.`,
+   task:`1) Используй любой датасет с числовыми и категориальными признаками
+2) ColumnTransformer для разных типов
+3) Pipeline + XGBoost
+4) RandomizedSearchCV (8+ итераций)
+5) Сохрани через joblib, загрузи обратно, проверь идентичность предсказаний`,
    solution:`import joblib, seaborn as sns
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -1061,126 +1374,695 @@ from sklearn.impute import SimpleImputer
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.metrics import roc_auc_score
+import numpy as np
 
-df = sns.load_dataset('titanic')
-df = df[['survived','pclass','sex','age','fare','embarked']].copy()
-X = df.drop('survived',axis=1); y = df['survived']
-Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+df = sns.load_dataset('titanic')[['survived','pclass','sex','age','fare','embarked']].copy()
+X=df.drop('survived',axis=1); y=df['survived']
+Xtr,Xte,ytr,yte=train_test_split(X,y,test_size=.2,random_state=42,stratify=y)
 
-n = Pipeline([('i',SimpleImputer(strategy='median')),('s',StandardScaler())])
-c = Pipeline([('i',SimpleImputer(strategy='most_frequent')),('o',OneHotEncoder(handle_unknown='ignore',sparse_output=False))])
-pre = ColumnTransformer([('n',n,['age','fare','pclass']),('c',c,['sex','embarked'])])
-pipe = Pipeline([('p',pre),('m',XGBClassifier(eval_metric='logloss',verbosity=0,random_state=42))])
+n=Pipeline([('i',SimpleImputer(strategy='median')),('s',StandardScaler())])
+c=Pipeline([('i',SimpleImputer(strategy='most_frequent')),('o',OneHotEncoder(handle_unknown='ignore',sparse_output=False))])
+pre=ColumnTransformer([('n',n,['age','fare','pclass']),('c',c,['sex','embarked'])])
+pipe=Pipeline([('p',pre),('m',XGBClassifier(eval_metric='logloss',verbosity=0,random_state=42,scale_pos_weight=(y==0).sum()/(y==1).sum()))])
 params={'m__n_estimators':[100,200],'m__max_depth':[3,5],'m__learning_rate':[0.05,0.1]}
-s = RandomizedSearchCV(pipe,params,n_iter=10,cv=5,scoring='roc_auc',random_state=42)
+s=RandomizedSearchCV(pipe,params,n_iter=8,cv=5,scoring='roc_auc',random_state=42)
 s.fit(Xtr,ytr); print(f"CV AUC: {s.best_score_:.3f}")
-joblib.dump(s.best_estimator_,'titanic_pipeline.pkl')
-loaded = joblib.load('titanic_pipeline.pkl')
-print(f"Loaded model AUC: {roc_auc_score(yte, loaded.predict_proba(Xte)[:,1]):.3f}")`}]},
- {id:"projects",code:"M-10",icon:"💀",xp:1000,color:"#facc6d",
+joblib.dump(s.best_estimator_,'model.pkl')
+loaded=joblib.load('model.pkl')
+preds_equal=np.all(loaded.predict(Xte)==s.best_estimator_.predict(Xte))
+print(f"Предсказания идентичны: {preds_equal}")
+`}]},
+ {id:"cases",code:"M-12",icon:"🔬",xp:500,color:"#fa6d9a",
+  title:"РЕАЛЬНЫЕ РАБОЧИЕ КЕЙСЫ",
+  subtitle:"3 задачи от первого шага до продакшн-результата",
+  sections:[
+   {title:"Кейс 1: Предсказание оттока клиентов (Churn)",visual:"cases",
+    theory:`<b>ЗАДАЧА</b>
+Телеком-компания теряет клиентов. Нужно заранее предсказать кто уйдёт — чтобы предложить им удержание (скидку, апгрейд тарифа) ДО ухода. Каждый ушедший клиент = -$500 LTV.
+
+<b>ДАТАСЕТ</b>
+Telco Customer Churn (IBM, Kaggle, 7043 клиента, 21 признак):
+— Демография: пол, возраст, наличие партнёра
+— Сервисы: телефон, интернет, TV, стриминг
+— Контракт: тип (month-to-month / 1yr / 2yr), оплата
+— Таргет: Churn (Yes/No) — 26.5% уходят (дисбаланс!)
+
+<b>АЛГОРИТМ ДЕЙСТВИЙ (5 шагов):</b>
+1. Загрузка и первичный EDA — форма, типы, пропуски, дисбаланс
+2. Чистка и Feature Engineering — кодировка категорий, новые признаки
+3. Визуализация — кто уходит? Какие паттерны?
+4. Обучение модели — XGBoost с учётом дисбаланса + Pipeline
+5. Интерпретация — SHAP, бизнес-выводы, конкретные рекомендации`,
+    code:`import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
+from xgboost import XGBClassifier
+
+# ══ ШАГ 1: ЗАГРУЗКА ДАННЫХ ══
+# Генерируем реалистичный синтетический датасет (структура = Telco Churn)
+np.random.seed(42)
+n = 7043
+
+tenure = np.random.gamma(3, 10, n).clip(1, 72).astype(int)
+monthly = np.random.normal(65, 25, n).clip(18, 120)
+contract = np.random.choice(['Month-to-month','One year','Two year'], n, p=[0.55,0.24,0.21])
+internet = np.random.choice(['Fiber optic','DSL','No'], n, p=[0.44,0.34,0.22])
+
+# Churn зависит от tenure, контракта, стоимости
+churn_prob = (
+    0.35 * (contract == 'Month-to-month').astype(float) +
+    0.15 * (monthly > 80).astype(float) +
+    0.20 * (tenure < 12).astype(float) +
+    0.10 * (internet == 'Fiber optic').astype(float)
+)
+churn_prob = (churn_prob / churn_prob.max() * 0.5).clip(0.03, 0.75)
+churn = (np.random.rand(n) < churn_prob).astype(int)
+
+df = pd.DataFrame({
+    'tenure': tenure,
+    'MonthlyCharges': monthly.round(2),
+    'TotalCharges': (tenure * monthly * np.random.uniform(0.9,1.1,n)).round(2),
+    'Contract': contract,
+    'InternetService': internet,
+    'SeniorCitizen': np.random.choice([0,1], n, p=[0.84,0.16]),
+    'Partner': np.random.choice(['Yes','No'], n, p=[0.48,0.52]),
+    'TechSupport': np.random.choice(['Yes','No','No internet'], n, p=[0.29,0.49,0.22]),
+    'Churn': churn
+})
+
+print("=== ШАГ 1: EDA ===")
+print(f"Форма: {df.shape}")
+print(f"Churn rate: {df['Churn'].mean():.1%} — {'⚠️ дисбаланс' if df['Churn'].mean() < 0.35 else 'норм'}")
+print(df.describe().round(1))
+
+# ══ ШАГ 2: FEATURE ENGINEERING ══
+print("\n=== ШАГ 2: Feature Engineering ===")
+
+# Новый признак: средняя месячная плата за единицу стажа
+df['charges_per_tenure'] = df['MonthlyCharges'] / (df['tenure'] + 1)
+
+# Кодировка
+le = LabelEncoder()
+for col in ['Contract', 'InternetService', 'Partner', 'TechSupport']:
+    df[col + '_enc'] = le.fit_transform(df[col])
+
+feature_cols = ['tenure','MonthlyCharges','TotalCharges','charges_per_tenure',
+                'SeniorCitizen','Contract_enc','InternetService_enc',
+                'Partner_enc','TechSupport_enc']
+
+X = df[feature_cols]
+y = df['Churn']
+print(f"Признаков: {X.shape[1]}, включая новый charges_per_tenure")
+
+# ══ ШАГ 3: ВИЗУАЛИЗАЦИЯ ══
+print("\n=== ШАГ 3: Визуализация паттернов ===")
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
+fig.suptitle('Кейс 1: Анализ оттока клиентов', fontsize=14)
+
+# Churn по типу контракта
+churn_contract = df.groupby('Contract')['Churn'].mean().sort_values(ascending=False)
+axes[0,0].bar(churn_contract.index, churn_contract.values*100,
+              color=['#fa6d9a','#facc6d','#6dfabc'])
+axes[0,0].set_title('Отток по типу контракта (%)')
+axes[0,0].set_ylabel('%')
+for i, v in enumerate(churn_contract.values):
+    axes[0,0].text(i, v*100+0.5, f'{v:.0%}', ha='center', fontweight='bold')
+
+# Tenure у churned vs retained
+axes[0,1].hist(df[df['Churn']==0]['tenure'], bins=25, alpha=0.7, label='Остался', color='#6dfabc')
+axes[0,1].hist(df[df['Churn']==1]['tenure'], bins=25, alpha=0.7, label='Ушёл', color='#fa6d9a')
+axes[0,1].set_title('Стаж: ушедшие vs оставшиеся')
+axes[0,1].set_xlabel('Месяцев')
+axes[0,1].legend()
+
+# MonthlyCharges boxplot по Churn
+axes[1,0].boxplot([df[df['Churn']==0]['MonthlyCharges'], df[df['Churn']==1]['MonthlyCharges']],
+                   labels=['Остался','Ушёл'], patch_artist=True,
+                   boxprops=dict(facecolor='#7c6dfa', alpha=0.6))
+axes[1,0].set_title('Месячный платёж: ушедшие vs оставшиеся')
+axes[1,0].set_ylabel('MonthlyCharges ($)')
+
+# Корреляции с таргетом
+corr_target = df[feature_cols + ['Churn']].corr()['Churn'].drop('Churn').sort_values()
+colors = ['#fa6d9a' if v > 0 else '#6dfabc' for v in corr_target.values]
+axes[1,1].barh(corr_target.index, corr_target.values, color=colors)
+axes[1,1].set_title('Корреляция признаков с оттоком')
+axes[1,1].axvline(0, color='white', linewidth=0.8)
+
+plt.tight_layout()
+plt.savefig('churn_eda.png', dpi=120, bbox_inches='tight')
+plt.show()
+
+# ══ ШАГ 4: МОДЕЛЬ ══
+print("\n=== ШАГ 4: Обучение XGBoost ===")
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
+
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', XGBClassifier(
+        n_estimators=200, max_depth=4, learning_rate=0.1,
+        scale_pos_weight=(ytr==0).sum()/(ytr==1).sum(),  # дисбаланс!
+        eval_metric='logloss', random_state=42, verbosity=0
+    ))
+])
+pipe.fit(Xtr, ytr)
+
+cv = cross_val_score(pipe, X, y, cv=5, scoring='roc_auc')
+print(f"CV AUC:   {cv.mean():.3f} ± {cv.std():.3f}")
+print(f"Test AUC: {roc_auc_score(yte, pipe.predict_proba(Xte)[:,1]):.3f}")
+print(classification_report(yte, pipe.predict(Xte), target_names=['Остался','Ушёл']))
+
+# Топ признаков
+model = pipe.named_steps['model']
+imp = pd.Series(model.feature_importances_, index=feature_cols).sort_values(ascending=False)
+print("\n=== ШАГ 5: БИЗНЕС-ВЫВОДЫ ===")
+print("Топ-3 предиктора оттока:")
+print(imp.head(3))
+print("\n→ Рекомендации:")
+print("  1. Клиенты на Month-to-month уходят в 3x чаще → предложи скидку за годовой контракт")
+print("  2. Первые 12 месяцев критичны → онбординг-программа в первый год")
+print("  3. Высокий платёж → мониторь клиентов с MonthlyCharges > $80")`,
+    realcase:`Результат такой модели в production: компания таргетирует 20% клиентов с наибольшей predicted_proba(churn). Звонит им, предлагает скидку. Retention rate вырастает на 15%. ROI модели = $2.3M в год при стоимости разработки $50k.`,
+    task:`Расширь кейс:
+1) Добавь признак high_risk = 1 если (tenure < 6 AND MonthlyCharges > 70)
+2) Подбери порог классификации: вместо 0.5 попробуй 0.3 — как изменился Recall?
+3) Посчитай сколько денег сохранит компания если правильно идентифицирует 70% уходящих (LTV = $500)`,
+    solution:`# Продолжение предыдущего кода
+import numpy as np
+
+# 1. Новый признак
+df['high_risk'] = ((df['tenure'] < 6) & (df['MonthlyCharges'] > 70)).astype(int)
+print(f"Высокорисковых клиентов: {df['high_risk'].sum()} ({df['high_risk'].mean():.1%})")
+print(f"Churn rate у high_risk: {df[df['high_risk']==1]['Churn'].mean():.1%}")
+
+# 2. Порог классификации
+proba = pipe.predict_proba(Xte)[:,1]
+for threshold in [0.3, 0.4, 0.5]:
+    preds = (proba > threshold).astype(int)
+    from sklearn.metrics import recall_score, precision_score
+    print(f"\nПорог {threshold}: Recall={recall_score(yte,preds):.3f}, Precision={precision_score(yte,preds):.3f}")
+
+# 3. ROI расчёт
+true_churners = yte.sum()
+identified_70pct = int(true_churners * 0.70)
+retention_rate = 0.40  # 40% из контактированных остаются
+ltv = 500
+savings = identified_70pct * retention_rate * ltv
+cost_contacts = identified_70pct * 15  # $15 на звонок
+roi = savings - cost_contacts
+print(f"\nROI модели:")
+print(f"  Уходящих в тесте: {true_churners}")
+print(f"  Идентифицировано (70%): {identified_70pct}")
+print(f"  Удержано (40%): {int(identified_70pct*retention_rate)}")
+print(f"  Сохранено: \${savings:,}")
+print(f"  Стоимость контактов: \${cost_contacts:,}")
+print(f"  Чистый ROI: \${roi:,}")
+`},
+   {title:"Кейс 2: Предсказание цены недвижимости",visual:"cases2",
+    theory:`<b>ЗАДАЧА</b>
+Риэлторское агентство хочет автоматически оценивать стоимость квартиры по её характеристикам. Сейчас оценщик тратит 2 часа на квартиру. Модель должна давать оценку за секунду с точностью ±10%.
+
+<b>ДАТАСЕТ</b>
+California Housing (встроен в sklearn, 20640 домов, 8 числовых признаков):
+— MedInc: медианный доход в блоке ($10k)
+— HouseAge: возраст дома (лет)
+— AveRooms, AveBedrms: среднее комнат
+— Population, AveOccup: население, заполненность
+— Latitude, Longitude: координаты
+— Таргет: MedHouseVal — медианная стоимость ($100k)
+
+<b>АЛГОРИТМ (6 шагов):</b>
+1. Загрузка и EDA — распределение цен, выбросы
+2. Feature Engineering — новые признаки из координат и соотношений
+3. Визуализация — географическая карта цен, корреляции
+4. Сравнение моделей — Linear vs RF vs XGBoost
+5. Лучшая модель + подбор гиперпараметров
+6. Анализ ошибок — где модель ошибается и почему`,
+    code:`import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from xgboost import XGBRegressor
+
+# ══ ШАГ 1: ЗАГРУЗКА И EDA ══
+print("=== ШАГ 1: EDA ===")
+data = fetch_california_housing(as_frame=True)
+df = data.frame
+print(f"Форма: {df.shape}")
+print(df.describe().round(2))
+
+# Выбросы в таргете
+Q3 = df['MedHouseVal'].quantile(0.99)
+print(f"\nВыбросы цены (>99-й перцентиль = \${Q3:.1f}x100k): {(df['MedHouseVal'] > Q3).sum()} домов")
+# Обрезаем выбросы
+df = df[df['MedHouseVal'] < Q3].copy()
+print(f"После обрезки: {len(df)} строк")
+
+# ══ ШАГ 2: FEATURE ENGINEERING ══
+print("\n=== ШАГ 2: Feature Engineering ===")
+df['rooms_per_person']   = df['AveRooms'] / df['AveOccup']
+df['bedrooms_ratio']     = df['AveBedrms'] / df['AveRooms']
+df['pop_per_household']  = df['Population'] / df['AveOccup']
+df['income_rooms']       = df['MedInc'] * df['AveRooms']  # взаимодействие признаков
+# Близость к побережью (приблизительно для Калифорнии)
+df['near_coast'] = (df['Longitude'] < -121.5).astype(int)
+
+print(f"Новые признаки: rooms_per_person, bedrooms_ratio, pop_per_household, income_rooms, near_coast")
+
+# ══ ШАГ 3: ВИЗУАЛИЗАЦИЯ ══
+print("\n=== ШАГ 3: Визуализация ===")
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle('Кейс 2: Анализ цен на недвижимость (California Housing)', fontsize=13)
+
+# Распределение цен
+axes[0,0].hist(df['MedHouseVal'], bins=40, color='#7c6dfa', alpha=0.8)
+axes[0,0].axvline(df['MedHouseVal'].mean(), color='red', linestyle='--',
+                   label=f"Mean: {df['MedHouseVal'].mean():.2f}")
+axes[0,0].set_title('Распределение цен')
+axes[0,0].set_xlabel('Цена ($100k)'); axes[0,0].legend()
+
+# Географическая карта цен
+scatter = axes[0,1].scatter(df['Longitude'], df['Latitude'],
+    c=df['MedHouseVal'], cmap='plasma', alpha=0.3, s=1)
+plt.colorbar(scatter, ax=axes[0,1])
+axes[0,1].set_title('Географическое распределение цен')
+axes[0,1].set_xlabel('Longitude'); axes[0,1].set_ylabel('Latitude')
+
+# Income vs Price
+axes[1,0].scatter(df['MedInc'], df['MedHouseVal'], alpha=0.1, s=1, color='#fa6d9a')
+axes[1,0].set_title('Доход vs Цена (главный предиктор)')
+axes[1,0].set_xlabel('MedInc'); axes[1,0].set_ylabel('Цена')
+
+# Корреляции с таргетом
+feature_cols = ['MedInc','HouseAge','AveRooms','Population','AveOccup',
+                'Latitude','Longitude','rooms_per_person','bedrooms_ratio',
+                'income_rooms','near_coast']
+corr = df[feature_cols + ['MedHouseVal']].corr()['MedHouseVal'].drop('MedHouseVal').sort_values()
+colors = ['#fa6d9a' if v > 0 else '#6dfabc' for v in corr.values]
+axes[1,1].barh(corr.index, corr.values, color=colors)
+axes[1,1].axvline(0, color='white', linewidth=0.8)
+axes[1,1].set_title('Корреляция признаков с ценой')
+
+plt.tight_layout()
+plt.savefig('housing_eda.png', dpi=120, bbox_inches='tight')
+plt.show()
+
+# ══ ШАГ 4: СРАВНЕНИЕ МОДЕЛЕЙ ══
+print("\n=== ШАГ 4: Сравнение моделей ===")
+X = df[feature_cols]
+y = df['MedHouseVal']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+models = {
+    'Linear Regression': Pipeline([('sc', StandardScaler()), ('m', LinearRegression())]),
+    'Ridge (L2)':        Pipeline([('sc', StandardScaler()), ('m', Ridge(alpha=1.0))]),
+    'Random Forest':     RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1),
+    'XGBoost':           XGBRegressor(n_estimators=300, max_depth=6, learning_rate=0.05,
+                                       random_state=42, verbosity=0),
+}
+results = {}
+for name, model in models.items():
+    model.fit(Xtr, ytr)
+    pred = model.predict(Xte)
+    mae  = mean_absolute_error(yte, pred)
+    r2   = r2_score(yte, pred)
+    rmse = np.sqrt(mean_squared_error(yte, pred))
+    results[name] = {'MAE': mae, 'RMSE': rmse, 'R2': r2}
+    print(f"{name:20} MAE={mae:.3f} RMSE={rmse:.3f} R²={r2:.3f}")
+
+# ══ ШАГ 5: АНАЛИЗ ОШИБОК ══
+print("\n=== ШАГ 5: Анализ ошибок (лучшая модель — XGBoost) ===")
+best_pred = models['XGBoost'].predict(Xte)
+errors = np.abs(best_pred - yte.values)
+big_errors = Xte[errors > errors.quantile(0.95)].copy()
+big_errors['actual'] = yte[errors > errors.quantile(0.95)].values
+big_errors['predicted'] = best_pred[errors > errors.quantile(0.95)]
+big_errors['error'] = errors[errors > errors.quantile(0.95)]
+print(f"Большие ошибки (топ 5%):")
+print(big_errors[['MedInc','AveOccup','actual','predicted','error']].describe().round(2))
+
+print("\n=== ШАГ 6: БИЗНЕС-ВЫВОДЫ ===")
+print(f"Лучшая модель: XGBoost")
+print(f"MAE = {results['XGBoost']['MAE']:.3f} ($100k) = ±\${results[\'XGBoost\'][\'MAE\']*100:.0f}k средняя ошибка")
+print(f"R²  = {results['XGBoost']['R2']:.3f} — модель объясняет {results['XGBoost']['R2']:.0%} вариации цен")
+print(f"\n→ MAE линейной = \${results[\'Linear Regression\'][\'MAE\']*100:.0f}k")
+print(f"→ MAE XGBoost  = \${results[\'XGBoost\'][\'MAE\']*100:.0f}k  (в {results['Linear Regression']['MAE']/results['XGBoost']['MAE']:.1f}x точнее)")
+print(f"\nВывод: модель заменяет первичную оценку оценщика. Экономия: 2ч × 50 объектов/день = 100ч/день")`,
+    realcase:`Авито Недвижимость, ЦИАН, ДомКлик используют такие модели для «честной цены». Пользователь вводит параметры — мгновенная оценка. Банки используют для проверки залоговой стоимости при ипотеке.`,
+    task:`1) Построй residual plot: scatter(y_pred, y_pred - y_true) — паттерны в ошибках?
+2) Добавь признак distance_to_sf = sqrt((lat-37.77)^2 + (lon+122.42)^2)
+3) Улучшает ли новый признак R²?
+4) Найди районы где модель систематически ошибается (по Latitude)`,
+    solution:`import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+from xgboost import XGBRegressor
+
+data = fetch_california_housing(as_frame=True)
+df = data.frame.copy()
+df = df[df['MedHouseVal'] < df['MedHouseVal'].quantile(0.99)]
+
+base_features = ['MedInc','HouseAge','AveRooms','AveBedrms','Population','AveOccup','Latitude','Longitude']
+df['distance_to_sf'] = np.sqrt((df['Latitude']-37.77)**2 + (df['Longitude']+122.42)**2)
+
+for features, name in [(base_features, 'Базовые'), (base_features+['distance_to_sf'], 'С distance_to_sf')]:
+    X = df[features]; y = df['MedHouseVal']
+    Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+    m = XGBRegressor(n_estimators=200,verbosity=0,random_state=42)
+    m.fit(Xtr,ytr)
+    pred = m.predict(Xte)
+    print(f"{name}: R²={r2_score(yte,pred):.4f}")
+
+# Residual plot
+pred = m.predict(Xte)
+plt.figure(figsize=(9,5))
+plt.scatter(pred, pred-yte.values, alpha=0.2, s=5, color='#fa6d9a')
+plt.axhline(0, color='white', linewidth=1)
+plt.xlabel('Предсказанная цена'); plt.ylabel('Ошибка')
+plt.title('Residual Plot: паттерн ошибок'); plt.show()
+`},
+   {title:"Кейс 3: Обнаружение аномалий (Fraud Detection)",visual:"cases3",
+    theory:`<b>ЗАДАЧА</b>
+Банк обрабатывает 500k транзакций в день. Нужно в реальном времени находить мошеннические транзакции. Стоимость пропущенного фрода = $200 в среднем. Стоимость ложной блокировки = -$5 (недовольный клиент).
+
+<b>ДАТАСЕТ</b>
+Генерируем реалистичный (структура аналогична Kaggle Credit Card Fraud):
+— Числовые признаки V1-V10 (PCA-компоненты реальных данных)
+— Amount: сумма транзакции
+— Time: часы от начала периода
+— Class: 0=нормальная, 1=фрод (0.17% — жёсткий дисбаланс!)
+
+<b>КЛЮЧЕВЫЕ СЛОЖНОСТИ:</b>
+→ Дисбаланс 1:600 — accuracy бесполезна как метрика
+→ Нужен высокий Recall (не пропустить фрод)
+→ Но не слишком низкий Precision (не блокировать легальные)
+→ Метрика: PR-AUC или F1-beta
+
+<b>АЛГОРИТМ (5 шагов):</b>
+1. EDA дисбаланса — насколько редок фрод
+2. Визуализация — чем отличаются фродовые транзакции
+3. Baseline — naive-модель (predict all 0): как выглядит accuracy
+4. Правильная модель с учётом дисбаланса
+5. Выбор порога и расчёт бизнес-метрики (сохранённые деньги)`,
+    code:`import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (classification_report, roc_auc_score,
+                              precision_recall_curve, average_precision_score,
+                              confusion_matrix)
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from xgboost import XGBClassifier
+
+# ══ ШАГ 1: ГЕНЕРАЦИЯ ДАТАСЕТА ══
+np.random.seed(42)
+n_legit  = 50000
+n_fraud  = 88  # ~0.17% как в реальных данных
+
+# Легальные транзакции
+legit = pd.DataFrame({
+    'V1':  np.random.normal(0, 1, n_legit),
+    'V2':  np.random.normal(0, 1, n_legit),
+    'V3':  np.random.normal(1, 2, n_legit),
+    'V4':  np.random.normal(0, 1.5, n_legit),
+    'V5':  np.random.normal(0, 1, n_legit),
+    'Amount': np.random.exponential(88, n_legit).clip(0.5, 5000),
+    'Hour': np.random.choice(range(24), n_legit,
+             p=[0.02]*6 + [0.04,0.05,0.06,0.07,0.08,0.07,0.06,0.05,
+                           0.05,0.06,0.07,0.06,0.05,0.04,0.03,0.02,0.02,0.01]),
+    'Class': 0
+})
+# Мошеннические транзакции — другой паттерн
+fraud = pd.DataFrame({
+    'V1':  np.random.normal(-3, 2, n_fraud),   # аномальные значения
+    'V2':  np.random.normal(2, 1.5, n_fraud),
+    'V3':  np.random.normal(-5, 2, n_fraud),
+    'V4':  np.random.normal(3, 1, n_fraud),
+    'V5':  np.random.normal(-2, 1.5, n_fraud),
+    'Amount': np.random.exponential(150, n_fraud).clip(5, 2000),
+    'Hour': np.random.choice(range(24), n_fraud,
+             p=[0.08]*6 + [0.04,0.03,0.03,0.03,0.03,0.03,0.03,0.03,
+                           0.04,0.04,0.04,0.04,0.04,0.04,0.03,0.03,0.03,0.02]),
+    'Class': 1
+})
+df = pd.concat([legit, fraud], ignore_index=True).sample(frac=1, random_state=42)
+
+print("=== ШАГ 1: EDA ДИСБАЛАНСА ===")
+print(f"Всего транзакций: {len(df):,}")
+print(f"Легальных: {(df['Class']==0).sum():,} ({(df['Class']==0).mean():.2%})")
+print(f"Мошеннических: {(df['Class']==1).sum():,} ({(df['Class']==1).mean():.3%})")
+print(f"\nBaseline (угадываем всегда 0): accuracy = {(df['Class']==0).mean():.4%}")
+print("→ 99.82% accuracy — бесполезная метрика! Используем PR-AUC и Recall.")
+
+# ══ ШАГ 2: ВИЗУАЛИЗАЦИЯ ══
+print("\n=== ШАГ 2: Визуализация аномалий ===")
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
+fig.suptitle('Кейс 3: Обнаружение мошеннических транзакций', fontsize=13)
+
+# V1 распределение: легал vs фрод
+axes[0,0].hist(df[df['Class']==0]['V1'], bins=50, alpha=0.7, label='Легальные', color='#6dfabc', density=True)
+axes[0,0].hist(df[df['Class']==1]['V1'], bins=20, alpha=0.7, label='Фрод', color='#fa6d9a', density=True)
+axes[0,0].set_title('V1: легальные vs мошеннические')
+axes[0,0].set_xlabel('V1'); axes[0,0].legend()
+
+# Amount distribution
+axes[0,1].hist(df[df['Class']==0]['Amount'].clip(0,500), bins=40, alpha=0.7,
+               label='Легальные', color='#6dfabc', density=True)
+axes[0,1].hist(df[df['Class']==1]['Amount'].clip(0,500), bins=20, alpha=0.7,
+               label='Фрод', color='#fa6d9a', density=True)
+axes[0,1].set_title('Суммы транзакций: легальные vs фрод')
+axes[0,1].set_xlabel('Amount ($)'); axes[0,1].legend()
+
+# Фрод по часам
+fraud_by_hour = df[df['Class']==1].groupby('Hour').size()
+legit_by_hour = df[df['Class']==0].groupby('Hour').size()
+fraud_rate_by_hour = fraud_by_hour / (fraud_by_hour + legit_by_hour)
+axes[1,0].bar(range(24), [fraud_rate_by_hour.get(h, 0)*1000 for h in range(24)], color='#fa6d9a', alpha=0.8)
+axes[1,0].set_title('Частота фрода по часам (‰)')
+axes[1,0].set_xlabel('Час дня')
+
+# Scatter V1 vs V3 с цветом
+sample_legit = df[df['Class']==0].sample(500, random_state=42)
+axes[1,1].scatter(sample_legit['V1'], sample_legit['V3'],
+                   alpha=0.2, s=5, color='#6dfabc', label='Легальные')
+axes[1,1].scatter(df[df['Class']==1]['V1'], df[df['Class']==1]['V3'],
+                   alpha=0.7, s=20, color='#fa6d9a', label='Фрод')
+axes[1,1].set_title('V1 vs V3: разделяемость классов')
+axes[1,1].legend()
+
+plt.tight_layout()
+plt.savefig('fraud_eda.png', dpi=120, bbox_inches='tight')
+plt.show()
+
+# ══ ШАГ 3-4: МОДЕЛЬ ══
+print("\n=== ШАГ 3-4: Обучение с учётом дисбаланса ===")
+X = df[['V1','V2','V3','V4','V5','Amount','Hour']]
+y = df['Class']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
+
+spw = (ytr==0).sum() / (ytr==1).sum()
+print(f"scale_pos_weight = {spw:.0f} (компенсация дисбаланса)")
+
+pipe = Pipeline([
+    ('sc', StandardScaler()),
+    ('m', XGBClassifier(
+        n_estimators=200, max_depth=4, learning_rate=0.1,
+        scale_pos_weight=spw,
+        eval_metric='aucpr',  # PR-AUC для дисбаланса
+        random_state=42, verbosity=0
+    ))
+])
+pipe.fit(Xtr, ytr)
+
+proba = pipe.predict_proba(Xte)[:,1]
+print(f"\nROC-AUC:  {roc_auc_score(yte, proba):.4f}")
+print(f"PR-AUC:   {average_precision_score(yte, proba):.4f}")
+print(classification_report(yte, pipe.predict(Xte), target_names=['Легальная','Фрод']))
+
+# ══ ШАГ 5: ПОДБОР ПОРОГА И БИЗНЕС-МЕТРИКА ══
+print("\n=== ШАГ 5: Подбор порога — бизнес-оптимум ===")
+cost_miss   =  200  # пропустили фрод — теряем $200
+cost_block  =  -5   # заблокировали легальную — теряем $5 (недовольный клиент)
+base_losses = (yte == 1).sum() * cost_miss
+print(f"Потери без модели: \${base_losses:,}")
+
+best_threshold, best_profit = 0.5, -1e9
+results_thresh = []
+for t in np.arange(0.1, 0.9, 0.05):
+    preds = (proba > t).astype(int)
+    tn, fp, fn, tp = confusion_matrix(yte, preds).ravel()
+    saved   =  tp * cost_miss        # нашли фрод → сохранили
+    penalty =  fp * cost_block       # заблокировали легальных → потери (отрицательные)
+    missed  =  fn * cost_miss        # пропустили фрод
+    net = saved + penalty - missed
+    results_thresh.append({'threshold': t, 'Recall': tp/(tp+fn), 'Precision': tp/(tp+fp+1e-9), 'net_benefit': net})
+    if net > best_profit:
+        best_profit, best_threshold = net, t
+
+res_df = pd.DataFrame(results_thresh)
+print(f"\nОптимальный порог: {best_threshold:.2f}")
+print(f"Чистая выгода от модели: \${best_profit:,}")
+best = res_df[res_df['threshold'].round(2)==round(best_threshold,2)].iloc[0]
+print(f"Recall: {best['Recall']:.3f}, Precision: {best['Precision']:.3f}")`,
+    realcase:`Stripe, Тинькофф, Сбер — у всех есть fraud-detection модели в production. Принимают решение за <100ms. Используют ensemble из XGBoost + правил. Порог не 0.5 а оптимизированный под бизнес-метрику, именно как в шаге 5.`,
+    task:`1) Добавь признак amount_hour_ratio = Amount / (Hour + 1)
+2) Сравни PR-AUC с и без нового признака
+3) Построй Precision-Recall curve (matplotlib)
+4) Объясни: почему ROC-AUC не лучшая метрика при сильном дисбалансе?`,
+    solution:`import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve, average_precision_score, roc_auc_score
+
+# Добавляем новый признак (к предыдущему коду)
+X2 = X.copy()
+X2['amount_hour_ratio'] = X2['Amount'] / (X2['Hour'] + 1)
+
+Xtr2, Xte2, ytr2, yte2 = train_test_split(X2, y, test_size=.2, random_state=42, stratify=y)
+
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier
+
+spw = (ytr2==0).sum()/(ytr2==1).sum()
+pipe2 = Pipeline([('sc',StandardScaler()),('m',XGBClassifier(n_estimators=200,scale_pos_weight=spw,eval_metric='aucpr',verbosity=0,random_state=42))])
+pipe2.fit(Xtr2, ytr2)
+proba2 = pipe2.predict_proba(Xte2)[:,1]
+
+print(f"PR-AUC без ratio: {average_precision_score(yte, proba):.4f}")
+print(f"PR-AUC с ratio:   {average_precision_score(yte2, proba2):.4f}")
+
+# PR curve
+prec, rec, thresh = precision_recall_curve(yte2, proba2)
+plt.figure(figsize=(8,5))
+plt.plot(rec, prec, color='#fa6d9a', lw=2)
+plt.fill_between(rec, prec, alpha=0.2, color='#fa6d9a')
+plt.xlabel('Recall'); plt.ylabel('Precision')
+plt.title(f'Precision-Recall Curve (PR-AUC={average_precision_score(yte2,proba2):.3f})')
+plt.grid(True, alpha=0.3); plt.show()
+
+print("\nПочему ROC-AUC не подходит при дисбалансе:")
+print("ROC-AUC рассматривает TN (true negatives) — которых 99.8%.")
+print("Поэтому ROC-AUC всегда высокий даже у плохой модели.")
+print("PR-AUC смотрит только на положительный класс — честнее.")
+`}
+  ]},
+ {id:"projects",code:"M-13",icon:"💀",xp:1000,color:"#facc6d",
   title:"10 ПРОЕКТОВ ПОРТФОЛИО",
-  subtitle:"Реальные датасеты, реальные задачи, реальные компании",
+  subtitle:"Реальные датасеты, реальные задачи — GitHub уже ждёт",
   sections:[{title:"10 проектов = 10 аргументов на собеседовании",visual:"projects",
-   theory:`Чувак, 3 хороших проекта &gt; 10 сертификатов. Работодатель смотрит на GitHub и спрашивает: «Расскажи про проект». Вот 10 задач с реальными датасетами.`,
+   theory:`Чувак, 3 хороших проекта > 10 сертификатов. Работодатель смотрит на GitHub. Вот 10 задач с датасетами — для каждой ты уже знаешь все инструменты из предыдущих модулей.`,
    code:`# ═══ ПРОЕКТ 1: Churn Prediction ═══
-# Датасет: Kaggle "Telco Customer Churn"
-# Задача: предсказать уход клиента
-# Модель: CatBoost + SHAP объяснение
-# Метрика: ROC-AUC, F1
+# → Полный кейс разобран в M-12. Возьми его за основу.
+# Датасет: sns.load_dataset или синтетический как в кейсе
+# Стек: XGBoost + Pipeline + SHAP
 
 # ═══ ПРОЕКТ 2: House Price Prediction ═══
-# Датасет: Kaggle "House Prices - Advanced Regression"
-# Задача: предсказать цену дома
-# Модель: XGBoost + feature engineering
-# Метрика: RMSE, R²
+# → Полный кейс разобран в M-12.
+# Датасет: fetch_california_housing() или Kaggle House Prices
+# Стек: XGBoost + Feature Engineering + Residual Analysis
 
-# ═══ ПРОЕКТ 3: Credit Card Fraud Detection ═══
-# Датасет: Kaggle "Credit Card Fraud Detection"
-# Задача: найти мошеннические транзакции
-# Особенность: сильный дисбаланс классов → SMOTE
-# Модель: Isolation Forest + Random Forest
+# ═══ ПРОЕКТ 3: Fraud Detection ═══
+# → Полный кейс разобран в M-12.
+# Датасет: синтетический или Kaggle Credit Card Fraud
+# Стек: XGBoost + дисбаланс + бизнес-порог
 
 # ═══ ПРОЕКТ 4: Customer Segmentation ═══
-# Датасет: Kaggle "Mall Customer Segmentation Data"
-# Задача: сегментировать покупателей
-# Модель: K-Means + PCA визуализация
-# Вывод: бизнес-описание каждого сегмента
+# Датасет: Mall Customers (Kaggle) или синтетический
+# Задача: сегментировать покупателей, описать кластеры бизнесу
+# Стек: K-Means (M-10) + PCA + визуализация
 
 # ═══ ПРОЕКТ 5: Heart Disease Prediction ═══
-# Датасет: UCI Heart Disease (Kaggle)
-# Задача: предсказать болезнь сердца
-# Акцент: Recall > Precision
-# Модель: Logistic Regression vs Random Forest
+# Датасет: Kaggle "Heart Disease UCI"
+# Задача: предсказать болезнь сердца — Recall критичен!
+# Стек: Random Forest + class_weight + confusion matrix
 
-# ═══ ПРОЕКТ 6: Movie Recommendation ═══
-# Датасет: MovieLens 100K (grouplens.org)
-# Задача: рекомендовать фильмы
-# Модель: Item-Based Collaborative Filtering
+# ═══ ПРОЕКТ 6: Titanic Extended ═══
+# Датасет: sns.load_dataset('titanic') — знаешь его наизусть
+# Задача: максимальный AUC — Feature Engineering + бустинг
+# Идея: добавь FamilySize, Title из имени, Deck из Cabin
 
-# ═══ ПРОЕКТ 7: Sentiment Analysis ═══
-# Датасет: Kaggle "Amazon Product Reviews"
-# Задача: позитивный/негативный отзыв
-# Модель: TF-IDF + Logistic Regression
-# (классический NLP без нейросетей)
+# ═══ ПРОЕКТ 7: Sentiment Analysis (NLP без нейросетей) ═══
+# Датасет: Kaggle "Amazon Product Reviews" или IMDB
+# Задача: положительный/отрицательный отзыв
+# Стек: TF-IDF + Logistic Regression
 
 # ═══ ПРОЕКТ 8: Sales Forecasting ═══
-# Датасет: Kaggle "Store Sales - Time Series"
+# Датасет: Kaggle "Rossmann Store Sales"
 # Задача: предсказать продажи на 30 дней
-# Модель: LightGBM с lag features
+# Стек: LightGBM + lag features из дат (M-02)
 
-# ═══ ПРОЕКТ 9: Anomaly Detection ═══
-# Датасет: Kaggle "Machine Predictive Maintenance"
-# Задача: найти аномальные показатели оборудования
-# Модель: Isolation Forest + One-Class SVM
+# ═══ ПРОЕКТ 9: A/B Test Analysis ═══
+# Датасет: Kaggle "E-Commerce A/B Testing" или синтетика
+# Задача: правильно посчитать A/B тест, выводы для бизнеса
+# Стек: scipy.stats + power analysis
 
-# ═══ ПРОЕКТ 10: A/B Test Analysis ═══
-# Датасет: Kaggle "E-Commerce AB Testing"
-# Задача: правильно посчитать A/B тест
-# Инструменты: scipy.stats, bootstrapping`,
+# ═══ ПРОЕКТ 10: ТВОй ДОМЕН ═══
+# Задача: найди открытые данные из ТВОЕЙ прошлой сферы
+# Это твоё главное конкурентное преимущество на рынке труда`,
    realcase:`Реальная история: DS устраивался в Тинькофф без опыта в 38 лет.
-4 проекта на GitHub:
-— Churn prediction
-— Credit scoring (синтетические данные из своей сферы)
-— A/B тест для e-commerce
-— Сегментация клиентов
-→ Оффер Junior DS 95k₽
-→ Через год: Senior Analyst 180k₽`,
-   task:`Выбери 3 проекта ближайших к твоей прошлой сфере.
+4 проекта на GitHub: Churn, Fraud, A/B тест, сегментация из своей прошлой сферы.
+→ Оффер Junior DS 95k₽. Через год: 180k₽.
 
-Это твоё уникальное преимущество: ты понимаешь бизнес-контекст лучше, чем выпускник вуза.
-
-Структура проекта в GitHub:
+Структура каждого проекта на GitHub:
 project_name/
-├── README.md       ← задача, метрики, выводы
+├── README.md       ← задача, данные, метрики, выводы (ОБЯЗАТЕЛЬНО)
 ├── notebooks/
 │   ├── 01_EDA.ipynb
 │   ├── 02_modeling.ipynb
 │   └── 03_evaluation.ipynb
-├── models/         ← сохранённая модель
 └── requirements.txt`,
-   solution:`# README.md шаблон:
-# ══════════════════════════════════
-# # Customer Churn Prediction
+   task:`Выбери 3 проекта из 10 ближайших к твоей прошлой сфере.
+Это твоё уникальное преимущество: ты понимаешь бизнес-контекст лучше выпускника вуза.
+
+Напиши README.md для первого проекта прямо сейчас — шаблон в решении.`,
+   solution:`# README.md шаблон для GitHub
+# ══════════════════════════════════════════════
+# # 🎯 Customer Churn Prediction
 #
 # ## Задача
-# Предсказать отток клиентов на основе поведения.
+# Предсказать отток клиентов телеком-компании
+# чтобы удерживать их ДО ухода (ROI > $2M/год).
 #
 # ## Данные
-# Telco Customer Churn — 7043 клиента, 21 признак
+# Telco Customer Churn (синтетика по структуре IBM)
+# 7043 клиента, 21 признак, 26.5% Churn rate
 #
 # ## Результаты
-# | Модель       | AUC   | F1    |
-# |--------------|-------|-------|
-# | Logistic Reg | 0.831 | 0.604 |
-# | XGBoost      | 0.873 | 0.641 |
+# | Модель        | CV AUC | Test Recall |
+# |---------------|--------|-------------|
+# | Logistic Reg  | 0.821  | 0.68        |
+# | XGBoost       | 0.873  | 0.79        |
 #
 # ## Ключевые находки
-# - Month-to-month контракт → уходят в 4x чаще
-# - Первые 12 мес — критический период удержания
+# - Month-to-month контракт → 3x выше вероятность ухода
+# - Первые 12 месяцев — критический период
+# - Клиенты с платежом > $80 в зоне риска
+#
+# ## ROI
+# Удержание 40% найденных уходящих = $2.3M/год при $50k стоимости
 #
 # ## Стек
-# Python · XGBoost · SHAP · pandas · scikit-learn`}]},
- {id:"career",code:"M-11",icon:"🏙️",xp:500,color:"#6dfabc",
+# Python · XGBoost · scikit-learn · Pipeline · matplotlib · seaborn
+#
+# ## Запуск
+# pip install -r requirements.txt
+# jupyter notebook notebooks/01_EDA.ipynb
+`}]},
+ {id:"career",code:"M-14",icon:"🏙️",xp:500,color:"#6dfabc",
   title:"КАРЬЕРНЫЙ БЛОК",
   subtitle:"Резюме, собеседования, первая работа — конкретный план",
   sections:[{title:"Как попасть в DS в 40",visual:"career",
@@ -1190,26 +2072,23 @@ project_name/
 — Понимание бизнеса (знаешь зачем нужны данные)
 — Умение общаться с заказчиками
 — Опыт завершения реальных проектов
-— Осознанная мотивация
+— Осознанная мотивация (не «родители сказали»)
 
 <b>Твой нарратив на собеседовании:</b>
-«Я X лет работал в [сфера]. Видел как решения принимаются без данных. Теперь хочу строить системы, которые улучшают эти решения. Вот мои проекты — именно из этой сферы.»
+«Я X лет работал в [сфера]. Видел как решения принимаются без данных. Теперь строю системы которые заменяют интуицию данными. Вот мои проекты именно из этой сферы.»
 
-<b>Стратегия поиска:</b>
+<b>Что спрашивают на интервью (DS):</b>
+— SQL: JOIN, GROUP BY, window functions (знаем — M-05)
+— Python: pandas задачи (знаем — M-02)
+— ML теория: bias-variance, overfitting, метрики (знаем — M-07)
+— Кейс: как бы ты решил задачу X (знаем — M-12 три кейса)
+— A/B тест: посчитай и интерпретируй
+
+<b>Стратегия поиска работы:</b>
 1. Стартуй с «Аналитик данных» — проще попасть
 2. Ищи компании в своей прошлой сфере — знаешь домен
 3. Малый и средний бизнес — меньше требований к опыту
-4. Стажировки — многие берут 35-40+
-5. Нетворкинг — 50% вакансий не публикуются
-
-<b>Что спрашивают на интервью:</b>
-— SQL: JOIN, GROUP BY, window functions
-— Python: pandas задачи
-— ML теория: bias-variance, overfitting, метрики
-— Кейс: как бы ты решил задачу X
-— A/B тест: посчитай и интерпретируй
-
-<b>Подавай заявки с 9-го месяца</b> — даже если не готов. Первые 5 интервью — учебные.`,
+4. Подавай с 9-го месяца — первые 5 интервью учебные`,
    code:`-- SQL задача (Яндекс, Авито, Ozon)
 -- Топ-10 пользователей за 30 дней (мин. 3 транзакции)
 
@@ -1230,75 +2109,76 @@ FROM active
 ORDER BY total DESC
 LIMIT 10;
 
--- Python задача (Яндекс Практикум)
--- Посчитай monthly retention
+-- Python задача (pandas — классика собеседований)
+-- Месячный Retention Rate
 
 import pandas as pd
 
-def retention(df):
-    # df: user_id, date
-    df['month'] = pd.to_datetime(df['date']).dt.to_period('M')
+def monthly_retention(df):
+    # df: user_id, event_date
+    df['month'] = pd.to_datetime(df['event_date']).dt.to_period('M')
     months = sorted(df['month'].unique())
     result = []
     for i in range(len(months)-1):
         m1, m2 = months[i], months[i+1]
         u1 = set(df[df['month']==m1]['user_id'])
         u2 = set(df[df['month']==m2]['user_id'])
-        ret = len(u1 & u2) / len(u1) * 100
-        result.append({'month': str(m1), 'retention_%': round(ret,1)})
+        ret = len(u1 & u2) / len(u1) * 100 if u1 else 0
+        result.append({'month': str(m1), 'retention_%': round(ret,1),
+                       'users_m1': len(u1), 'retained': len(u1 & u2)})
     return pd.DataFrame(result)`,
    realcase:`Реальный путь Junior DS (2024-2025):
-Месяц 1-6:  учёба + проекты
-Месяц 7-9:  GitHub, начало заявок
-Месяц 10-12: 20-30 собеседований, первый оффер
+Месяц 1-3:   Math + Python + Визуализация + EDA + SQL
+Месяц 4-6:   Линейные → Валидация → Классификация → Бустинг
+Месяц 7-9:   Pipeline + 3 полных проекта на GitHub
+Месяц 10-12: 20-30 собеседований → первый оффер
+
 Первая работа: 80-120k₽
 Через год: 150-200k₽
-Через 3 года: 250-400k₽ Middle DS`,
+Через 3 года: 250-400k₽ Middle DS
+Удалёнка EU/US: $3k-$8k/мес`,
    task:`Напиши своё резюме прямо сейчас.
 1) Summary: кто ты, откуда, почему DS (3-4 предложения)
 2) 3 проекта: название — задача — результат — стек
 3) Навыки: Python, SQL, ML фреймворки
 4) Ссылка на GitHub
 
-Создай GitHub если нет: github.com → Sign up → New repository`,
+Создай GitHub если нет: github.com → Sign up`,
    solution:`# ШАБЛОН РЕЗЮМЕ
-# ══════════════════════════════════════════
+# ══════════════════════════════════════════════
 # ИМЯ ФАМИЛИЯ
-# Junior Data Scientist | Город (Remote)
-# email | github.com/username
+# Junior Data Scientist | Город (Remote OK)
+# email | github.com/username | LinkedIn
 #
 # SUMMARY
-# 15 лет в [строительстве]. Видел как решения принимались
-# на интуиции. Перешёл в DS чтобы строить системы, которые
-# заменяют интуицию данными. Специализируюсь на задачах
-# классификации для [своя сфера].
+# 15 лет в [строительстве]. Наблюдал как ключевые решения
+# принимались на интуиции. Перешёл в DS чтобы строить системы,
+# которые заменяют интуицию данными. Специализируюсь на задачах
+# предсказания и оптимизации для [своя отрасль].
 #
 # ПРОЕКТЫ
-# Customer Churn Prediction
-#   Предсказание оттока телеком-клиентов
-#   ROC-AUC 0.87 | XGBoost + SHAP
-#   github.com/username/churn
+# Customer Churn Prediction | github.com/user/churn
+#   XGBoost-модель предсказания оттока клиентов телекома
+#   ROC-AUC 0.87 | Recall 0.79 | Python, XGBoost, Pipeline
+#   → Расчётный ROI: $2.3M/год при retention rate 40%
 #
-# House Price Forecasting
-#   Предсказание цены недвижимости по 80 признакам
-#   R²=0.89 | XGBoost + feature engineering
-#   github.com/username/house-prices
+# Fraud Detection | github.com/user/fraud
+#   Обнаружение мошеннических транзакций (0.17% класс)
+#   PR-AUC 0.91 | Подобран оптимальный бизнес-порог
+#   → Python, XGBoost, scale_pos_weight, PR-curve
 #
-# Customer Segmentation
-#   Сегментация клиентов, бизнес-рекомендации
-#   K-Means, 5 сегментов
-#   github.com/username/segmentation
+# House Price Regression | github.com/user/housing
+#   Предсказание цен на недвижимость (California Housing)
+#   R²=0.84, MAE=±$28k | Linear, Ridge, XGBoost сравнение
+#   → Feature engineering: географические и ratio-признаки
 #
 # НАВЫКИ
-# Python: pandas, scikit-learn, XGBoost, CatBoost
-# SQL: JOIN, window functions, CTE
-# Инструменты: Jupyter, Git, GitHub`}]}
-,{id:"sql",code:"M-12",icon:"🗄",xp:200,color:"#6dfabc",title:"SQL В PYTHON",subtitle:"pandas + SQLite — как DS работает с базами данных",sections:[{title:"SQL изнутри Python",visual:"sql",theory:"placeholder_theory",code:"placeholder_code",realcase:"placeholder_case",task:"placeholder_task",solution:"placeholder_sol"}]}
+# Python: pandas, numpy, scikit-learn, XGBoost, matplotlib, seaborn
+# SQL: JOIN, GROUP BY, Window Functions, CTE (SQLite, PostgreSQL)
+# ML: классификация, регрессия, кластеризация, Pipeline, CV
+# Инструменты: Jupyter, Git, GitHub, VS Code
+`}]}
 ];
-
-// ══════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════
 let state = {
   completed: new Set(JSON.parse(localStorage.getItem('ds_comp') || '[]')),
   achievements: new Set(JSON.parse(localStorage.getItem('ds_ach') || '[]')),
@@ -1539,6 +2419,134 @@ function buildVisual(name) {
         <div class="prog-track"><div class="prog-fill" style="width:${x.w}%;background:${x.c}"><span>${x.l}</span></div></div>
       </div>`).join('')}`;
 
+
+
+    case 'sql': return `
+      <div class="visual-label">// SQL: JOIN объединяет таблицы</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-size:9px;color:var(--acc);margin-bottom:5px;font-family:monospace">TABLE: users</div>
+          <table class="sql-table">
+            <thead><tr><th>user_id</th><th>name</th><th>city</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Иван</td><td>Москва</td></tr>
+              <tr><td>2</td><td>Мария</td><td>СПб</td></tr>
+              <tr><td>3</td><td>Алексей</td><td>Москва</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--b1);margin-bottom:5px;font-family:monospace">TABLE: orders</div>
+          <table class="sql-table">
+            <thead><tr><th>user_id</th><th>amount</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1500</td></tr>
+              <tr><td>1</td><td>500</td></tr>
+              <tr><td>2</td><td>2000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--fg3);margin-bottom:7px;font-family:monospace">// GROUP BY + SUM → результат:</div>
+      <table class="sql-table">
+        <thead><tr><th>city</th><th>orders</th><th>total ₽</th><th>avg ₽</th></tr></thead>
+        <tbody>
+          <tr><td>Москва</td><td>3</td><td style="color:var(--b1);font-weight:bold">4800</td><td>1600</td></tr>
+          <tr><td>СПб</td><td>1</td><td style="color:var(--b1)">2000</td><td>2000</td></tr>
+          <tr><td>Казань</td><td>0</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>`;
+
+    case 'vizual': return `
+      <div class="visual-label">// 5 графиков которые нужны в каждом EDA</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;color:var(--acc);margin-bottom:6px;font-family:monospace">HISTOGRAM — распределение</div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:50px">
+            ${[3,8,15,22,28,18,10,5,2].map((h,i)=>`<div style="flex:1;height:${h*1.7}px;background:var(--acc);opacity:${0.4+i*0.07};border-radius:2px 2px 0 0"></div>`).join('')}
+          </div>
+          <div style="font-size:9px;color:var(--fg4);margin-top:4px">симметрично / скошено?</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;color:var(--b1);margin-bottom:6px;font-family:monospace">BOXPLOT — выбросы</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:8px 4px">
+            <div style="flex:1;height:20px;background:var(--b1bg);border:1px solid var(--b1b);border-radius:4px;position:relative">
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2px;height:100%;background:var(--b1)"></div>
+            </div>
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--acc2)"></div>
+            <div style="font-size:9px;color:var(--acc2)">выброс</div>
+          </div>
+          <div style="font-size:9px;color:var(--fg4)">медиана, IQR, выбросы</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;color:var(--b2);margin-bottom:6px;font-family:monospace">SCATTER — связь признаков</div>
+          <div style="position:relative;height:50px">
+            ${Array.from({length:20},(_,i)=>{const x=10+Math.random()*80;const y=10+x*0.5+Math.random()*20-10;return `<div style="position:absolute;left:${x}%;top:${100-y}%;width:5px;height:5px;border-radius:50%;background:var(--b2);opacity:0.7"></div>`}).join('')}
+          </div>
+          <div style="font-size:9px;color:var(--fg4)">линейная зависимость?</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;color:var(--acc);margin-bottom:6px;font-family:monospace">HEATMAP — корреляции</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px">
+            ${[[1,.8,.3,-.2],[.8,1,.4,-.1],[.3,.4,1,.6],[-.2,-.1,.6,1]].flat().map(v=>`<div style="height:14px;border-radius:2px;background:${v>0?'var(--b1)':'var(--acc2)'};opacity:${Math.abs(v)*0.8+0.2}"></div>`).join('')}
+          </div>
+          <div style="font-size:9px;color:var(--fg4);margin-top:4px">какие признаки связаны?</div>
+        </div>
+      </div>`;
+
+    case 'cases': return `
+      <div class="visual-label">// Кейс 1: Churn Prediction — pipeline</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[['1. EDA','📊','Дисбаланс 26.5%, паттерны оттока','var(--acc)'],
+           ['2. Features','⚙️','charges_per_tenure, кодировка','var(--b2)'],
+           ['3. Модель','🤖','XGBoost + scale_pos_weight','var(--b1)'],
+           ['4. Метрики','📈','ROC-AUC 0.87, Recall 0.79','var(--acc2,#fa6d9a)'],
+           ['5. ROI','💰','$2.3M/год при 40% retention','var(--b1)']
+          ].map(([s,ic,d,col])=>`
+          <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--brd);border-radius:7px;padding:8px 12px">
+            <span style="font-size:16px">${ic}</span>
+            <div><div style="font-size:11px;font-weight:bold;color:${col}">${s}</div><div style="font-size:10px;color:var(--fg3)">${d}</div></div>
+          </div>`).join('')}
+      </div>`;
+
+    case 'cases2': return `
+      <div class="visual-label">// Кейс 2: House Price — сравнение моделей</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${[['Linear Regression','#fa6d9a',42,0.63],['Ridge (L2)','#facc6d',41,0.64],['Random Forest','#6db8fa',32,0.80],['XGBoost','#6dfabc',28,0.84]].map(([name,col,mae,r2])=>`
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:120px;font-size:10px;color:var(--fg3)">${name}</div>
+            <div style="flex:1;height:18px;background:var(--brd);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${(1-mae/50)*100}%;background:${col};display:flex;align-items:center;padding-left:6px">
+                <span style="font-size:9px;color:#000;font-weight:bold">MAE=${mae}k R²=${r2}</span>
+              </div>
+            </div>
+          </div>`).join('')}
+        <div style="font-size:9px;color:var(--fg4);margin-top:6px">Длиннее = лучше (меньше MAE)</div>
+      </div>`;
+
+    case 'cases3': return `
+      <div class="visual-label">// Кейс 3: Fraud Detection — дисбаланс классов</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:9px;color:var(--fg4);margin-bottom:6px">СОСТАВ ДАННЫХ</div>
+          <div style="font-size:28px;font-weight:bold;color:var(--b1)">99.83%</div>
+          <div style="font-size:11px;color:var(--fg3)">легальных</div>
+          <div style="height:4px;background:var(--b1);border-radius:2px;margin:8px 0"></div>
+          <div style="font-size:22px;font-weight:bold;color:var(--acc2,#fa6d9a)">0.17%</div>
+          <div style="font-size:11px;color:var(--fg3)">мошеннических</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--fg4);margin-bottom:8px">МЕТРИКА ПО ПОРОГУ</div>
+          ${[['0.3','recall=0.91','prec=0.71'],['0.5','recall=0.82','prec=0.84'],['0.7','recall=0.67','prec=0.93']].map(([t,r,p])=>`
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px">
+              <span style="font-size:9px;color:var(--acc);font-family:monospace;width:24px">p>${t}</span>
+              <span style="font-size:9px;color:var(--b1)">${r}</span>
+              <span style="font-size:9px;color:var(--fg4)">${p}</span>
+            </div>`).join('')}
+          <div style="font-size:9px;color:var(--fg4);margin-top:6px">порог = бизнес-решение</div>
+        </div>
+      </div>`;
+
     default: return '<div style="color:#4a4a6a;font-size:13px">Запусти код — matplotlib покажет графики в Jupyter.</div>';
   }
 }
@@ -1574,12 +2582,15 @@ function completeModule() {
   state.completed.add(mod.id);
   state.xp += mod.xp;
 
-  if (mod.id === 'math')    unlockAch('math_done');
-  if (mod.id === 'python')  unlockAch('python_done');
+  if (state.completed.size === 1)         unlockAch('first_module');
+  if (mod.id === 'math')         unlockAch('math_done');
+  if (mod.id === 'python')       unlockAch('python_done');
+  if (mod.id === 'visualization')unlockAch('viz_done');
   if (['linear','classification','boosting'].includes(mod.id)) unlockAch('first_model');
-  if (state.completed.size >= 5)          unlockAch('five_modules');
+  if (state.completed.size >= 5) unlockAch('five_modules');
+  if (mod.id === 'cases')        unlockAch('cases_done');
   if (state.completed.size === MODULES.length) unlockAch('all_done');
-  if (mod.id === 'career')  unlockAch('career_done');
+  if (mod.id === 'career')       unlockAch('career_done');
 
   save();
   render();
@@ -1649,11 +2660,11 @@ function renderContent() {
       <h1 style="font-size:clamp(22px,4vw,40px);font-weight:bold;line-height:1.15;margin-bottom:14px">Добро пожаловать,<br><span style="color:#7c6dfa">Чувак.</span></h1>
       <p style="color:#6b6b8a;line-height:1.9;margin-bottom:28px;font-size:14px;max-width:560px">
         Твой личный курс по Data Science. Только то, что реально нужно для Junior DS.<br>
-        11 модулей · 10 проектов · 1 карьерный блок.<br>
+        14 модулей · 3 реальных кейса · 10 проектов · 1 карьерный блок.<br>
         Теория + Код + Реальный кейс + Задание в каждом модуле.
       </p>
       <div id="home-grid">
-        ${[['🧮','Математика','Только минимум'],['🐍','Python','pandas — 80% работы'],['🤖','Классический ML','sklearn + XGBoost'],['💀','10 проектов','Реальные датасеты'],['🏙️','Карьера','Резюме + интервью'],['⚡','Игровая система','XP и достижения']].map(([ic,t,d])=>`
+        ${[['🧮','Математика','Только минимум'],['📊','Визуализация','matplotlib + seaborn'],['🔍','EDA + Чистка','Пропуски, категории'],['🗄️','SQL в Python','Без SQL не нанимают'],['🔬','Реальные кейсы','Churn, Housing, Fraud'],['🤖','Классический ML','sklearn + XGBoost'],['💀','10 проектов','Реальные датасеты'],['🏙️','Карьера','Резюме + интервью'],['⚡','Игровая система','XP и достижения']].map(([ic,t,d])=>`
         <div class="home-card"><div class="home-card-icon">${ic}</div><div class="home-card-title">${t}</div><div class="home-card-desc">${d}</div></div>`).join('')}
       </div>
       <button id="start-btn" onclick="openModule('math')">&gt; НАЧАТЬ ОБУЧЕНИЕ_</button>
@@ -1992,7 +3003,7 @@ completeModule = function() {
 const _origUpdateHeader = updateHeader;
 updateHeader = function() {
   _origUpdateHeader();
-  document.getElementById('mod-count').textContent = state.completed.size + '/12 модулей';
+  document.getElementById('mod-count').textContent = state.completed.size + '/14 модулей';
 };
 
 // ══════════════════════════════════════════════
