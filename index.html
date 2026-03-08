@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS://CORP ACCESS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;transition:background .3s,color .3s}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:2px}
+
+/* ── THEMES ─────────────────────────────────────── */
+:root{
+  --bg:#0a0a0f;--bg2:#09090e;--bg3:#12121a;--bg4:#11111a;--bg5:#0b0b14;
+  --fg:#e8e8f0;--fg2:#b8b8cc;--fg3:#6b6b8a;--fg4:#3a3a4a;--fg5:#555;
+  --brd:#1a1a2a;--brd2:#2a2a3a;
+  --acc:#7c6dfa;--acc2:#fa6d9a;
+  --xpbar:linear-gradient(90deg,#7c6dfa,#fa6d9a);
+  --b1bg:#6dfabc20;--b1:#6dfabc;--b1b:#6dfabc40;
+  --b2bg:#facc6d20;--b2:#facc6d;--b2b:#facc6d40;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);
+  --glow:#7c6dfa;--code-bg:#0b0b14;--code-brd:#1a2a1a;--code-kw:#9b8dfa;--code-cm:#4a5a4a;
+}
+body.th-matrix{
+  --bg:#000800;--bg2:#000a00;--bg3:#001200;--bg4:#001000;--bg5:#000900;
+  --fg:#00ff41;--fg2:#00cc33;--fg3:#008822;--fg4:#004d14;--fg5:#003a0e;
+  --brd:#004d14;--brd2:#008822;--acc:#00ff41;--acc2:#39ff14;
+  --xpbar:linear-gradient(90deg,#00ff41,#39ff14);
+  --b1bg:#00ff4118;--b1:#00ff41;--b1b:#00ff4140;
+  --b2bg:#39ff1418;--b2:#39ff14;--b2b:#39ff1440;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.05) 2px,rgba(0,255,65,.05) 4px);
+  --glow:#00ff41;--code-bg:#000a00;--code-brd:#004d14;--code-kw:#39ff14;--code-cm:#005522;
+}
+body.th-redteam{
+  --bg:#0f0000;--bg2:#110000;--bg3:#1c0000;--bg4:#160000;--bg5:#0d0000;
+  --fg:#ff4455;--fg2:#dd2233;--fg3:#991122;--fg4:#661122;--fg5:#441111;
+  --brd:#661122;--brd2:#991122;--acc:#ff4455;--acc2:#ff8833;
+  --xpbar:linear-gradient(90deg,#ff4455,#ff8833);
+  --b1bg:#ff445518;--b1:#ff4455;--b1b:#ff445540;
+  --b2bg:#ff883318;--b2:#ff8833;--b2b:#ff883340;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,0,.03) 2px,rgba(255,0,0,.03) 4px);
+  --glow:#ff4455;--code-bg:#110000;--code-brd:#661122;--code-kw:#ff6677;--code-cm:#663333;
+}
+body.th-deepsea{
+  --bg:#000d1a;--bg2:#000f1f;--bg3:#001830;--bg4:#001428;--bg5:#000c18;
+  --fg:#00d4ff;--fg2:#0099cc;--fg3:#006688;--fg4:#004466;--fg5:#003355;
+  --brd:#004466;--brd2:#006688;--acc:#00d4ff;--acc2:#0077ff;
+  --xpbar:linear-gradient(90deg,#00d4ff,#0077ff);
+  --b1bg:#00d4ff18;--b1:#00d4ff;--b1b:#00d4ff40;
+  --b2bg:#0077ff18;--b2:#0077ff;--b2b:#0077ff40;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,180,255,.04) 2px,rgba(0,180,255,.04) 4px);
+  --glow:#00d4ff;--code-bg:#000d1a;--code-brd:#004466;--code-kw:#33ddff;--code-cm:#005577;
+}
+body.th-ghost{
+  --bg:#f4f4f4;--bg2:#ebebeb;--bg3:#ffffff;--bg4:#f8f8f8;--bg5:#e8e8e8;
+  --fg:#111111;--fg2:#333333;--fg3:#777777;--fg4:#aaaaaa;--fg5:#bbbbbb;
+  --brd:#dddddd;--brd2:#cccccc;--acc:#222222;--acc2:#555555;
+  --xpbar:linear-gradient(90deg,#222,#666);
+  --b1bg:#22222212;--b1:#222222;--b1b:#22222230;
+  --b2bg:#55555512;--b2:#555555;--b2b:#55555530;
+  --scan:none;--glow:#222;--code-bg:#f0f0f0;--code-brd:#dddddd;--code-kw:#2200aa;--code-cm:#888888;
+}
+body.th-retro{
+  --bg:#1a0a2e;--bg2:#150826;--bg3:#220d3a;--bg4:#1c0a30;--bg5:#120720;
+  --fg:#ff44ff;--fg2:#cc22cc;--fg3:#881188;--fg4:#550055;--fg5:#440044;
+  --brd:#550055;--brd2:#881188;--acc:#ff44ff;--acc2:#44ffff;
+  --xpbar:linear-gradient(90deg,#ff44ff,#44ffff);
+  --b1bg:#ff44ff18;--b1:#ff44ff;--b1b:#ff44ff40;
+  --b2bg:#44ffff18;--b2:#44ffff;--b2b:#44ffff40;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,0,255,.07) 3px,rgba(255,0,255,.07) 4px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,255,255,.03) 3px,rgba(0,255,255,.03) 4px);
+  --glow:#ff44ff;--code-bg:#12051e;--code-brd:#550055;--code-kw:#ff44ff;--code-cm:#553355;
+}
+
+/* Matrix rain canvas */
+#matrix-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9994;opacity:0;transition:opacity .5s}
+body.th-matrix #matrix-canvas{opacity:.45}
+
+.scanlines{position:fixed;inset:0;background:var(--scan,none);pointer-events:none;z-index:9997}
+body.th-ghost .scanlines{display:none}
+
+@keyframes glow{0%,100%{text-shadow:0 0 6px var(--glow)}50%{text-shadow:0 0 18px var(--glow),0 0 35px var(--glow)}}
+@keyframes slideIn{from{transform:translateX(120px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pixelFlicker{0%,100%{opacity:1}50%{opacity:.8}}
+body.th-retro .glow{animation:glow 1.2s infinite,pixelFlicker 2s infinite}
+.glow{animation:glow 2.5s infinite}
+.fade{animation:fadeUp .25s ease}
+
+/* HEADER */
+#header{border-bottom:1px solid var(--brd);padding:10px 20px;display:flex;align-items:center;gap:12px;background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
+#logo{font-size:15px;font-weight:bold;color:var(--acc);letter-spacing:2px;white-space:nowrap}
+#xp-wrap{flex:1;max-width:240px;min-width:80px}
+#xp-label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px}
+#xp-track{height:5px;background:var(--brd);border-radius:3px;overflow:hidden}
+#xp-fill{height:100%;background:var(--xpbar);border-radius:3px;transition:width .6s}
+.hbadge{background:var(--b1bg);color:var(--b1);padding:2px 8px;border-radius:4px;font-size:10px;border:1px solid var(--b1b);white-space:nowrap}
+.hbadge2{background:var(--b2bg);color:var(--b2);padding:2px 8px;border-radius:4px;font-size:10px;border:1px solid var(--b2b);white-space:nowrap}
+#menu-btn{background:none;border:1px solid var(--brd2);color:var(--fg3);border-radius:5px;padding:4px 9px;cursor:pointer;font-size:14px;flex-shrink:0}
+#menu-btn:hover{border-color:var(--acc)}
+
+/* THEME SWITCHER */
+#theme-bar{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.tbar-lbl{font-size:9px;color:var(--fg4);letter-spacing:1px;margin-right:2px}
+.tdot{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .18s;flex-shrink:0}
+.tdot:hover{transform:scale(1.25)}
+.tdot.on{border-color:var(--fg)!important;box-shadow:0 0 8px var(--glow)}
+.tdot[data-t="cyber"]  {background:radial-gradient(circle,#7c6dfa,#fa6d9a)}
+.tdot[data-t="matrix"] {background:radial-gradient(circle,#00ff41,#004d14)}
+.tdot[data-t="redteam"]{background:radial-gradient(circle,#ff4455,#881122)}
+.tdot[data-t="deepsea"]{background:radial-gradient(circle,#00d4ff,#0044aa)}
+.tdot[data-t="ghost"]  {background:radial-gradient(circle,#fff,#aaa);border-color:#ccc!important}
+.tdot[data-t="retro"]  {background:radial-gradient(circle,#ff44ff,#44ffff)}
+
+/* BODY */
+#body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:270px;min-width:270px;border-right:1px solid var(--brd);overflow-y:auto;background:var(--bg2);transition:all .3s;flex-shrink:0}
+#sidebar.closed{width:0;min-width:0;overflow:hidden}
+#sb-inner{padding:12px;width:270px}
+.sec-label{font-size:9px;color:var(--fg4);letter-spacing:2px;margin-bottom:8px}
+.mod-card{background:transparent;border:1px solid var(--brd);border-radius:9px;padding:10px 11px;cursor:pointer;margin-bottom:5px;transition:all .15s;display:flex;align-items:flex-start;gap:8px}
+.mod-card:hover{border-color:var(--acc);transform:translateX(3px)}
+.mod-card.active{background:var(--mc,transparent);border-color:var(--mb,var(--acc))}
+.mod-icon{font-size:18px;line-height:1;flex-shrink:0;margin-top:1px}
+.mod-info{flex:1;min-width:0}
+.mod-code{font-size:9px;font-family:monospace}
+.mod-title{font-size:11px;font-weight:bold;line-height:1.3;margin-top:2px}
+.mod-xp{font-size:10px;color:var(--fg4);margin-top:2px}
+.mod-done{font-size:12px;flex-shrink:0}
+.ach-row{display:flex;gap:8px;align-items:center;margin-bottom:7px;transition:opacity .3s}
+.ach-row.locked{opacity:.22}
+.ach-icon{font-size:15px;flex-shrink:0}
+.ach-title{font-size:10px;font-weight:bold;color:var(--b2)}
+.ach-desc{font-size:9px;color:var(--fg4)}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;padding:24px 26px;background:var(--bg)}
+
+/* HOME */
+#home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:28px}
+.home-card{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:14px 15px}
+.home-card-icon{font-size:22px;margin-bottom:8px}
+.home-card-title{font-size:12px;font-weight:bold;margin-bottom:3px}
+.home-card-desc{font-size:10px;color:var(--fg4)}
+
+/* MODULE PAGE */
+.mod-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.mod-h-left .mod-code-big{font-size:9px;letter-spacing:3px;margin-bottom:4px}
+.mod-h-left h2{font-size:19px;font-weight:bold;line-height:1.25}
+.mod-h-left p{font-size:12px;color:var(--fg3);margin-top:4px}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--brd);padding-bottom:10px}
+.tab-btn{background:transparent;color:var(--fg5);border:1px solid var(--brd);border-radius:6px;padding:5px 13px;cursor:pointer;font-family:'Courier New',monospace;font-size:11px;transition:all .15s;white-space:nowrap}
+.tab-btn.on{border-color:var(--tc);color:var(--tc);background:var(--tbg)}
+
+/* SECTION NAV */
+.sec-nav{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.snav-btn{background:transparent;color:var(--fg5);border:1px solid var(--brd);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'Courier New',monospace;font-size:10px;transition:all .15s;white-space:nowrap}
+.snav-btn.on{border-color:var(--tc);color:var(--tc);background:var(--tbg)}
+
+/* CONTENT BLOCKS */
+.theory-box{background:var(--bg4);border:1px solid var(--brd);border-radius:10px;padding:22px}
+.theory-box h3{font-size:13px;margin-bottom:14px;font-family:monospace}
+.theory-text{font-size:14px;line-height:1.95;color:var(--fg2);white-space:pre-wrap;word-break:break-word}
+.theory-text strong,.theory-text b{color:var(--fg)}
+.case-box{border-radius:10px;padding:22px}
+.case-label{font-size:9px;letter-spacing:2px;margin-bottom:12px}
+.case-text{font-size:14px;line-height:1.95;color:var(--fg2);white-space:pre-wrap;word-break:break-word}
+.task-box{border-radius:10px;padding:22px;margin-bottom:12px}
+.task-label{font-size:9px;letter-spacing:2px;margin-bottom:12px}
+.task-text{font-size:14px;line-height:1.95;color:var(--fg2);white-space:pre-wrap;word-break:break-word}
+
+/* CODE BLOCK */
+.code-wrap{background:var(--code-bg);border:1px solid var(--code-brd);border-radius:10px;overflow:hidden;margin-top:4px}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:7px 15px;background:var(--bg4);border-bottom:1px solid var(--code-brd)}
+.code-label{font-size:9px;color:var(--fg4);letter-spacing:2px}
+.copy-btn{background:var(--bg3);color:var(--fg3);border:1px solid var(--brd2);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:10px;font-family:monospace;transition:all .2s}
+.copy-btn:hover{color:var(--acc);border-color:var(--acc)}
+.code-pre{padding:18px;font-size:12px;line-height:1.75;color:var(--fg2);font-family:'Courier New',monospace;overflow-x:auto;white-space:pre;tab-size:4}
+
+/* VISUAL */
+.visual-wrap{background:var(--bg4);border:1px solid var(--brd);border-radius:12px;padding:20px}
+.visual-label{font-size:10px;color:var(--acc);margin-bottom:10px;font-family:monospace}
+
+/* BUTTONS */
+.btn{background:var(--b1bg);color:var(--b1);border:1px solid var(--b1b);border-radius:6px;padding:7px 16px;cursor:pointer;font-family:'Courier New',monospace;font-size:12px;transition:all .15s}
+.btn:hover{opacity:.8}
+.btn-green{background:var(--b1bg);color:var(--b1);border:1px solid var(--b1b)}
+.btn-muted{background:transparent;color:var(--fg4);border:1px solid var(--brd)}
+.btn-done{background:var(--b1bg);color:var(--b1);border:1px solid var(--b1b);cursor:default}
+
+/* NAV BOTTOM */
+.nav-bottom{display:flex;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid var(--brd);flex-wrap:wrap}
+
+/* ACHIEVEMENT POPUP */
+#ach-popup{position:fixed;bottom:22px;right:22px;background:var(--bg3);border:1px solid var(--b2);border-radius:12px;padding:14px 18px;z-index:9999;max-width:265px;animation:slideIn .35s ease;box-shadow:0 0 25px var(--glow);display:none}
+#ach-popup.show{display:block}
+.ach-popup-top{font-size:9px;color:var(--b2);letter-spacing:2px;margin-bottom:8px}
+.ach-popup-body{display:flex;gap:12px;align-items:center}
+.ach-popup-icon{font-size:28px}
+.ach-popup-title{font-weight:bold;color:var(--b2);font-size:13px}
+.ach-popup-desc{font-size:11px;color:var(--fg3);margin-top:2px}
+.ach-popup-xp{font-size:11px;color:var(--b1);margin-top:4px}
+
+/* START BTN */
+#start-btn{background:var(--b1bg);color:var(--acc);border:1px solid var(--b1b);border-radius:7px;padding:11px 26px;cursor:pointer;font-family:'Courier New',monospace;font-size:13px;transition:all .2s}
+#start-btn:hover{background:var(--b1b)}
+
+/* VISUAL helpers */
+.matrix-cell{background:var(--bg3);color:var(--fg);padding:5px 10px;border-radius:4px;font-size:13px;font-family:monospace;border:1px solid var(--brd)}
+.matrix-cell.green{background:var(--b1bg);color:var(--b1);font-weight:bold}
+.matrix-cell.pink{background:var(--b2bg);color:var(--b2)}
+.mat-label{font-size:10px;margin-bottom:5px;font-family:monospace}
+.flex-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.math-sym{color:var(--b2);font-size:26px}
+.conf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:310px;margin:0 auto}
+.conf-cell{background:var(--bg3);border-radius:8px;padding:12px;text-align:center}
+.conf-val{font-size:24px;font-weight:bold;font-family:monospace}
+.conf-lbl{font-size:10px;color:var(--fg3);margin-top:3px}
+.conf-sub{font-size:9px;margin-top:2px;opacity:.7}
+.conf-metrics{display:flex;gap:18px;margin-top:10px;justify-content:center;flex-wrap:wrap}
+.boost-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.boost-track{flex:1;height:8px;background:var(--brd);border-radius:4px;overflow:hidden}
+.fold-row{display:flex;gap:4px;align-items:center;margin-bottom:5px}
+.fold-lbl{font-size:10px;color:var(--fg3);width:48px;flex-shrink:0}
+.fold-block{flex:1;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px}
+.pipe-step{border-radius:8px;padding:8px 14px;font-size:11px;width:100%;text-align:center}
+.pipe-connector{width:2px;height:10px;margin:0 auto}
+.prog-row{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.prog-month{font-size:10px;color:var(--fg3);width:38px;flex-shrink:0}
+.prog-track{flex:1;height:21px;background:var(--brd);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;opacity:.8;display:flex;align-items:center;padding-left:7px}
+.prog-fill span{font-size:9px;color:#0a0a0f;font-weight:bold;white-space:nowrap;overflow:hidden}
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.proj-card{border-radius:8px;padding:8px 11px;display:flex;gap:8px;align-items:center}
+.proj-num{font-family:monospace;font-weight:bold;font-size:12px;flex-shrink:0}
+.proj-name{font-size:11px;font-weight:600}
+.proj-dom{font-size:10px;color:var(--fg3)}
+.pd-table{border-collapse:collapse;font-size:12px;width:100%;font-family:monospace}
+.pd-table th{padding:5px 11px;color:var(--acc);border-bottom:2px solid var(--brd2);text-align:left}
+.pd-table td{padding:5px 11px;border-bottom:1px solid var(--brd)}
+.td-pos{color:var(--b1)}.td-neg{color:var(--acc2,#fa6d9a)}
+.eda-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-bottom:10px}
+.eda-cell{height:13px;border-radius:2px}
+/* SQL visual */
+.sql-table{width:100%;border-collapse:collapse;font-size:12px;font-family:monospace;margin-bottom:10px}
+.sql-table th{padding:5px 10px;text-align:left;border-bottom:2px solid var(--acc);color:var(--acc)}
+.sql-table td{padding:5px 10px;border-bottom:1px solid var(--brd);color:var(--fg2)}
+.sql-table tr:hover td{background:var(--b1bg)}
+.sql-badge{display:inline-block;background:var(--b1bg);color:var(--b1);border:1px solid var(--b1b);border-radius:4px;padding:2px 8px;font-size:10px;font-family:monospace;margin:2px}
+@media(max-width:600px){#sidebar{width:240px;min-width:240px}#sb-inner{width:240px}#content{padding:16px}.proj-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="matrix-canvas"></canvas>
+<div class="scanlines"></div>
+
+<!-- HEADER -->
+<div id="header">
+  <button id="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+  <div id="logo" class="glow">&#11041; DS://CORP</div>
+  <div id="xp-wrap">
+    <div id="xp-label"><span id="xp-text" style="color:var(--acc)">LVL 1 &mdash; 0 XP</span><span style="color:var(--fg4)">3500 total</span></div>
+    <div id="xp-track"><div id="xp-fill" style="width:0%"></div></div>
+  </div>
+  <span class="hbadge" id="mod-count">0/12 модулей</span>
+  <span class="hbadge2" id="ach-count">0 достижений</span>
+  <div id="theme-bar">
+    <span class="tbar-lbl" style="font-size:9px;color:var(--fg4);letter-spacing:1px">ТЕМА:</span>
+    <div class="tdot on" data-t="cyber"   title="Cyberpunk"   onclick="setTheme('cyber')"></div>
+    <div class="tdot"    data-t="matrix"  title="Matrix"      onclick="setTheme('matrix')"></div>
+    <div class="tdot"    data-t="redteam" title="Red Team"    onclick="setTheme('redteam')"></div>
+    <div class="tdot"    data-t="deepsea" title="Deep Sea"    onclick="setTheme('deepsea')"></div>
+    <div class="tdot"    data-t="ghost"   title="Ghost Mode"  onclick="setTheme('ghost')"></div>
+    <div class="tdot"    data-t="retro"   title="Retro Pixel" onclick="setTheme('retro')"></div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div id="body">
+  <div id="sidebar"><div id="sb-inner">
+    <div class="sec-label">// МОДУЛИ</div>
+    <div id="mod-list"></div>
+    <div style="border-top:1px solid var(--brd);margin-top:12px;padding-top:12px">
+      <div class="sec-label">// ДОСТИЖЕНИЯ</div>
+      <div id="ach-list"></div>
+    </div>
+  </div></div>
+  <div id="content"></div>
+</div>
+
+<div id="ach-popup">
+  <div class="ach-popup-top">// ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО</div>
+  <div class="ach-popup-body">
+    <div class="ach-popup-icon" id="ap-icon"></div>
+    <div><div class="ach-popup-title" id="ap-title"></div><div class="ach-popup-desc" id="ap-desc"></div><div class="ach-popup-xp" id="ap-xp"></div></div>
+  </div>
+</div>
+
+<script>
+const ACHIEVEMENTS = [
+  {id:"first_module",icon:"🔓",title:"ПЕРВЫЙ ВЗЛОМ",     desc:"Открыл первый модуль",       xp:50},
+  {id:"math_done",   icon:"🧮",title:"ЧИСЛОДРОБ",        desc:"Завершил математику",         xp:100},
+  {id:"python_done", icon:"🐍",title:"SNAKE CHARMER",    desc:"Завершил Python",             xp:150},
+  {id:"first_model", icon:"🤖",title:"ПЕРВЫЙ ИНФИЛЬТРАТ",desc:"Обучил первую модель",        xp:200},
+  {id:"five_modules",icon:"⚡",title:"МИДЛ-ХАКЕР",       desc:"5 модулей закрыто",           xp:300},
+  {id:"all_done",    icon:"💀",title:"GHOST IN THE DATA",desc:"Все модули пройдены",         xp:1000},
+  {id:"career_done", icon:"🏙️",title:"CORP INFILTRATOR", desc:"Карьерный блок пройден",      xp:500},
+];
+
+const MODULES = [
+ {id:"math",code:"M-01",icon:"∑",xp:100,color:"#7c6dfa",
+  title:"МАТЕМАТИКА — НЕОБХОДИМЫЙ МИНИМУМ",
+  subtitle:"Линейная алгебра, матстат, вероятность — только рабочие инструменты",
+  sections:[
+   {title:"Линейная алгебра для ML",visual:"math",
+    theory:`Чувак, тебе не нужна линейная алгебра из университета. Нужно 3 вещи:
+
+<b>Вектор</b> — это просто список чисел. Строка в таблице клиентов — это вектор.
+[возраст=35, доход=80000, кредиты=2] → вектор размерности 3
+
+<b>Матрица</b> — таблица векторов. Твой датасет — это матрица.
+
+<b>Скалярное произведение</b> — умножаем элементы и складываем.
+[1,2,3] · [4,5,6] = 1×4 + 2×5 + 3×6 = 32
+В ML это основа линейной регрессии и нейросетей.
+
+<b>Норма вектора</b> — "длина" вектора: ||v|| = √(v₁² + v₂² + ...)
+Используется в регуляризации (L1, L2).`,
+    code:`import numpy as np
+
+# Вектор = массив numpy
+v1 = np.array([1, 2, 3])
+v2 = np.array([4, 5, 6])
+
+# Скалярное произведение
+dot = np.dot(v1, v2)
+print(f"Скалярное произведение: {dot}")  # 32
+
+# Матрица = 2D массив
+X = np.array([
+    [1, 2, 3],   # клиент 1
+    [4, 5, 6],   # клиент 2
+    [7, 8, 9]    # клиент 3
+])
+print(f"Форма матрицы: {X.shape}")  # (3, 3)
+
+# Умножение матриц — основа предсказания в ML
+W = np.array([[0.5], [0.3], [0.2]])
+predictions = X @ W    # предсказания
+print(f"Предсказания:\\n{predictions}")`,
+    realcase:`В линейной регрессии предсказание = X @ w, где X — матрица признаков, w — веса модели. Каждый раз когда модель делает predict() — она умножает матрицы.
+
+Понимание этого помогает дебажить ошибки размерностей (самая частая ошибка новичков):
+ValueError: shapes (100,8) and (9,1) not aligned → значит пропущен один признак.`,
+    task:`Создай матрицу 4×3 из случайных чисел (np.random.rand).
+Найди среднее по каждому столбцу (np.mean с axis=0).
+Стандартизируй матрицу: вычти среднее, раздели на std.
+Это Z-score нормализация — делают в каждом ML проекте перед обучением.`,
+    solution:`import numpy as np
+
+# Случайная матрица 4x3
+X = np.random.rand(4, 3)
+print("Матрица X:")
+print(X.round(3))
+
+# Среднее и std по столбцам
+col_means = np.mean(X, axis=0)
+col_stds  = np.std(X, axis=0)
+print(f"\\nСредние: {col_means.round(3)}")
+print(f"Std:     {col_stds.round(3)}")
+
+# Z-score нормализация
+X_norm = (X - col_means) / col_stds
+print("\\nНормализованная матрица:")
+print(X_norm.round(2))
+# Проверка: среднее должно быть ~0
+print(f"Среднее после нормализации: {X_norm.mean(axis=0).round(10)}")`},
+   {title:"Статистика — только 5 концептов",visual:"stats",
+    theory:`<b>1. Среднее vs Медиана</b>
+Среднее врёт при выбросах. Медиана — нет.
+Зарплаты: [50k, 55k, 60k, 65k, 500k]
+→ среднее = 146k, медиана = 60k
+Медиана честнее показывает «типичную» зарплату.
+
+<b>2. Стандартное отклонение (std)</b>
+Насколько данные «разбросаны» вокруг среднего.
+Маленький std → кучкуются. Большой std → хаос.
+
+<b>3. Корреляция Пирсона</b>
+От -1 до +1. Насколько два признака «движутся вместе».
+Рост и вес: ~0.8 (сильная положительная).
+Температура и продажи шуб: ~-0.7 (отрицательная).
+
+<b>4. Нормальное распределение (колокол)</b>
+68% данных в пределах ±1σ, 95% в ±2σ.
+
+<b>5. p-value (интуитивно)</b>
+p &lt; 0.05 → «это не случайность, есть реальный эффект».
+Используется в A/B тестах.`,
+    code:`import numpy as np
+from scipy import stats
+
+# Данные зарплат с выбросом (CEO)
+salaries = np.concatenate([
+    np.random.normal(60000, 10000, 99),
+    [500000]
+])
+
+print(f"Среднее: {salaries.mean():.0f}")
+print(f"Медиана: {np.median(salaries):.0f}")
+print(f"Std:     {salaries.std():.0f}")
+
+# Корреляция рост-вес
+heights = np.array([165, 170, 175, 180, 185])
+weights = np.array([60,  68,  75,  80,  85 ])
+corr, p = stats.pearsonr(heights, weights)
+print(f"\\nКорреляция рост-вес: {corr:.2f}")
+print(f"p-value: {p:.4f} ({'значимо' if p < 0.05 else 'незначимо'})")
+
+# Нормальное распределение
+data = np.random.normal(0, 1, 10000)
+w1 = np.mean(np.abs(data) < 1) * 100
+w2 = np.mean(np.abs(data) < 2) * 100
+print(f"\\nВ ±1σ: {w1:.1f}% (ожидаем 68%)")
+print(f"В ±2σ: {w2:.1f}% (ожидаем 95%)")`,
+    realcase:`В банке анализируют доход клиентов. Среднее = 150k (искажено богатыми), медиана = 65k. Кредитный скоринг строят на основе медианы — честнее отражает типичного клиента.
+
+Корреляции используют для отбора признаков: если два признака коррелируют > 0.95 — один лишний, убирают.`,
+    task:`Загрузи Titanic: import seaborn as sns; df = sns.load_dataset('titanic')
+1) Среднее и медиану возраста
+2) Корреляцию между возрастом и стоимостью билета
+3) T-test: есть ли значимая разница в возрасте между выжившими и нет?`,
+    solution:`import seaborn as sns
+from scipy import stats
+
+df = sns.load_dataset('titanic')
+
+print(f"Средний возраст:  {df['age'].mean():.1f}")
+print(f"Медиана возраста: {df['age'].median():.1f}")
+
+mask = df['age'].notna() & df['fare'].notna()
+corr, p = stats.pearsonr(df.loc[mask,'age'], df.loc[mask,'fare'])
+print(f"\\nКорреляция возраст-билет: {corr:.3f} (p={p:.3f})")
+
+survived = df[df['survived']==1]['age'].dropna()
+died     = df[df['survived']==0]['age'].dropna()
+t, pval  = stats.ttest_ind(survived, died)
+print(f"\\nВозраст выживших: {survived.mean():.1f}")
+print(f"Возраст погибших: {died.mean():.1f}")
+print(f"Разница значима: {pval < 0.05} (p={pval:.3f})")`}
+  ]},
+ {id:"python",code:"M-02",icon:"🐍",xp:150,color:"#fa6d9a",
+  title:"PYTHON — РАБОЧИЙ ИНСТРУМЕНТ",
+  subtitle:"pandas, numpy, matplotlib — три библиотеки = 80% работы DS",
+  sections:[{title:"pandas — работа с таблицами",visual:"pandas",
+   theory:`Чувак, pandas — это Excel на стероидах.
+
+<b>Загрузка данных:</b>
+pd.read_csv('file.csv')
+pd.read_excel('file.xlsx')
+sns.load_dataset('titanic')   # встроенные датасеты
+
+<b>Первый взгляд (делаешь ВСЕГДА первым делом):</b>
+df.head()          — первые 5 строк
+df.info()          — типы данных, пропуски
+df.describe()      — статистика по числовым
+df.isnull().sum()  — количество NaN
+
+<b>Фильтрация:</b>
+df[df['age'] &gt; 30]
+df[(df['age'] &gt; 30) &amp; (df['sex'] == 'male')]
+
+<b>Группировка (GROUP BY как в SQL):</b>
+df.groupby('sex')['survived'].mean()
+df.groupby(['sex','pclass'])['fare'].median()`,
+   code:`import pandas as pd
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+print("=== ФОРМА И ТИПЫ ===")
+print(df.shape)
+
+print("\\n=== ПРОПУСКИ ===")
+missing = df.isnull().sum()
+print(missing[missing > 0].sort_values(ascending=False))
+
+print("\\n=== ВЫЖИВАЕМОСТЬ ПО ПОЛУ ===")
+result = df.groupby('sex')['survived'].agg(['mean','count'])
+result.columns = ['выжило_%','всего']
+result['выжило_%'] = (result['выжило_%'] * 100).round(1)
+print(result)
+
+print("\\n=== МЕДИАНА ЦЕНЫ ПО КЛАССУ ===")
+print(df.groupby('pclass')['fare'].median().round(2))
+
+print("\\n=== ФИЛЬТР: молодые богатые ===")
+rich = df[(df['age'] < 30) & (df['fare'] > 100)]
+print(f"Таких: {len(rich)}, выжило: {rich['survived'].mean():.0%}")`,
+   realcase:`Аналитик в ритейле каждое утро запускает скрипт: загружает продажи за вчера, делает groupby по магазинам и категориям, фильтрует выбросы. Это чистый pandas без ML — и это уже ценная работа.`,
+   task:`Загрузи 'diamonds' через sns.load_dataset('diamonds').
+1) Топ-3 огранки (cut) по средней цене
+2) Корреляция между carat и price
+3) Создай признак price_per_carat = price / carat
+4) Какой color даёт самый высокий price_per_carat?`,
+   solution:`import seaborn as sns
+
+df = sns.load_dataset('diamonds')
+
+top = df.groupby('cut')['price'].mean().sort_values(ascending=False).head(3)
+print("Топ-3 cut:"); print(top.round(0))
+
+print(f"\\nКорреляция carat-price: {df['carat'].corr(df['price']):.3f}")
+
+df['price_per_carat'] = df['price'] / df['carat']
+best = df.groupby('color')['price_per_carat'].mean().sort_values(ascending=False)
+print("\\nPrice per carat по color:"); print(best.round(0))`}]},
+ {id:"eda",code:"M-03",icon:"🔍",xp:150,color:"#6dfabc",
+  title:"EDA — РАЗВЕДКА ДАННЫХ",
+  subtitle:"Первое что делает DS на любом проекте — понять данные",
+  sections:[{title:"Чеклист EDA — 7 шагов",visual:"eda",
+   theory:`EDA — ты получаешь датасет и пытаешься понять его ДО модели.
+
+<b>Чувак, без EDA ты слеп.</b> Модель на грязных данных = мусор с красивой точностью.
+
+<b>Чеклист EDA:</b>
+1. Shape и типы — сколько строк, что за колонки
+2. Пропуски — где их нет, там им и не место
+3. Дубликаты — одна строка = один раз
+4. Распределения — как выглядят числовые данные
+5. Выбросы — аномально большие/малые значения
+6. Корреляции — какие признаки связаны с таргетом
+7. Категориальные — уникальные значения, опечатки
+
+<b>Самые частые проблемы в реальных датасетах:</b>
+- Пропуски (NaN) там где их не ждёшь
+- Даты записаны как строки ("2024-01-15")
+- Числа записаны как строки ("1,234.56")
+- Одно значение в разных форматах ("Москва", "москва")`,
+   code:`import pandas as pd
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+print("1. БАЗОВАЯ ИНФОРМАЦИЯ")
+print(f"Строк: {df.shape[0]}, Колонок: {df.shape[1]}")
+
+print("\\n2. ПРОПУСКИ")
+missing = df.isnull().sum()
+pct = (missing / len(df) * 100).round(1)
+miss_df = pd.DataFrame({'count': missing, '%': pct})
+print(miss_df[miss_df['count'] > 0].sort_values('%', ascending=False))
+
+print("\\n3. ДУБЛИКАТЫ")
+print(f"Дубликатов: {df.duplicated().sum()}")
+
+print("\\n4. СТАТИСТИКА ЧИСЛОВЫХ")
+print(df.describe().round(2))
+
+print("\\n5. ВЫБРОСЫ (IQR метод)")
+for col in ['age', 'fare']:
+    Q1, Q3 = df[col].quantile([0.25, 0.75])
+    IQR = Q3 - Q1
+    out = df[(df[col] < Q1-1.5*IQR) | (df[col] > Q3+1.5*IQR)]
+    print(f"{col}: {len(out)} выбросов")`,
+   realcase:`DS в банке получает выгрузку транзакций за квартал. Первое что делает — EDA. Находит: 15% пустых значений в merchant_category, даты в 3 разных форматах, суммы иногда отрицательные. Без EDA — модель скоринга выдаёт бред.`,
+   task:`Загрузи 'tips': df = sns.load_dataset('tips')
+1) Форма, типы, пропуски, дубликаты
+2) Описательная статистика total_bill
+3) Выбросы в total_bill и tip (IQR)
+4) Корреляция total_bill и tip
+5) Средний tip% по дням: tip / total_bill * 100`,
+   solution:`import seaborn as sns
+
+df = sns.load_dataset('tips')
+print("Форма:", df.shape)
+print("Пропуски:", df.isnull().sum().sum())
+print(df['total_bill'].describe().round(2))
+
+for col in ['total_bill','tip']:
+    Q1,Q3 = df[col].quantile([0.25,0.75])
+    IQR = Q3-Q1
+    n = len(df[(df[col]<Q1-1.5*IQR)|(df[col]>Q3+1.5*IQR)])
+    print(f"Выбросы {col}: {n}")
+
+print(f"Корреляция: {df['total_bill'].corr(df['tip']):.3f}")
+df['tip_pct'] = df['tip']/df['total_bill']*100
+print(df.groupby('day')['tip_pct'].mean().round(1).sort_values(ascending=False))`}]},
+ {id:"linear",code:"M-04",icon:"📈",xp:200,color:"#6db8fa",
+  title:"ЛИНЕЙНЫЕ МОДЕЛИ",
+  subtitle:"Линейная и логистическая регрессия — фундамент всего ML",
+  sections:[{title:"Линейная регрессия — предсказываем числа",visual:"regression",
+   theory:`Чувак, линейная регрессия — это формула:
+<b>ŷ = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</b>
+
+Где x — признаки, w — веса (находит алгоритм), b — bias, ŷ — предсказание.
+
+<b>Как модель находит веса?</b>
+Минимизирует MSE = 1/n × Σ(ŷᵢ - yᵢ)²
+
+<b>Когда применять:</b>
+✅ Предсказание цены квартиры
+✅ Предсказание продаж
+✅ Предсказание времени доставки
+❌ «Выживет / не выживет» — это классификация
+
+<b>Метрики регрессии:</b>
+MAE — средняя абсолютная ошибка (понятна людям)
+RMSE — штрафует большие ошибки сильнее
+R² — от 0 до 1, насколько модель лучше «угадывания среднего»`,
+   code:`from sklearn.datasets import fetch_california_housing
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, r2_score
+import pandas as pd
+
+data = fetch_california_housing(as_frame=True)
+df = data.frame
+
+X = df.drop('MedHouseVal', axis=1)
+y = df['MedHouseVal']
+
+# Train/test split — ОБЯЗАТЕЛЬНО
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(f"Train: {X_train.shape}, Test: {X_test.shape}")
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+print(f"\\nMAE: {mean_absolute_error(y_test, y_pred):.3f}")
+print(f"R²:  {r2_score(y_test, y_pred):.3f}")
+
+coef = pd.Series(model.coef_, index=X.columns)
+print("\\nВеса признаков:")
+print(coef.sort_values(ascending=False).round(4))`,
+   realcase:`Агентство недвижимости использует линейную регрессию для оценки квартир. Признаки: расстояние до центра, площадь, этаж, год постройки. Точность ±12% — хватает для предварительной оценки без выезда оценщика.`,
+   task:`Используй California Housing.
+1) Обучи линейную регрессию на 3 признаках: MedInc, AveRooms, HouseAge
+2) Сравни R² с моделью на ВСЕХ признаках
+3) Какой признак имеет наибольший вес (по абсолютному значению)?`,
+   solution:`from sklearn.datasets import fetch_california_housing
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+import numpy as np
+
+data = fetch_california_housing(as_frame=True)
+df = data.frame
+X = df.drop('MedHouseVal', axis=1)
+y = df['MedHouseVal']
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+f3 = ['MedInc','AveRooms','HouseAge']
+m3 = LinearRegression().fit(Xtr[f3], ytr)
+mall = LinearRegression().fit(Xtr, ytr)
+
+print(f"R² (3 признака): {r2_score(yte, m3.predict(Xte[f3])):.3f}")
+print(f"R² (все):        {r2_score(yte, mall.predict(Xte)):.3f}")
+
+import pandas as pd
+coefs = pd.Series(mall.coef_, index=X.columns).abs().sort_values(ascending=False)
+print(f"\\nСамый важный: {coefs.index[0]} ({coefs.iloc[0]:.4f})")`}]},
+ {id:"classification",code:"M-05",icon:"🎯",xp:200,color:"#facc6d",
+  title:"КЛАССИФИКАЦИЯ",
+  subtitle:"Логрег, Decision Tree, Random Forest — задачи да/нет",
+  sections:[{title:"От логрега до случайного леса",visual:"classification",
+   theory:`<b>Логистическая регрессия</b> — предсказывает вероятность класса 0 или 1.
+Выход — число от 0 до 1. Если &gt; 0.5 → класс 1.
+Применения: спам, мошенничество, диагноз, churn.
+
+<b>Decision Tree</b> — дерево «если-то-иначе».
+✅ Понятен людям, не нужна нормализация
+❌ Переобучается — выучивает шум
+
+<b>Random Forest</b> — 100+ деревьев, голосование.
+✅ Точнее, устойчивее к шуму
+❌ Менее интерпретируем
+
+<b>Метрики классификации:</b>
+Accuracy — % правильных (врёт при дисбалансе классов!)
+Precision — из предсказанных «1», сколько правда «1»
+Recall — из реальных «1», сколько нашли
+F1 — баланс precision и recall
+ROC-AUC — 0.5=случайно, 1.0=идеал`,
+   code:`import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.preprocessing import LabelEncoder
+
+df = sns.load_dataset('titanic')
+df = df[['survived','pclass','sex','age','fare','sibsp','parch']].dropna()
+df['sex'] = LabelEncoder().fit_transform(df['sex'])
+
+X = df.drop('survived', axis=1)
+y = df['survived']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+models = {
+    'Logistic Regression': LogisticRegression(max_iter=1000),
+    'Decision Tree':       DecisionTreeClassifier(max_depth=5, random_state=42),
+    'Random Forest':       RandomForestClassifier(n_estimators=100, random_state=42),
+}
+for name, m in models.items():
+    m.fit(Xtr, ytr)
+    auc = roc_auc_score(yte, m.predict_proba(Xte)[:,1])
+    print(f"\\n{name}  |  AUC: {auc:.3f}")
+    print(classification_report(yte, m.predict(Xte),
+          target_names=['погиб','выжил']))`,
+   realcase:`Тинькофф использует Random Forest для одобрения кредитов. 200+ признаков: история платежей, возраст, доход. Recall важнее Precision — лучше отказать надёжному, чем дать кредит мошеннику.`,
+   task:`Датасет: Breast Cancer (встроен в sklearn).
+from sklearn.datasets import load_breast_cancer
+1) Обучи Random Forest
+2) Топ-5 важных признаков (feature_importances_)
+3) Матрица ошибок (confusion_matrix)
+4) Что важнее в медицинской задаче — precision или recall? Почему?`,
+   solution:`from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
+import pandas as pd
+
+data = load_breast_cancer()
+Xtr,Xte,ytr,yte = train_test_split(data.data,data.target,test_size=.2,random_state=42)
+
+rf = RandomForestClassifier(n_estimators=100, random_state=42)
+rf.fit(Xtr, ytr)
+
+imp = pd.Series(rf.feature_importances_, index=data.feature_names)
+print("Топ-5:"); print(imp.sort_values(ascending=False).head(5).round(3))
+print("\\nConfusion Matrix:"); print(confusion_matrix(yte, rf.predict(Xte)))
+print(classification_report(yte, rf.predict(Xte)))
+# Важнее RECALL: лучше ложный диагноз, чем пропущенная опухоль`}]},
+ {id:"boosting",code:"M-06",icon:"⚡",xp:250,color:"#fa9b6d",
+  title:"GRADIENT BOOSTING",
+  subtitle:"XGBoost, LightGBM, CatBoost — оружие победителей Kaggle",
+  sections:[{title:"Почему бустинг побеждает на табличных данных",visual:"boosting",
+   theory:`<b>Идея бустинга:</b> строим деревья последовательно, каждое исправляет ошибки предыдущих.
+
+Дерево 1 → предсказало, посмотрело на ошибки
+Дерево 2 → учится исправлять ошибки дерева 1
+...и так 100-1000 раз.
+
+<b>Три брата-бустера:</b>
+XGBoost — классика, стабилен
+LightGBM — быстрее, меньше памяти, для больших данных
+CatBoost — нативная обработка категорий, создан Яндексом
+
+<b>Главные гиперпараметры:</b>
+n_estimators — количество деревьев (100–1000)
+max_depth — глубина (3–8, больше = переобучение)
+learning_rate — шаг (0.01–0.3, меньше = точнее но медленнее)
+
+<b>SHAP</b> — объяснение модели. Показывает вклад каждого признака в предсказание. Это твоя суперсила на презентациях.`,
+   code:`import seaborn as sns
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+
+df = sns.load_dataset('titanic')
+df = df[['survived','pclass','sex','age','fare','sibsp','parch','embarked']].copy()
+df['age'].fillna(df['age'].median(), inplace=True)
+df['embarked'].fillna('S', inplace=True)
+df['sex']      = LabelEncoder().fit_transform(df['sex'])
+df['embarked'] = LabelEncoder().fit_transform(df['embarked'])
+
+X = df.drop('survived', axis=1)
+y = df['survived']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+xgb = XGBClassifier(n_estimators=200, max_depth=4,
+                     learning_rate=0.1, eval_metric='logloss',
+                     random_state=42, verbosity=0)
+xgb.fit(Xtr, ytr)
+
+auc = roc_auc_score(yte, xgb.predict_proba(Xte)[:,1])
+cv  = cross_val_score(xgb, X, y, cv=5, scoring='roc_auc')
+print(f"Test AUC: {auc:.3f}")
+print(f"CV  AUC:  {cv.mean():.3f} ± {cv.std():.3f}")
+
+imp = pd.Series(xgb.feature_importances_, index=X.columns)
+print("\\nВажность признаков:")
+print(imp.sort_values(ascending=False).round(3))`,
+   realcase:`Сбер, Тинькофф, ВТБ — все три используют LightGBM/CatBoost в кредитном скоринге. CatBoost особенно популярен в России: создан командой Яндекса, лучше работает «из коробки» на категориальных признаках.`,
+   task:`Скачай с Kaggle 'Telco Customer Churn'.
+1) Обучи XGBoost на предсказание оттока (Churn)
+2) Сравни с Random Forest по ROC-AUC
+3) Топ-3 признака по важности
+4) Что бизнес должен сделать, зная эти признаки?`,
+   solution:`import pandas as pd
+from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelEncoder
+
+df = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')
+df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+df.dropna(inplace=True)
+df['Churn'] = (df['Churn'] == 'Yes').astype(int)
+df.drop('customerID', axis=1, inplace=True)
+for col in df.select_dtypes(include='object').columns:
+    df[col] = LabelEncoder().fit_transform(df[col])
+
+X = df.drop('Churn',axis=1); y = df['Churn']
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+for name, m in [('XGBoost', XGBClassifier(n_estimators=200,random_state=42,eval_metric='logloss',verbosity=0)),
+                ('RF', RandomForestClassifier(n_estimators=200,random_state=42))]:
+    m.fit(Xtr,ytr); print(f"{name}: AUC={roc_auc_score(yte,m.predict_proba(Xte)[:,1]):.3f}")
+
+imp = pd.Series(XGBClassifier(n_estimators=200,random_state=42,eval_metric='logloss',verbosity=0).fit(Xtr,ytr).feature_importances_,index=X.columns)
+print("Топ-3:", imp.sort_values(ascending=False).head(3).index.tolist())`}]},
+ {id:"unsupervised",code:"M-07",icon:"🔮",xp:200,color:"#c46dfa",
+  title:"КЛАСТЕРИЗАЦИЯ",
+  subtitle:"K-Means, PCA — находим скрытые паттерны без таргета",
+  sections:[{title:"Обучение без учителя",visual:"clustering",
+   theory:`<b>Кластеризация</b> — нет таргета, только данные. Разбить объекты на группы.
+
+<b>K-Means алгоритм:</b>
+1. Выбери K центроидов случайно
+2. Назначь каждую точку ближайшему центроиду
+3. Пересчитай центроиды (среднее кластера)
+4. Повторяй до стабилизации
+
+Как выбрать K? → Elbow Method (метод локтя).
+
+<b>PCA (Principal Component Analysis):</b>
+Снижение размерности. 100 признаков → 2–3 компоненты.
+Использование: визуализация, ускорение обучения, удаление шума.
+
+<b>ОБЯЗАТЕЛЬНО нормализовать перед кластеризацией!</b>
+Иначе признак с большим масштабом задавит остальные.
+
+<b>Применения в бизнесе:</b>
+— Сегментация клиентов (маркетинг)
+— Аномалии в транзакциях (безопасность)
+— Группировка похожих товаров (рекомендации)`,
+   code:`import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+np.random.seed(42)
+data = {
+    'age':      np.concatenate([np.random.normal(25,5,60), np.random.normal(45,8,80), np.random.normal(60,6,60)]),
+    'income':   np.concatenate([np.random.normal(30000,5000,60), np.random.normal(70000,15000,80), np.random.normal(55000,8000,60)]),
+    'spending': np.concatenate([np.random.normal(70,10,60), np.random.normal(50,20,80), np.random.normal(35,8,60)])
+}
+df = pd.DataFrame(data)
+
+# Нормализация — ОБЯЗАТЕЛЬНО
+scaler = StandardScaler()
+X_sc = scaler.fit_transform(df)
+
+# Elbow Method
+print("Inertia (меньше = лучше, ищем 'локоть'):")
+for k in range(2, 8):
+    km = KMeans(k, random_state=42, n_init=10)
+    print(f"K={k}: {km.fit(X_sc).inertia_:.0f}")
+
+# Финальная кластеризация
+km = KMeans(3, random_state=42, n_init=10)
+df['cluster'] = km.fit_predict(X_sc)
+
+print("\\nПрофиль кластеров:")
+print(df.groupby('cluster')[['age','income','spending']].mean().round(0))
+
+# PCA визуализация
+pca = PCA(n_components=2)
+X2d = pca.fit_transform(X_sc)
+print(f"\\nPCA объясняет: {pca.explained_variance_ratio_.sum():.1%}")`,
+   realcase:`Ozon сегментирует 50M покупателей. Кластер 1: молодые, низкий доход, электроника — рассрочка. Кластер 2: женщины 35+, высокий доход — премиум одежда. Разные кластеры = разные баннеры, скидки, emails.`,
+   task:`Загрузи Mall Customers (Kaggle) или используй синтетические данные из примера.
+1) Сегментация по Age, Income, Spending
+2) Оптимальное K через Elbow Method
+3) Опиши каждый кластер бизнес-языком
+4) Какой кластер наиболее ценен?`,
+   solution:`import pandas as pd, numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+np.random.seed(42)
+df = pd.DataFrame({'Age': np.random.normal(35,12,200), 'Income': np.random.normal(55000,20000,200), 'Spending': np.random.normal(50,20,200)})
+X_sc = StandardScaler().fit_transform(df)
+
+inertias = [KMeans(k,random_state=42,n_init=10).fit(X_sc).inertia_ for k in range(2,9)]
+print("Elbow:", [round(x) for x in inertias])
+
+km = KMeans(4, random_state=42, n_init=10)
+df['cluster'] = km.fit_predict(X_sc)
+print(df.groupby('cluster').mean().round(0))
+print("Самый ценный: высокий доход + высокие расходы → VIP клиенты")`}]},
+ {id:"validation",code:"M-08",icon:"🛡️",xp:200,color:"#6dfabc",
+  title:"ВАЛИДАЦИЯ И OVERFITTING",
+  subtitle:"Как не обмануть себя: cross-validation, bias-variance tradeoff",
+  sections:[{title:"Переобучение — главный враг DS",visual:"validation",
+   theory:`<b>Overfitting (переобучение)</b> — модель выучила тренировочные данные наизусть, но на новых данных работает плохо.
+
+Аналогия: студент зазубрил ответы на конкретные вопросы, не понял тему.
+
+<b>Диагностика:</b>
+Train accuracy = 99%
+Test  accuracy = 65%
+→ Классическое переобучение!
+
+<b>Лечение:</b>
+1. Больше данных — лучшее лекарство
+2. Регуляризация L1/L2 — штрафуем сложность
+3. Меньше признаков — убираем шум
+4. max_depth, min_samples_leaf — для деревьев
+
+<b>5-Fold Cross-Validation:</b>
+Делим данные на 5 частей.
+Обучаем 5 раз, каждый раз валидируемся на другой части.
+Итог = среднее по 5 запускам. Честнее чем один split.
+
+<b>Bias-Variance Tradeoff:</b>
+Высокий Bias → Underfitting (слишком простая модель)
+Высокая Variance → Overfitting (слишком сложная)
+Цель: найти баланс.`,
+   code:`import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.datasets import make_classification
+
+X, y = make_classification(n_samples=1000, n_features=20,
+                            n_informative=5, n_redundant=10, random_state=42)
+
+models = {
+    'DT (без лимита)':  DecisionTreeClassifier(random_state=42),
+    'DT (max_depth=5)': DecisionTreeClassifier(max_depth=5, random_state=42),
+    'Random Forest':    RandomForestClassifier(n_estimators=100, random_state=42),
+}
+
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+for name, model in models.items():
+    model.fit(Xtr, ytr)
+    tr_sc = model.score(Xtr, ytr)
+    te_sc = model.score(Xte, yte)
+    cv    = cross_val_score(model, X, y, cv=5, scoring='roc_auc')
+    print(f"\\n{name}:")
+    print(f"  Train={tr_sc:.3f} | Test={te_sc:.3f} | Gap={tr_sc-te_sc:.3f}")
+    print(f"  CV AUC: {cv.mean():.3f} ± {cv.std():.3f}")`,
+   realcase:`DS в Яндексе обучил модель ранжирования. Train MAP@10 = 0.95, Test = 0.71 — явное переобучение. Решение: ограничили глубину дерева, убрали 200 редких признаков. Test вырос до 0.88.`,
+   task:`1) Сгенерируй: make_classification(n_samples=500, n_features=50, n_informative=5)
+2) Обучи Decision Tree без ограничений — train и test score
+3) Подбери max_depth от 1 до 20, найди оптимальный
+4) Сравни с Random Forest
+5) Что происходит с train и test при увеличении глубины?`,
+   solution:`import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_classification
+
+X,y = make_classification(n_samples=500,n_features=50,n_informative=5,random_state=42)
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+print("Подбор max_depth:")
+best_d, best_te = 0, 0
+for d in range(1, 21):
+    dt = DecisionTreeClassifier(max_depth=d, random_state=42)
+    dt.fit(Xtr,ytr)
+    tr,te = dt.score(Xtr,ytr), dt.score(Xte,yte)
+    if te > best_te: best_d, best_te = d, te
+    if d in [1,3,5,7,10,15,20]: print(f"  depth={d}: train={tr:.2f}, test={te:.2f}")
+
+print(f"\\nОптимальная глубина: {best_d}, test={best_te:.3f}")
+
+rf = RandomForestClassifier(n_estimators=100,random_state=42)
+rf.fit(Xtr,ytr)
+print(f"Random Forest: train={rf.score(Xtr,ytr):.3f}, test={rf.score(Xte,yte):.3f}")`}]},
+ {id:"pipeline",code:"M-09",icon:"🔧",xp:200,color:"#fa6d6d",
+  title:"SKLEARN PIPELINE",
+  subtitle:"Правильный способ строить ML модели — без data leakage",
+  sections:[{title:"Pipeline — один объект, вся логика",visual:"pipeline",
+   theory:`<b>Pipeline</b> — цепочка трансформаций + модель в одном объекте.
+
+<b>БЕЗ Pipeline (опасно):</b>
+scaler.fit(X_train)
+X_train_sc = scaler.transform(X_train)
+X_test_sc = scaler.transform(X_test)
+→ Легко ошибиться → data leakage
+
+<b>С Pipeline (правильно):</b>
+pipe = Pipeline([('scaler', ...), ('model', ...)])
+pipe.fit(X_train, y_train)
+pipe.predict(X_test)  # всё автоматически
+
+<b>Data Leakage</b> — информация из test попадает в обучение. Модель кажется точной, но в production провалится. Самая коварная ошибка в ML.
+
+<b>Почему Pipeline обязателен:</b>
+1. Защита от data leakage
+2. Один объект = вся логика модели
+3. Легко деплоить: joblib.dump(pipeline, 'model.pkl')
+4. Работает с GridSearchCV / RandomizedSearchCV`,
+   code:`import seaborn as sns
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.metrics import classification_report
+
+df = sns.load_dataset('titanic')
+df = df[['survived','pclass','sex','age','fare','embarked']].copy()
+X = df.drop('survived', axis=1)
+y = df['survived']
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, random_state=42)
+
+num_t = Pipeline([('imp', SimpleImputer(strategy='median')),
+                  ('sc',  StandardScaler())])
+cat_t = Pipeline([('imp', SimpleImputer(strategy='most_frequent')),
+                  ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False))])
+pre = ColumnTransformer([
+    ('num', num_t, ['age','fare','pclass']),
+    ('cat', cat_t, ['sex','embarked'])
+])
+
+full_pipe = Pipeline([('pre', pre),
+                      ('clf', RandomForestClassifier(random_state=42))])
+
+params = {
+    'clf__n_estimators':    [50, 100, 200],
+    'clf__max_depth':       [3, 5, 7, None],
+    'clf__min_samples_leaf':[1, 2, 5]
+}
+search = RandomizedSearchCV(full_pipe, params, n_iter=12,
+                             cv=5, scoring='roc_auc', random_state=42)
+search.fit(Xtr, ytr)
+print(f"CV AUC: {search.best_score_:.3f}")
+print(classification_report(yte, search.predict(Xte)))`,
+   realcase:`В production Pipeline — стандарт. Сохраняется через joblib.dump(pipeline, 'model.pkl'), загружается на сервер. Весь препроцессинг (нормализация, OneHot) работает автоматически для каждого нового запроса.`,
+   task:`1) Любой датасет с числовыми и категориальными признаками
+2) Построй ColumnTransformer для разных типов
+3) Полный Pipeline: препроцессинг + XGBoost
+4) RandomizedSearchCV (10+ итераций)
+5) Сохрани лучшую модель через joblib, загрузи обратно`,
+   solution:`import joblib, seaborn as sns
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from xgboost import XGBClassifier
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.metrics import roc_auc_score
+
+df = sns.load_dataset('titanic')
+df = df[['survived','pclass','sex','age','fare','embarked']].copy()
+X = df.drop('survived',axis=1); y = df['survived']
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42)
+
+n = Pipeline([('i',SimpleImputer(strategy='median')),('s',StandardScaler())])
+c = Pipeline([('i',SimpleImputer(strategy='most_frequent')),('o',OneHotEncoder(handle_unknown='ignore',sparse_output=False))])
+pre = ColumnTransformer([('n',n,['age','fare','pclass']),('c',c,['sex','embarked'])])
+pipe = Pipeline([('p',pre),('m',XGBClassifier(eval_metric='logloss',verbosity=0,random_state=42))])
+params={'m__n_estimators':[100,200],'m__max_depth':[3,5],'m__learning_rate':[0.05,0.1]}
+s = RandomizedSearchCV(pipe,params,n_iter=10,cv=5,scoring='roc_auc',random_state=42)
+s.fit(Xtr,ytr); print(f"CV AUC: {s.best_score_:.3f}")
+joblib.dump(s.best_estimator_,'titanic_pipeline.pkl')
+loaded = joblib.load('titanic_pipeline.pkl')
+print(f"Loaded model AUC: {roc_auc_score(yte, loaded.predict_proba(Xte)[:,1]):.3f}")`}]},
+ {id:"projects",code:"M-10",icon:"💀",xp:1000,color:"#facc6d",
+  title:"10 ПРОЕКТОВ ПОРТФОЛИО",
+  subtitle:"Реальные датасеты, реальные задачи, реальные компании",
+  sections:[{title:"10 проектов = 10 аргументов на собеседовании",visual:"projects",
+   theory:`Чувак, 3 хороших проекта &gt; 10 сертификатов. Работодатель смотрит на GitHub и спрашивает: «Расскажи про проект». Вот 10 задач с реальными датасетами.`,
+   code:`# ═══ ПРОЕКТ 1: Churn Prediction ═══
+# Датасет: Kaggle "Telco Customer Churn"
+# Задача: предсказать уход клиента
+# Модель: CatBoost + SHAP объяснение
+# Метрика: ROC-AUC, F1
+
+# ═══ ПРОЕКТ 2: House Price Prediction ═══
+# Датасет: Kaggle "House Prices - Advanced Regression"
+# Задача: предсказать цену дома
+# Модель: XGBoost + feature engineering
+# Метрика: RMSE, R²
+
+# ═══ ПРОЕКТ 3: Credit Card Fraud Detection ═══
+# Датасет: Kaggle "Credit Card Fraud Detection"
+# Задача: найти мошеннические транзакции
+# Особенность: сильный дисбаланс классов → SMOTE
+# Модель: Isolation Forest + Random Forest
+
+# ═══ ПРОЕКТ 4: Customer Segmentation ═══
+# Датасет: Kaggle "Mall Customer Segmentation Data"
+# Задача: сегментировать покупателей
+# Модель: K-Means + PCA визуализация
+# Вывод: бизнес-описание каждого сегмента
+
+# ═══ ПРОЕКТ 5: Heart Disease Prediction ═══
+# Датасет: UCI Heart Disease (Kaggle)
+# Задача: предсказать болезнь сердца
+# Акцент: Recall > Precision
+# Модель: Logistic Regression vs Random Forest
+
+# ═══ ПРОЕКТ 6: Movie Recommendation ═══
+# Датасет: MovieLens 100K (grouplens.org)
+# Задача: рекомендовать фильмы
+# Модель: Item-Based Collaborative Filtering
+
+# ═══ ПРОЕКТ 7: Sentiment Analysis ═══
+# Датасет: Kaggle "Amazon Product Reviews"
+# Задача: позитивный/негативный отзыв
+# Модель: TF-IDF + Logistic Regression
+# (классический NLP без нейросетей)
+
+# ═══ ПРОЕКТ 8: Sales Forecasting ═══
+# Датасет: Kaggle "Store Sales - Time Series"
+# Задача: предсказать продажи на 30 дней
+# Модель: LightGBM с lag features
+
+# ═══ ПРОЕКТ 9: Anomaly Detection ═══
+# Датасет: Kaggle "Machine Predictive Maintenance"
+# Задача: найти аномальные показатели оборудования
+# Модель: Isolation Forest + One-Class SVM
+
+# ═══ ПРОЕКТ 10: A/B Test Analysis ═══
+# Датасет: Kaggle "E-Commerce AB Testing"
+# Задача: правильно посчитать A/B тест
+# Инструменты: scipy.stats, bootstrapping`,
+   realcase:`Реальная история: DS устраивался в Тинькофф без опыта в 38 лет.
+4 проекта на GitHub:
+— Churn prediction
+— Credit scoring (синтетические данные из своей сферы)
+— A/B тест для e-commerce
+— Сегментация клиентов
+→ Оффер Junior DS 95k₽
+→ Через год: Senior Analyst 180k₽`,
+   task:`Выбери 3 проекта ближайших к твоей прошлой сфере.
+
+Это твоё уникальное преимущество: ты понимаешь бизнес-контекст лучше, чем выпускник вуза.
+
+Структура проекта в GitHub:
+project_name/
+├── README.md       ← задача, метрики, выводы
+├── notebooks/
+│   ├── 01_EDA.ipynb
+│   ├── 02_modeling.ipynb
+│   └── 03_evaluation.ipynb
+├── models/         ← сохранённая модель
+└── requirements.txt`,
+   solution:`# README.md шаблон:
+# ══════════════════════════════════
+# # Customer Churn Prediction
+#
+# ## Задача
+# Предсказать отток клиентов на основе поведения.
+#
+# ## Данные
+# Telco Customer Churn — 7043 клиента, 21 признак
+#
+# ## Результаты
+# | Модель       | AUC   | F1    |
+# |--------------|-------|-------|
+# | Logistic Reg | 0.831 | 0.604 |
+# | XGBoost      | 0.873 | 0.641 |
+#
+# ## Ключевые находки
+# - Month-to-month контракт → уходят в 4x чаще
+# - Первые 12 мес — критический период удержания
+#
+# ## Стек
+# Python · XGBoost · SHAP · pandas · scikit-learn`}]},
+ {id:"career",code:"M-11",icon:"🏙️",xp:500,color:"#6dfabc",
+  title:"КАРЬЕРНЫЙ БЛОК",
+  subtitle:"Резюме, собеседования, первая работа — конкретный план",
+  sections:[{title:"Как попасть в DS в 40",visual:"career",
+   theory:`Чувак, сначала честно: 40 лет — это не минус.
+
+<b>Что у тебя есть, чего нет у 22-летних:</b>
+— Понимание бизнеса (знаешь зачем нужны данные)
+— Умение общаться с заказчиками
+— Опыт завершения реальных проектов
+— Осознанная мотивация
+
+<b>Твой нарратив на собеседовании:</b>
+«Я X лет работал в [сфера]. Видел как решения принимаются без данных. Теперь хочу строить системы, которые улучшают эти решения. Вот мои проекты — именно из этой сферы.»
+
+<b>Стратегия поиска:</b>
+1. Стартуй с «Аналитик данных» — проще попасть
+2. Ищи компании в своей прошлой сфере — знаешь домен
+3. Малый и средний бизнес — меньше требований к опыту
+4. Стажировки — многие берут 35-40+
+5. Нетворкинг — 50% вакансий не публикуются
+
+<b>Что спрашивают на интервью:</b>
+— SQL: JOIN, GROUP BY, window functions
+— Python: pandas задачи
+— ML теория: bias-variance, overfitting, метрики
+— Кейс: как бы ты решил задачу X
+— A/B тест: посчитай и интерпретируй
+
+<b>Подавай заявки с 9-го месяца</b> — даже если не готов. Первые 5 интервью — учебные.`,
+   code:`-- SQL задача (Яндекс, Авито, Ozon)
+-- Топ-10 пользователей за 30 дней (мин. 3 транзакции)
+
+WITH active AS (
+    SELECT
+        user_id,
+        SUM(amount)  AS total,
+        COUNT(*)     AS cnt
+    FROM transactions
+    WHERE date >= CURRENT_DATE - INTERVAL '30 days'
+    GROUP BY user_id
+    HAVING COUNT(*) >= 3
+)
+SELECT
+    user_id, total, cnt,
+    RANK() OVER (ORDER BY total DESC) AS rank
+FROM active
+ORDER BY total DESC
+LIMIT 10;
+
+-- Python задача (Яндекс Практикум)
+-- Посчитай monthly retention
+
+import pandas as pd
+
+def retention(df):
+    # df: user_id, date
+    df['month'] = pd.to_datetime(df['date']).dt.to_period('M')
+    months = sorted(df['month'].unique())
+    result = []
+    for i in range(len(months)-1):
+        m1, m2 = months[i], months[i+1]
+        u1 = set(df[df['month']==m1]['user_id'])
+        u2 = set(df[df['month']==m2]['user_id'])
+        ret = len(u1 & u2) / len(u1) * 100
+        result.append({'month': str(m1), 'retention_%': round(ret,1)})
+    return pd.DataFrame(result)`,
+   realcase:`Реальный путь Junior DS (2024-2025):
+Месяц 1-6:  учёба + проекты
+Месяц 7-9:  GitHub, начало заявок
+Месяц 10-12: 20-30 собеседований, первый оффер
+Первая работа: 80-120k₽
+Через год: 150-200k₽
+Через 3 года: 250-400k₽ Middle DS`,
+   task:`Напиши своё резюме прямо сейчас.
+1) Summary: кто ты, откуда, почему DS (3-4 предложения)
+2) 3 проекта: название — задача — результат — стек
+3) Навыки: Python, SQL, ML фреймворки
+4) Ссылка на GitHub
+
+Создай GitHub если нет: github.com → Sign up → New repository`,
+   solution:`# ШАБЛОН РЕЗЮМЕ
+# ══════════════════════════════════════════
+# ИМЯ ФАМИЛИЯ
+# Junior Data Scientist | Город (Remote)
+# email | github.com/username
+#
+# SUMMARY
+# 15 лет в [строительстве]. Видел как решения принимались
+# на интуиции. Перешёл в DS чтобы строить системы, которые
+# заменяют интуицию данными. Специализируюсь на задачах
+# классификации для [своя сфера].
+#
+# ПРОЕКТЫ
+# Customer Churn Prediction
+#   Предсказание оттока телеком-клиентов
+#   ROC-AUC 0.87 | XGBoost + SHAP
+#   github.com/username/churn
+#
+# House Price Forecasting
+#   Предсказание цены недвижимости по 80 признакам
+#   R²=0.89 | XGBoost + feature engineering
+#   github.com/username/house-prices
+#
+# Customer Segmentation
+#   Сегментация клиентов, бизнес-рекомендации
+#   K-Means, 5 сегментов
+#   github.com/username/segmentation
+#
+# НАВЫКИ
+# Python: pandas, scikit-learn, XGBoost, CatBoost
+# SQL: JOIN, window functions, CTE
+# Инструменты: Jupyter, Git, GitHub`}]}
+,{id:"sql",code:"M-12",icon:"🗄",xp:200,color:"#6dfabc",title:"SQL В PYTHON",subtitle:"pandas + SQLite — как DS работает с базами данных",sections:[{title:"SQL изнутри Python",visual:"sql",theory:"placeholder_theory",code:"placeholder_code",realcase:"placeholder_case",task:"placeholder_task",solution:"placeholder_sol"}]}
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let state = {
+  completed: new Set(JSON.parse(localStorage.getItem('ds_comp') || '[]')),
+  achievements: new Set(JSON.parse(localStorage.getItem('ds_ach') || '[]')),
+  xp: parseInt(localStorage.getItem('ds_xp') || '0'),
+  activeModuleId: null,
+  activeSectionIdx: 0,
+  activeTab: 'theory',
+  showSolution: false,
+};
+
+function save() {
+  localStorage.setItem('ds_comp', JSON.stringify([...state.completed]));
+  localStorage.setItem('ds_ach',  JSON.stringify([...state.achievements]));
+  localStorage.setItem('ds_xp',   String(state.xp));
+}
+
+// ══════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ══════════════════════════════════════════════
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('closed');
+}
+
+// ══════════════════════════════════════════════
+// ACHIEVEMENT POPUP
+// ══════════════════════════════════════════════
+let popupTimer = null;
+function showAchievement(ach) {
+  const p = document.getElementById('ach-popup');
+  document.getElementById('ap-icon').textContent  = ach.icon;
+  document.getElementById('ap-title').textContent = ach.title;
+  document.getElementById('ap-desc').textContent  = ach.desc;
+  document.getElementById('ap-xp').textContent    = '+' + ach.xp + ' XP';
+  p.classList.add('show');
+  clearTimeout(popupTimer);
+  popupTimer = setTimeout(() => p.classList.remove('show'), 3500);
+}
+
+function unlockAch(id) {
+  if (state.achievements.has(id)) return;
+  const a = ACHIEVEMENTS.find(x => x.id === id);
+  if (!a) return;
+  state.achievements.add(id);
+  state.xp += a.xp;
+  showAchievement(a);
+}
+
+// ══════════════════════════════════════════════
+// HEADER UPDATE
+// ══════════════════════════════════════════════
+function updateHeader() {
+  const lvl = Math.max(1, Math.floor(state.xp / 400) + 1);
+  const pct = ((state.xp % 400) / 400 * 100).toFixed(1);
+  document.getElementById('xp-text').textContent  = `LVL ${lvl} — ${state.xp} XP`;
+  document.getElementById('xp-fill').style.width  = pct + '%';
+  document.getElementById('mod-count').textContent = `${state.completed.size}/11 модулей`;
+  document.getElementById('ach-count').textContent = `${state.achievements.size} достижений`;
+}
+
+// ══════════════════════════════════════════════
+// SIDEBAR BUILD
+// ══════════════════════════════════════════════
+function buildSidebar() {
+  // modules
+  const ml = document.getElementById('mod-list');
+  ml.innerHTML = '';
+  MODULES.forEach(mod => {
+    const active = state.activeModuleId === mod.id;
+    const done   = state.completed.has(mod.id);
+    const div = document.createElement('div');
+    div.className = 'mod-card' + (active ? ' active' : '');
+    div.style.setProperty('--mc', mod.color + '12');
+    div.style.setProperty('--mb', mod.color);
+    div.innerHTML = `
+      <span class="mod-icon">${mod.icon}</span>
+      <div class="mod-info">
+        <div class="mod-code" style="color:${mod.color}">${mod.code}</div>
+        <div class="mod-title" style="color:${active ? mod.color : '#c8c8d8'}">${mod.title}</div>
+        <div class="mod-xp">${mod.xp} XP</div>
+      </div>
+      ${done ? '<span class="mod-done">✅</span>' : ''}`;
+    div.onclick = () => openModule(mod.id);
+    ml.appendChild(div);
+  });
+
+  // achievements
+  const al = document.getElementById('ach-list');
+  al.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'ach-row' + (state.achievements.has(a.id) ? '' : ' locked');
+    div.innerHTML = `<span class="ach-icon">${a.icon}</span><div><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>`;
+    al.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════
+// COPY BUTTON
+// ══════════════════════════════════════════════
+function copyCode(btn, id) {
+  const pre = document.getElementById(id);
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '✓ скопировано';
+    btn.style.color = '#6dfabc';
+    setTimeout(() => { btn.textContent = '📋 copy'; btn.style.color = ''; }, 2000);
+  });
+}
+
+// ══════════════════════════════════════════════
+// VISUAL BUILDERS
+// ══════════════════════════════════════════════
+function buildVisual(name) {
+  switch(name) {
+    case 'math': return `
+      <div class="visual-label">// Матрица признаков × веса = предсказание</div>
+      <div class="flex-row">
+        <div><div class="mat-label" style="color:#7c6dfa">X (датасет)</div>
+          ${[[1,2,3],[4,5,6],[7,8,9]].map(r=>`<div class="flex-row" style="gap:4px;margin-bottom:4px">${r.map(v=>`<span class="matrix-cell">${v}</span>`).join('')}</div>`).join('')}
+        </div>
+        <span class="math-sym">×</span>
+        <div><div class="mat-label" style="color:#fa6d9a">w (веса)</div>
+          ${[0.5,0.3,0.2].map(v=>`<div style="margin-bottom:4px"><span class="matrix-cell pink">${v}</span></div>`).join('')}
+        </div>
+        <span class="math-sym">=</span>
+        <div><div class="mat-label" style="color:#6dfabc">ŷ (предсказание)</div>
+          ${[2.3,5.6,8.9].map(v=>`<div style="margin-bottom:4px"><span class="matrix-cell green">${v}</span></div>`).join('')}
+        </div>
+      </div>`;
+
+    case 'stats': return `
+      <div class="visual-label">// 68-95-99.7 правило нормального распределения</div>
+      <svg id="bell-svg" viewBox="0 0 400 120">
+        <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6dfa" stop-opacity=".8"/><stop offset="100%" stop-color="#7c6dfa" stop-opacity=".05"/></linearGradient></defs>
+        <path d="M20 110 C80 110 110 18 200 10 C290 18 320 110 380 110 Z" fill="url(#bg)" stroke="#7c6dfa" stroke-width="2"/>
+        <line x1="200" y1="10" x2="200" y2="110" stroke="#facc6d" stroke-width="1.5" stroke-dasharray="4"/>
+        <line x1="145" y1="47" x2="255" y2="47" stroke="#6dfabc" stroke-width="1.5"/>
+        <line x1="88" y1="103" x2="312" y2="103" stroke="#fa6d9a" stroke-width="1.5"/>
+        <text x="200" y="125" fill="#facc6d" font-size="10" text-anchor="middle">μ (среднее)</text>
+        <text x="148" y="41" fill="#6dfabc" font-size="9">← 68% (±1σ) →</text>
+        <text x="93" y="98" fill="#fa6d9a" font-size="9">← 95% (±2σ) →</text>
+      </svg>`;
+
+    case 'pandas': return `
+      <div class="visual-label">// DataFrame — основная структура данных в pandas</div>
+      <div style="overflow-x:auto">
+      <table class="pd-table">
+        <thead><tr>${['idx','name','age','survived','fare'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${[[0,'Braund',22,0,'7.25'],[1,'Cumings',38,1,'71.28'],[2,'Heikkinen',26,1,'7.92'],['…','…','…','…','…']].map((r,i)=>`<tr style="background:${i%2===0?'#12121a':'#0d0d18'}">${r.map((c,j)=>`<td class="${j===3&&c===1?'td-green':j===3&&c===0?'td-red':''}">${c}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table></div>`;
+
+    case 'eda': return `
+      <div class="visual-label">// Паттерны пропусков в реальных данных (15% NaN)</div>
+      <div class="eda-grid">${Array(100).fill(0).map((_,i)=>{
+        const m=[3,7,15,22,23,31,45,46,60,70,71,80,91,92,93].includes(i);
+        return `<div class="eda-cell" style="background:${m?'#fa6d9a44':'#7c6dfa44'};border:1px solid ${m?'#fa6d9a66':'#7c6dfa33'}"></div>`;
+      }).join('')}</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap"><span style="font-size:11px;color:#7c6dfa">■ Данные (85%)</span><span style="font-size:11px;color:#fa6d9a">■ NaN (15%)</span></div>`;
+
+    case 'regression': return `
+      <div class="visual-label">// Линия регрессии минимизирует сумму квадратов ошибок</div>
+      <svg id="reg-svg" viewBox="0 0 400 140">
+        ${[[40,128],[70,110],[105,103],[140,88],[175,73],[215,66],[248,52],[285,46],[325,36],[365,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="#7c6dfa" opacity=".85"/>`).join('')}
+        <line x1="25" y1="138" x2="380" y2="16" stroke="#fa6d9a" stroke-width="2.5"/>
+        <text x="200" y="135" fill="#fa6d9a" font-size="9" text-anchor="middle">Красная = линия регрессии ŷ = wx + b</text>
+      </svg>`;
+
+    case 'classification': return `
+      <div class="visual-label">// Confusion Matrix</div>
+      <div class="conf-grid">
+        ${[{l:'TP',v:85,c:'#6dfabc',d:'Верно позитив'},{l:'FP',v:12,c:'#fa6d9a',d:'Ложная тревога'},{l:'FN',v:8,c:'#facc6d',d:'Пропустили!'},{l:'TN',v:95,c:'#6dfabc',d:'Верно негатив'}].map(x=>`
+        <div class="conf-cell" style="border:1px solid ${x.c}44">
+          <div class="conf-val" style="color:${x.c}">${x.v}</div>
+          <div class="conf-lbl">${x.l}</div>
+          <div class="conf-sub" style="color:${x.c}">${x.d}</div>
+        </div>`).join('')}
+      </div>
+      <div class="conf-metrics">
+        <span style="font-size:11px;color:#7c6dfa">Precision: 85/(85+12) = <b>87.6%</b></span>
+        <span style="font-size:11px;color:#fa6d9a">Recall: 85/(85+8) = <b>91.4%</b></span>
+      </div>`;
+
+    case 'boosting': return `
+      <div class="visual-label">// Каждое дерево исправляет ошибки предыдущих</div>
+      ${[{n:'Дерево 1',e:'Ошибка: 35%',d:'',c:'#7c6dfa',w:70},{n:'Дерево 2',e:'Ошибка: 22%',d:'↓13%',c:'#fa6d9a',w:44},{n:'Дерево 3',e:'Ошибка: 15%',d:'↓7%',c:'#6dfabc',w:30},{n:'...100 деревьев',e:'Ошибка: 4%',d:'↓11%',c:'#facc6d',w:8}].map(x=>`
+      <div class="boost-row">
+        <div class="boost-name" style="--bc:${x.c}20;--bb:${x.c};background:${x.c}15;border-color:${x.c}55;color:${x.c}">${x.n}</div>
+        <div class="boost-track"><div class="boost-bar" style="width:${x.w}%;background:${x.c}"></div></div>
+        <div class="boost-err">${x.e}</div>
+        <div class="boost-delta">${x.d}</div>
+      </div>`).join('')}`;
+
+    case 'clustering': return `
+      <div class="visual-label">// K-Means: 3 кластера покупателей</div>
+      <svg id="cluster-svg" viewBox="0 0 400 160">
+        ${generateClusterPoints()}
+        <circle cx="95" cy="100" r="12" fill="none" stroke="#7c6dfa" stroke-width="2.5"/>
+        <circle cx="215" cy="82" r="12" fill="none" stroke="#fa6d9a" stroke-width="2.5"/>
+        <circle cx="320" cy="112" r="12" fill="none" stroke="#6dfabc" stroke-width="2.5"/>
+        <text x="95" y="155" fill="#7c6dfa" font-size="10" text-anchor="middle">Молодые</text>
+        <text x="215" y="155" fill="#fa6d9a" font-size="10" text-anchor="middle">Средний класс</text>
+        <text x="320" y="155" fill="#6dfabc" font-size="10" text-anchor="middle">Премиум</text>
+      </svg>`;
+
+    case 'validation': return `
+      <div class="visual-label">// 5-Fold Cross-Validation</div>
+      ${[1,2,3,4,5].map(fold=>`
+      <div class="fold-row">
+        <span class="fold-lbl">Fold ${fold}:</span>
+        ${[1,2,3,4,5].map(b=>`<div class="fold-block" style="background:${b===fold?'#fa6d9a33':'#7c6dfa22'};border:1px solid ${b===fold?'#fa6d9a':'#7c6dfa44'};color:${b===fold?'#fa6d9a':'#7c6dfa99'}">${b===fold?'VAL':'tr'}</div>`).join('')}
+      </div>`).join('')}
+      <div style="text-align:center;font-size:11px;color:#facc6d;margin-top:10px">Итог = mean(AUC₁…AUC₅) ± std</div>`;
+
+    case 'pipeline': return `
+      <div class="visual-label">// Pipeline = один объект, вся логика модели</div>
+      ${[{n:'Raw Data',c:'#6b6b8a'},{n:'Imputer — заполнить пропуски',c:'#7c6dfa'},{n:'StandardScaler — нормализация',c:'#fa6d9a'},{n:'OneHotEncoder — категории',c:'#6dfabc'},{n:'XGBoost / RF — модель',c:'#facc6d'},{n:'✓ Prediction',c:'#6dfabc'}].map((s,i,a)=>`
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div class="pipe-step" style="background:${s.c}14;border:1px solid ${s.c}55;color:${s.c}">${s.n}</div>
+        ${i<a.length-1?`<div class="pipe-connector" style="background:${a[i+1].c}55"></div>`:''}
+      </div>`).join('')}`;
+
+    case 'projects': return `
+      <div class="visual-label">// 10 проектов = твоё портфолио на GitHub</div>
+      <div class="proj-grid">
+        ${[{n:1,t:'Churn Prediction',d:'Телеком',c:'#7c6dfa'},{n:2,t:'House Prices',d:'Недвижимость',c:'#fa6d9a'},{n:3,t:'Fraud Detection',d:'Банк',c:'#6dfabc'},{n:4,t:'Segmentation',d:'Ритейл',c:'#facc6d'},{n:5,t:'Heart Disease',d:'Медицина',c:'#6db8fa'},{n:6,t:'Recommendations',d:'Контент',c:'#fa9b6d'},{n:7,t:'Sentiment NLP',d:'Маркетинг',c:'#c46dfa'},{n:8,t:'Sales Forecast',d:'Ритейл',c:'#fa6d6d'},{n:9,t:'Anomaly Detection',d:'Пром-сть',c:'#6dfae0'},{n:10,t:'A/B Test',d:'Продукт',c:'#fafa6d'}].map(p=>`
+        <div class="proj-card" style="background:${p.c}10;border:1px solid ${p.c}44">
+          <span class="proj-num" style="color:${p.c}">#${p.n}</span>
+          <div><div class="proj-name">${p.t}</div><div class="proj-dom">${p.d}</div></div>
+        </div>`).join('')}
+      </div>`;
+
+    case 'career': return `
+      <div class="visual-label">// Твой путь от нуля до первого оффера</div>
+      ${[{m:'1-3',l:'Математика + Python + SQL',c:'#7c6dfa',w:20},{m:'3-6',l:'EDA + Первые модели',c:'#fa6d9a',w:40},{m:'6-9',l:'Boosting + Кластеризация',c:'#6dfabc',w:65},{m:'9-12',l:'Pipeline + 3 проекта',c:'#facc6d',w:85},{m:'12+',l:'Собеседования → Оффер 🎯',c:'#6db8fa',w:100}].map(x=>`
+      <div class="prog-row">
+        <span class="prog-month">м${x.m}</span>
+        <div class="prog-track"><div class="prog-fill" style="width:${x.w}%;background:${x.c}"><span>${x.l}</span></div></div>
+      </div>`).join('')}`;
+
+    default: return '<div style="color:#4a4a6a;font-size:13px">Запусти код — matplotlib покажет графики в Jupyter.</div>';
+  }
+}
+
+function generateClusterPoints() {
+  let s = 42, pts = '';
+  const rng = () => { s=(s*9301+49297)%233280; return s/233280; };
+  for(let i=0;i<12;i++) pts += `<circle cx="${70+rng()*55}" cy="${80+rng()*55}" r="4.5" fill="#7c6dfa" opacity=".8"/>`;
+  for(let i=0;i<12;i++) pts += `<circle cx="${190+rng()*55}" cy="${65+rng()*55}" r="4.5" fill="#fa6d9a" opacity=".8"/>`;
+  for(let i=0;i<12;i++) pts += `<circle cx="${305+rng()*50}" cy="${90+rng()*50}" r="4.5" fill="#6dfabc" opacity=".8"/>`;
+  return pts;
+}
+
+// ══════════════════════════════════════════════
+// RENDER HELPERS
+// ══════════════════════════════════════════════
+function syntaxCode(code) {
+  return code.split('\n').map(line => {
+    const t = line.trim();
+    if (t.startsWith('#') || t.startsWith('--')) return `<div style="color:#4a5a4a">${esc(line)}</div>`;
+    if (/^(import |from |def |class |return |if |else:|elif |for |while |with |try:|except|async )/.test(t)) return `<div style="color:#9b8dfa">${esc(line)}</div>`;
+    return `<div>${esc(line)}</div>`;
+  }).join('');
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ══════════════════════════════════════════════
+// COMPLETE MODULE
+// ══════════════════════════════════════════════
+function completeModule() {
+  const mod = MODULES.find(m => m.id === state.activeModuleId);
+  if (!mod || state.completed.has(mod.id)) return;
+  state.completed.add(mod.id);
+  state.xp += mod.xp;
+
+  if (mod.id === 'math')    unlockAch('math_done');
+  if (mod.id === 'python')  unlockAch('python_done');
+  if (['linear','classification','boosting'].includes(mod.id)) unlockAch('first_model');
+  if (state.completed.size >= 5)          unlockAch('five_modules');
+  if (state.completed.size === MODULES.length) unlockAch('all_done');
+  if (mod.id === 'career')  unlockAch('career_done');
+
+  save();
+  render();
+}
+
+// ══════════════════════════════════════════════
+// OPEN MODULE
+// ══════════════════════════════════════════════
+function openModule(id) {
+  state.activeModuleId = id;
+  state.activeSectionIdx = 0;
+  state.activeTab = 'theory';
+  state.showSolution = false;
+
+  if (!state.achievements.has('first_module')) {
+    unlockAch('first_module');
+    save();
+  }
+
+  const content = document.getElementById('content');
+  if (content) content.scrollTop = 0;
+  render();
+}
+
+// ══════════════════════════════════════════════
+// SET TAB
+// ══════════════════════════════════════════════
+function setTab(tab) {
+  state.activeTab = tab;
+  state.showSolution = false;
+  renderContent();
+}
+
+function setSection(idx) {
+  state.activeSectionIdx = idx;
+  state.activeTab = 'theory';
+  state.showSolution = false;
+  renderContent();
+  document.getElementById('content').scrollTop = 0;
+}
+
+function toggleSolution() {
+  state.showSolution = !state.showSolution;
+  renderContent();
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATE
+// ══════════════════════════════════════════════
+function navModule(dir) {
+  const idx = MODULES.findIndex(m => m.id === state.activeModuleId);
+  const next = MODULES[idx + dir];
+  if (next) openModule(next.id);
+}
+
+// ══════════════════════════════════════════════
+// RENDER CONTENT
+// ══════════════════════════════════════════════
+function renderContent() {
+  const c = document.getElementById('content');
+  const mod = MODULES.find(m => m.id === state.activeModuleId);
+
+  if (!mod) {
+    c.innerHTML = `
+    <div class="fade">
+      <div style="font-size:10px;color:#7c6dfa;letter-spacing:3px;margin-bottom:14px">// СИСТЕМА ИНИЦИАЛИЗИРОВАНА</div>
+      <h1 style="font-size:clamp(22px,4vw,40px);font-weight:bold;line-height:1.15;margin-bottom:14px">Добро пожаловать,<br><span style="color:#7c6dfa">Чувак.</span></h1>
+      <p style="color:#6b6b8a;line-height:1.9;margin-bottom:28px;font-size:14px;max-width:560px">
+        Твой личный курс по Data Science. Только то, что реально нужно для Junior DS.<br>
+        11 модулей · 10 проектов · 1 карьерный блок.<br>
+        Теория + Код + Реальный кейс + Задание в каждом модуле.
+      </p>
+      <div id="home-grid">
+        ${[['🧮','Математика','Только минимум'],['🐍','Python','pandas — 80% работы'],['🤖','Классический ML','sklearn + XGBoost'],['💀','10 проектов','Реальные датасеты'],['🏙️','Карьера','Резюме + интервью'],['⚡','Игровая система','XP и достижения']].map(([ic,t,d])=>`
+        <div class="home-card"><div class="home-card-icon">${ic}</div><div class="home-card-title">${t}</div><div class="home-card-desc">${d}</div></div>`).join('')}
+      </div>
+      <button id="start-btn" onclick="openModule('math')">&gt; НАЧАТЬ ОБУЧЕНИЕ_</button>
+    </div>`;
+    return;
+  }
+
+  const sec = mod.sections[state.activeSectionIdx];
+  const modIdx = MODULES.findIndex(m => m.id === mod.id);
+  const tc = mod.color;
+  const tbg = mod.color + '18';
+
+  // tab content
+  let tabContent = '';
+  if (state.activeTab === 'theory') {
+    tabContent = `<div class="theory-box"><h3 style="color:${tc}">&gt; ${sec.title}</h3><div class="theory-text">${sec.theory}</div></div>`;
+  } else if (state.activeTab === 'code') {
+    const cid = 'code_' + mod.id + '_' + state.activeSectionIdx;
+    tabContent = `
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-label">// PYTHON — скопируй в Jupyter</span>
+          <button class="copy-btn" onclick="copyCode(this,'${cid}')">📋 copy</button>
+        </div>
+        <div class="code-pre" id="${cid}">${syntaxCode(sec.code)}</div>
+      </div>`;
+  } else if (state.activeTab === 'visual') {
+    tabContent = `<div class="visual-wrap">${buildVisual(sec.visual)}</div>`;
+  } else if (state.activeTab === 'case') {
+    tabContent = `<div class="case-box" style="background:#11111a;border:1px solid ${tc}44"><div class="case-label" style="color:${tc}">// РЕАЛЬНЫЙ КЕЙС ИЗ ИНДУСТРИИ</div><div class="case-text">${sec.realcase}</div></div>`;
+  } else if (state.activeTab === 'task') {
+    const sid = 'sol_' + mod.id + '_' + state.activeSectionIdx;
+    tabContent = `
+      <div class="task-box" style="background:#11111a;border:1px solid ${tc}55">
+        <div class="task-label" style="color:${tc}">// ЗАДАНИЕ ДЛЯ ТЕБЯ, ЧУВАК</div>
+        <div class="task-text">${sec.task}</div>
+      </div>
+      <button class="btn btn-green" onclick="toggleSolution()" style="margin-bottom:14px">
+        ${state.showSolution ? '▲ Скрыть решение' : '▼ Показать решение (сначала попробуй сам!)'}
+      </button>
+      ${state.showSolution ? `
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-label">// РЕШЕНИЕ</span>
+          <button class="copy-btn" onclick="copyCode(this,'${sid}')">📋 copy</button>
+        </div>
+        <div class="code-pre" id="${sid}">${syntaxCode(sec.solution)}</div>
+      </div>` : ''}`;
+  }
+
+  c.innerHTML = `
+  <div class="fade">
+    <div class="mod-header">
+      <div class="mod-h-left">
+        <div class="mod-code-big" style="color:${tc}">${mod.code} // ${mod.sections.length} секц.</div>
+        <h2>${mod.title}</h2>
+        <p>${mod.subtitle}</p>
+      </div>
+      <div>
+        ${state.completed.has(mod.id)
+          ? `<span class="btn btn-done">✅ ЗАВЕРШЕНО</span>`
+          : `<button class="btn" style="background:${tbg};color:${tc};border-color:${tc}50" onclick="completeModule()">✓ Завершить (+${mod.xp}XP)</button>`}
+      </div>
+    </div>
+
+    ${mod.sections.length > 1 ? `
+    <div class="sec-nav">
+      ${mod.sections.map((s,i)=>`<button class="snav-btn${state.activeSectionIdx===i?' on':''}" style="--tc:${tc};--tbg:${tbg}" onclick="setSection(${i})">${i+1}. ${s.title.length>26?s.title.slice(0,26)+'…':s.title}</button>`).join('')}
+    </div>` : ''}
+
+    <div class="tabs">
+      ${[['theory','📖 Теория'],['code','💻 Код'],['visual','📊 Визуал'],['case','🏢 Кейс'],['task','🎯 Задание']].map(([id,lbl])=>`
+      <button class="tab-btn${state.activeTab===id?' on':''}" style="--tc:${tc};--tbg:${tbg}" onclick="setTab('${id}')">${lbl}</button>`).join('')}
+    </div>
+
+    <div class="fade">${tabContent}</div>
+
+    <div class="nav-bottom">
+      ${modIdx > 0 ? `<button class="btn btn-muted" onclick="navModule(-1)">← Назад</button>` : ''}
+      ${modIdx < MODULES.length-1 ? `<button class="btn" style="background:${tbg};color:${tc};border-color:${tc}50" onclick="navModule(1)">Следующий →</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// FULL RENDER
+// ══════════════════════════════════════════════
+function render() {
+  updateHeader();
+  buildSidebar();
+  renderContent();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+render();
+
+// ══════════════════════════════════════════════
+// THEME ENGINE
+// ══════════════════════════════════════════════
+const THEMES = ['cyber','matrix','redteam','deepsea','ghost','retro'];
+let currentTheme = localStorage.getItem('ds_theme') || 'cyber';
+
+function setTheme(t) {
+  THEMES.forEach(th => document.body.classList.remove('th-' + th));
+  if (t !== 'cyber') document.body.classList.add('th-' + t);
+  currentTheme = t;
+  localStorage.setItem('ds_theme', t);
+  document.querySelectorAll('.tdot').forEach(d => d.classList.toggle('on', d.dataset.t === t));
+  if (t === 'matrix') startMatrix(); else stopMatrix();
+}
+
+// Matrix rain
+let matrixInterval = null;
+function startMatrix() {
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const cols = Math.floor(canvas.width / 16);
+  const drops = Array(cols).fill(1);
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  matrixInterval = setInterval(() => {
+    ctx.fillStyle = 'rgba(0,8,0,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff41';
+    ctx.font = '14px monospace';
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 16, y * 16);
+      if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }, 45);
+}
+function stopMatrix() {
+  if (matrixInterval) { clearInterval(matrixInterval); matrixInterval = null; }
+  const canvas = document.getElementById('matrix-canvas');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// ══════════════════════════════════════════════
+// SQL MODULE CONTENT (injected after load)
+// ══════════════════════════════════════════════
+(function() {
+  const sqlMod = MODULES.find(m => m.id === 'sql');
+  if (!sqlMod) return;
+  const sec = sqlMod.sections[0];
+
+  sec.theory = `Чувак, DS не пишет SQL отдельно. Он запускает SQL прямо из Python — результат сразу в DataFrame.
+
+<b>Три способа работы с SQL в Python:</b>
+1. pandas.read_sql() — самый простой. Запрос → DataFrame.
+2. SQLite в памяти — база прямо в Python, ничего не устанавливать.
+3. sqlalchemy + psycopg2 — для production PostgreSQL/MySQL.
+
+<b>Топ-5 SQL конструкций для DS:</b>
+SELECT / FROM / WHERE — базовая выборка
+GROUP BY + HAVING — агрегация с фильтром
+JOIN (LEFT, INNER) — объединение таблиц
+Window Functions — RANK, ROW_NUMBER, LAG
+CTE (WITH ...) — читаемые сложные запросы
+
+<b>Без SQL Junior DS не нанимают. Это не опционально.</b>
+На собеседовании дают 2–3 задачи именно на SQL.`;
+
+  sec.code = `import pandas as pd
+import sqlite3
+
+# Создаём базу прямо в Python (в памяти — ничего не устанавливать)
+conn = sqlite3.connect(':memory:')
+
+conn.execute("CREATE TABLE users (user_id INT, name TEXT, city TEXT)")
+conn.execute("CREATE TABLE orders (order_id INT, user_id INT, amount REAL, order_date TEXT)")
+conn.executemany("INSERT INTO users VALUES (?,?,?)", [
+    (1,'Иван','Москва'),(2,'Мария','СПб'),
+    (3,'Алексей','Москва'),(4,'Елена','Казань')
+])
+conn.executemany("INSERT INTO orders VALUES (?,?,?,?)", [
+    (1,1,1500,'2024-01-15'),(2,1,500,'2024-01-20'),
+    (3,2,2000,'2024-01-18'),(4,3,800,'2024-02-01'),
+    (5,3,3000,'2024-02-10'),(6,4,1200,'2024-02-05')
+])
+conn.commit()
+
+# Запрос 1: GROUP BY + LEFT JOIN
+q1 = """
+    SELECT u.city,
+           COUNT(o.order_id)       AS orders_count,
+           ROUND(SUM(o.amount),0)  AS total_revenue,
+           ROUND(AVG(o.amount),0)  AS avg_order
+    FROM users u
+    LEFT JOIN orders o ON u.user_id = o.user_id
+    GROUP BY u.city
+    ORDER BY total_revenue DESC
+"""
+print("=== Выручка по городам ===")
+print(pd.read_sql(q1, conn))
+
+# Запрос 2: CTE + Window Function RANK
+q2 = """
+    WITH totals AS (
+        SELECT u.name, u.city, SUM(o.amount) AS total
+        FROM users u
+        JOIN orders o ON u.user_id = o.user_id
+        GROUP BY u.user_id
+    )
+    SELECT name, city, total,
+           RANK() OVER (ORDER BY total DESC) AS rank
+    FROM totals
+"""
+print("\\n=== Топ клиенты (CTE + RANK) ===")
+print(pd.read_sql(q2, conn))
+
+# Запрос 3: LAG — сравнение с предыдущим заказом
+q3 = """
+    SELECT user_id, amount, order_date,
+           LAG(amount) OVER (PARTITION BY user_id ORDER BY order_date) AS prev_order,
+           amount - LAG(amount) OVER (PARTITION BY user_id ORDER BY order_date) AS delta
+    FROM orders
+"""
+print("\\n=== Динамика заказов (LAG) ===")
+print(pd.read_sql(q3, conn))`;
+
+  sec.realcase = `В Яндексе, Avito, Ozon каждый DS начинает задачу с SQL-запроса к prod-базе. Выгружает нужные данные в DataFrame, потом строит модель.
+
+Типичный рабочий день аналитика:
+→ утром: SQL-запрос, чтобы выгрузить когорту пользователей
+→ днём: pandas EDA, построение фичей
+→ вечером: модель обучена, результат записан обратно в БД
+
+Без SQL — нет данных. Без данных — нет модели.`;
+
+  sec.task = `Создай SQLite базу с users и orders (как в примере).
+1) Найди пользователей со средним чеком > 1000
+2) Найди последний заказ каждого пользователя (MAX по дате)
+3) CTE: сумма заказов по user_id → выбери топ-3
+4) Переведи в DataFrame, добавь колонку VIP = 'YES' если total > 2000`;
+
+  sec.solution = `import pandas as pd, sqlite3
+
+conn = sqlite3.connect(':memory:')
+conn.execute("CREATE TABLE users (user_id INT, name TEXT, city TEXT)")
+conn.execute("CREATE TABLE orders (order_id INT, user_id INT, amount REAL, order_date TEXT)")
+conn.executemany("INSERT INTO users VALUES (?,?,?)",
+    [(1,'Иван','Москва'),(2,'Мария','СПб'),(3,'Алексей','Москва'),(4,'Елена','Казань')])
+conn.executemany("INSERT INTO orders VALUES (?,?,?,?)",
+    [(1,1,1500,'2024-01-15'),(2,1,500,'2024-01-20'),(3,2,2000,'2024-01-18'),
+     (4,3,800,'2024-02-01'),(5,3,3000,'2024-02-10'),(6,4,1200,'2024-02-05')])
+conn.commit()
+
+# 1. Средний чек > 1000
+df = pd.read_sql("SELECT user_id, ROUND(AVG(amount),0) avg_check FROM orders GROUP BY user_id HAVING avg_check > 1000", conn)
+print("Ср.чек > 1000:\\n", df.to_string(index=False))
+
+# 2. Последний заказ
+df2 = pd.read_sql("SELECT user_id, MAX(order_date) last_order FROM orders GROUP BY user_id", conn)
+print("\\nПоследние заказы:\\n", df2.to_string(index=False))
+
+# 3. CTE + топ-3
+q = """
+WITH t AS (
+    SELECT u.name, SUM(o.amount) AS total
+    FROM users u JOIN orders o ON u.user_id=o.user_id
+    GROUP BY u.user_id
+)
+SELECT * FROM t ORDER BY total DESC LIMIT 3
+"""
+df3 = pd.read_sql(q, conn)
+df3['VIP'] = df3['total'].apply(lambda x: 'YES' if x > 2000 else 'no')
+print("\\nТоп-3 + VIP flag:\\n", df3.to_string(index=False))`;
+})();
+
+// ══════════════════════════════════════════════
+// SQL VISUAL BUILDER (added to buildVisual)
+// ══════════════════════════════════════════════
+const _origBuildVisual = buildVisual;
+function buildVisual(name) {
+  if (name === 'sql') {
+    return `
+      <div class="visual-label">// SQL: таблицы объединяются через JOIN</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <div style="font-size:9px;color:var(--acc);margin-bottom:5px;font-family:monospace">TABLE: users</div>
+          <table class="sql-table">
+            <thead><tr><th>user_id</th><th>name</th><th>city</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Иван</td><td>Москва</td></tr>
+              <tr><td>2</td><td>Мария</td><td>СПб</td></tr>
+              <tr><td>3</td><td>Алексей</td><td>Москва</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--b1);margin-bottom:5px;font-family:monospace">TABLE: orders</div>
+          <table class="sql-table">
+            <thead><tr><th>user_id</th><th>amount</th><th>date</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1500</td><td>2024-01-15</td></tr>
+              <tr><td>1</td><td>500</td><td>2024-01-20</td></tr>
+              <tr><td>2</td><td>2000</td><td>2024-01-18</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--fg3);margin-bottom:8px;font-family:monospace">// GROUP BY + SUM → результат JOIN:</div>
+      <table class="sql-table">
+        <thead><tr><th>city</th><th>orders</th><th>total ₽</th><th>avg ₽</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sql-badge">Москва</span></td><td>3</td><td style="color:var(--b1);font-weight:bold">4800</td><td>1600</td></tr>
+          <tr><td><span class="sql-badge">СПб</span></td><td>1</td><td style="color:var(--b1)">2000</td><td>2000</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;font-size:11px;color:var(--fg3);font-family:monospace">
+        <span style="color:var(--acc)">SELECT</span> u.city, COUNT(*), SUM(o.amount)
+        <span style="color:var(--acc)">FROM</span> users u
+        <span style="color:var(--acc)">JOIN</span> orders o <span style="color:var(--acc)">ON</span> u.user_id = o.user_id
+        <span style="color:var(--acc)">GROUP BY</span> u.city
+      </div>`;
+  }
+  return _origBuildVisual(name);
+}
+
+// ══════════════════════════════════════════════
+// PATCH: update completeModule for SQL achievement
+// ══════════════════════════════════════════════
+const _origComplete = completeModule;
+completeModule = function() {
+  _origComplete();
+};
+
+// ══════════════════════════════════════════════
+// PATCH: mod-count shows 12 now
+// ══════════════════════════════════════════════
+const _origUpdateHeader = updateHeader;
+updateHeader = function() {
+  _origUpdateHeader();
+  document.getElementById('mod-count').textContent = state.completed.size + '/12 модулей';
+};
+
+// ══════════════════════════════════════════════
+// INIT WITH THEME
+// ══════════════════════════════════════════════
+setTheme(currentTheme);
+render();
+</script></body></html>
