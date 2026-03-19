@@ -649,9 +649,10 @@ body.th-ghost .snav-btn.on{
 
 /* Стрик и квест в шапке */
 .streak-badge{
-  background:linear-gradient(135deg,#ff4422,#ff8800) !important;
-  color:#fff !important;border-color:#ff6600 !important;
-  font-weight:bold;box-shadow:0 0 10px #ff660066 !important;
+  background:transparent !important;
+  color:#ff8800 !important;
+  border-color:#ff880044 !important;
+  font-weight:bold;
 }
 .quest-badge{
   background:var(--b1bg) !important;color:var(--b1) !important;
@@ -811,6 +812,21 @@ body.sea-summer   { --acc:#aaff00;--bg:#001200;--bg2:#001a00;--bg3:#002200;
   --b1:#aaff00;--b1bg:#aaff0020;--b1b:#aaff0040;--b2:#ffff00;--b2bg:#ffff0020;--b2b:#ffff0040; }
 body.sea-winter   { --acc:#00ccff;--bg:#000d1a;--bg2:#001530;--bg3:#002040;
   --b1:#00ccff;--b1bg:#00ccff20;--b1b:#00ccff40;--b2:#0088ff;--b2bg:#0088ff20;--b2b:#0088ff40; }
+body.sea-patrick  { --acc:#00cc44;--bg:#001a08;--bg2:#002a0e;--bg3:#003814;--bg4:#004a1c;
+  --b1:#00cc44;--b1bg:#00cc4420;--b1b:#00cc4440;--b2:#ffcc00;--b2bg:#ffcc0020;--b2b:#ffcc0040;
+  --fg:#d4ffd4;--fg2:#aaffaa;--fg3:#88cc88;--fg4:#447744;--fg5:#224422;--brd:#00cc4430; }
+body.sea-whiskey  { --acc:#d4860a;--bg:#0f0800;--bg2:#1a0e00;--bg3:#241500;--bg4:#301c00;
+  --b1:#d4860a;--b1bg:#d4860a20;--b1b:#d4860a40;--b2:#c8a96e;--b2bg:#c8a96e20;--b2b:#c8a96e40;
+  --fg:#ffe8c0;--fg2:#f5d49a;--fg3:#c8a96e;--fg4:#7a5c2e;--fg5:#3d2e17;--brd:#d4860a30; }
+body.sea-newyear  { --acc:#ffd700;--bg:#020018;--bg2:#050030;--bg3:#080048;--bg4:#0c0060;
+  --b1:#ffd700;--b1bg:#ffd70020;--b1b:#ffd70040;--b2:#ff4488;--b2bg:#ff448820;--b2b:#ff448840;
+  --fg:#fffde0;--fg2:#fff5a0;--fg3:#d4b800;--fg4:#7a6600;--fg5:#3d3300;--brd:#ffd70030; }
+body.sea-progday  { --acc:#00ff88;--bg:#001408;--bg2:#002010;--bg3:#002e18;--bg4:#003c20;
+  --b1:#00ff88;--b1bg:#00ff8820;--b1b:#00ff8840;--b2:#0088ff;--b2bg:#0088ff20;--b2b:#0088ff40;
+  --fg:#d0ffe8;--fg2:#a0ffcc;--fg3:#00cc66;--fg4:#007744;--fg5:#003322;--brd:#00ff8830; }
+body.sea-birthday { --acc:#ff44cc;--bg:#150010;--bg2:#220018;--bg3:#300022;--bg4:#40002e;
+  --b1:#ff44cc;--b1bg:#ff44cc20;--b1b:#ff44cc40;--b2:#ffcc00;--b2bg:#ffcc0020;--b2b:#ffcc0040;
+  --fg:#ffe8ff;--fg2:#ffbbff;--fg3:#cc44aa;--fg4:#882266;--fg5:#440033;--brd:#ff44cc30; }
 
 /* Новые темы */
 
@@ -972,6 +988,14 @@ body.th-ghost .glos-term { color: var(--fg) !important; }
     <div class="h-right">
       <span class="hbadge boost-badge" id="boost-indicator" style="display:none">⚡×2</span>
       <span class="hbadge streak-badge" id="streak-badge" title="Дней подряд" style="display:none">🔥 <span id="streak-count">0</span></span>
+      <div id="audio-controls" style="display:flex;align-items:center;gap:6px">
+        <button id="sfx-btn" onclick="toggleSFX()" title="Все звуки вкл/выкл" style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px 3px;opacity:1;line-height:1">🔊</button>
+        <button id="music-btn" onclick="toggleMusic()" title="Музыка ВЫКЛ (нажми чтобы вкл)" style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px 3px;opacity:0.4;line-height:1">🎵</button>
+        <input id="vol-slider" type="range" min="0" max="100" value="40"
+          oninput="setVolume(this.value)"
+          title="Громкость SFX"
+          style="width:60px;height:3px;accent-color:var(--acc);cursor:pointer;opacity:0.7">
+      </div>
       <span class="hbadge" id="mod-count">0 / 10</span>
       <span class="hbadge2" id="ach-count">0 🏆</span>
       <div id="player-card" onclick="openShop()" title="Магазин — сменить аватар и титул">
@@ -6482,7 +6506,6 @@ function showAchievement(ach) {
 }
 
 function unlockAch(id) {
-  playSound('unlock');
   if (state.achievements.has(id)) return;
   const a = ACHIEVEMENTS.find(x => x.id === id);
   if (!a) return;
@@ -6492,6 +6515,7 @@ function unlockAch(id) {
   save();
   updateHeader();
   showAchievement(a);
+  playSound('achieve');
 }
 
 // ══════════════════════════════════════════════
@@ -6505,6 +6529,12 @@ function updateHeader() {
   const xpText  = document.getElementById('xp-text');
   const xpTotal = document.getElementById('xp-total');
   const xpFill  = document.getElementById('xp-fill');
+  // Level-up detection
+  const prevLvl = parseInt(localStorage.getItem('ds_last_lvl') || '1');
+  if (lvl.lvl > prevLvl) {
+    localStorage.setItem('ds_last_lvl', lvl.lvl);
+    setTimeout(function(){ playSound('level_up'); }, 200);
+  }
   if (xpText)  xpText.textContent  = 'LVL ' + lvl.lvl + ' — ' + lvl.title;
   if (xpTotal) xpTotal.textContent = state.earnedXp + ' XP';
   if (xpFill) {
@@ -6517,6 +6547,7 @@ function updateHeader() {
   document.getElementById('ach-count').textContent = state.achievements.size + ' достижений';
   if (state.earnedXp >= 500)  unlockAch('xp_500');
   if (state.earnedXp >= 1000) unlockAch('xp_1000');
+  _updateAudioButtons();
 }
 function renderQuestSidebar() {
   var el = document.getElementById('quest-sidebar');
@@ -6570,10 +6601,11 @@ function buildSidebar() {
     const locked = isModuleLocked(mod);
     const div = document.createElement('div');
     div.className = 'mod-card' + (active ? ' active' : '') + (locked ? ' locked' : '');
+    div.dataset.modid = mod.id;
     div.style.setProperty('--mc', locked ? '#ffffff08' : mod.color + '12');
     div.style.setProperty('--mb', locked ? '#444' : mod.color);
     div.innerHTML = `
-      <span class="mod-icon">${locked ? '🔒' : mod.icon}</span>
+      <span class="mod-icon" ${locked ? 'data-locked="1"' : ''}>${locked ? '🔒' : mod.icon}</span>
       <div class="mod-info">
         <div class="mod-code" style="color:${locked ? 'var(--fg5)' : mod.color}">${mod.code}</div>
         <div class="mod-title" style="color:${locked ? 'var(--fg5)' : active ? mod.color : '#c8c8d8'}">${mod.title}</div>
@@ -6982,7 +7014,7 @@ function completeModule() {
 // ══════════════════════════════════════════════
 function openModule(id) {
   triggerQuest('open_module');
-  playSound('click');
+  playSound('module');
   state.activeModuleId = id;
   state.activeSectionIdx = 0;
   state.activeTab = 'theory';
@@ -7005,6 +7037,7 @@ function setTab(tab) {
   state.activeTab = tab;
   state.showSolution = false;
   renderContent();
+  playSound('tab');
   if (tab === 'theory') triggerQuest('read_theory');
   if (tab === 'code')   triggerQuest('view_code');
 }
@@ -7015,6 +7048,7 @@ function setSection(idx) {
   state.showSolution = false;
   renderContent();
   document.getElementById('content').scrollTop = 0;
+  playSound('tab');
 }
 
 function toggleSolution() {
@@ -7142,7 +7176,7 @@ function quizAnswer(optIdx) {
   if (activeQuiz.answers[ci] !== null) return;
   activeQuiz.answers[ci] = optIdx;
   var correct = optIdx === activeQuiz.questions[ci].ans;
-  if (correct) playSound('coin');
+  playSound(correct ? 'quiz_ok' : 'quiz_fail');
   renderQuizModal();
 }
 
@@ -7345,11 +7379,11 @@ function renderContent() {
   } else if (state.activeTab === 'visual') {
     tabContent = `<div class="visual-wrap">${buildVisual(sec.visual)}</div>`;
   } else if (state.activeTab === 'case') {
-    tabContent = `<div class="case-box" style="background:#11111a;border:1px solid ${tc}44"><div class="case-label" style="color:${tc}">// РЕАЛЬНЫЙ КЕЙС ИЗ ИНДУСТРИИ</div><div class="case-text">${sec.realcase}</div></div>`;
+    tabContent = `<div class="case-box" style="background:var(--bg3);border:1px solid ${tc}44"><div class="case-label" style="color:${tc}">// РЕАЛЬНЫЙ КЕЙС ИЗ ИНДУСТРИИ</div><div class="case-text">${sec.realcase}</div></div>`;
   } else if (state.activeTab === 'task') {
     const sid = 'sol_' + mod.id + '_' + state.activeSectionIdx;
     tabContent = `
-      <div class="task-box" style="background:#11111a;border:1px solid ${tc}55">
+      <div class="task-box" style="background:var(--bg3);border:1px solid ${tc}55">
         <div class="task-label" style="color:${tc}">// ЗАДАНИЕ ДЛЯ ТЕБЯ, ЧУВАК</div>
         <div class="task-text">${sec.task}</div>
       </div>
@@ -7498,13 +7532,14 @@ const CHEATSHEET = [
 ];
 
 function cheatFilter(cat) {
+  playSound('click');
   state.cheatCat = cat;
   renderContent();
 }
 
 function openCheatsheet() {
+  playSound('nav');
   triggerQuest('check_cheat');
-  unlockAch('cheat_open');
   unlockAch('cheat_open');
   state.activeModuleId = 'cheatsheet';
   render();
@@ -7830,22 +7865,48 @@ const SHOP_ITEMS = [
     desc:'Рука. Всё под контролем.', cursor:'grab' },
 
   // ── ЗВУКИ ────────────────────────────────────────────────────
-  { id:'sfx_click',    cat:'sound',  name:'Keyboard Click',  icon:'⌨️', price:120,
-    desc:'Механическая клавиатура при каждом клике.',
-    sfx:'click' },
-  { id:'sfx_complete', cat:'sound',  name:'Level Up Chime',  icon:'🎵', price:180,
-    desc:'8-bit мелодия при завершении модуля.',
-    sfx:'complete' },
-  { id:'sfx_unlock',   cat:'sound',  name:'Unlock Sound',    icon:'🔓', price:150,
-    desc:'Звук открытия при разблокировке модуля.',
-    sfx:'unlock' },
-  { id:'sfx_coin',     cat:'sound',  name:'Coin Drop',       icon:'🪙', price:200,
-    desc:'Монета при получении XP. Ретро-аркада.',
-    sfx:'coin' },
-  { id:'sfx_error',    cat:'sound',  name:'Error Buzz',      icon:'📢', price:100,
-    desc:'Резкий звук при попытке открыть заблокированное.',
-    sfx:'error' },
-
+  { id:'sfx_cyber',      cat:'sfx'  , name:'Cyber SFX',         icon:'⚡', price:0,
+    desc:'Дефолтный пак: чистые синтетические звуки.',
+    sfxPack:'cyber' },
+  { id:'sfx_retro',      cat:'sfx'  , name:'Retro 8-bit',       icon:'👾', price:200,
+    desc:'Все звуки в стиле 8-bit: квадратные волны, NES-эстетика.',
+    sfxPack:'retro' },
+  { id:'sfx_mech',       cat:'sfx'  , name:'Mech Keyboard',     icon:'⌨️', price:350,
+    desc:'Звуки механической клавиатуры: щелчки и шум.',
+    sfxPack:'mech' },
+  { id:'sfx_spectrum',   cat:'sfx'  , name:'ZX Spectrum',       icon:'🎮', price:300,
+    desc:'AY-3-8912 чип. Загрузочные трели и пищалки как на ZX Spectrum.',
+    sfxPack:'spectrum' },
+  { id:'mus_cyber',       cat:'music', name:'🎵 Cyber Ambient',  icon:'🌐', price:0,
+    desc:'Дефолтная тема: процедурный техно-эмбиент. Daft Punk × Blade Runner.',
+    musicTheme:'cyber' },
+  { id:'mus_mario',       cat:'music', name:'🎵 Super Mario',    icon:'🍄', price:400,
+    desc:'Главная мелодия уровня 1-1. Квадратные волны, MIDI-бас.',
+    musicTheme:'mario' },
+  { id:'mus_xfiles',      cat:'music', name:'🎵 X-Files Theme',  icon:'🛸', price:450,
+    desc:'Жуткий хроматический мотив Марка Сноу. Дрон-бас, расстроенные синусы.',
+    musicTheme:'xfiles' },
+  { id:'mus_interstellar',cat:'music', name:'🎵 Interstellar',   icon:'🪐', price:500,
+    desc:'Hans Zimmer: органные пэды, тиканье часов, нарастающий суббас.',
+    musicTheme:'interstellar' },
+  { id:'mus_matrix',      cat:'music', name:'🎵 Matrix OST',     icon:'💊', price:500,
+    desc:'Clubbed to Death feel. Жёсткий индастриал-техно, driving bass.',
+    musicTheme:'matrix_ost' },
+  { id:'mus_twinpeaks',   cat:'music', name:'🎵 Twin Peaks',     icon:'🦉', price:450,
+    desc:'Badalamenti: джазовый бас, тёплый лид, сновидческие пэды.',
+    musicTheme:'twinpeaks' },
+  { id:'mus_dialup',      cat:'music', name:'🎵 Dial-Up Modem',  icon:'📞', price:350,
+    desc:'56k handshake: несущие тоны, частотные чирпы, шум данных.',
+    musicTheme:'dialup' },
+  { id:'mus_cyberpunk',   cat:'music', name:'🎵 Cyberpunk 2077', icon:'🔫', price:600,
+    desc:'Night City ambient: грязный бас, industrial kick, редкая мелодия.',
+    musicTheme:'cyberpunk' },
+  { id:'mus_spectrum',    cat:'music', name:'🎵 ZX Spectrum Load',icon:'📼', price:200,
+    desc:'Загрузка программы с кассеты. Pilot tone → data. Тот самый звук 1982 года.',
+    musicTheme:'spectrum_load' },
+  { id:'mus_irish',       cat:'music', name:'🎵 Irish Folk',       icon:'🍀', price:300,
+    desc:'Весёлый ирландский фолк: флейта, скрипка, бодрый джиг. Tangled-up в Data Science.',
+    musicTheme:'irish' },
   // ── БУСТ XP ──────────────────────────────────────────────────
   { id:'boost_x2_1h',  cat:'boost',  name:'×2 XP · 1 час',  icon:'⚡', price:200,
     desc:'Двойной опыт за все действия в течение 1 часа.',
@@ -7882,21 +7943,36 @@ const SHOP_ITEMS = [
     desc:'Тебя не видят. Ты везде.',           titleText:'[GHOST]',     titleColor:'#aaaaaa' },
 
   // ── СЕЗОННЫЕ ─────────────────────────────────────────────────
-  { id:'sea_halloween', cat:'season', name:'🎃 Halloween',   icon:'🎃', price:0, lvlReq:1,
+  { id:'sea_halloween',      cat:'season' , name:'🎃 Halloween',   icon:'🎃', price:0, lvlReq:1,
     desc:'Тыквенная тема. Доступна навсегда.', special:'halloween',
     preview:'linear-gradient(135deg,#1a0800,#ff6600)' },
-  { id:'sea_cyber_ny',  cat:'season', name:'🎆 Cyber NY',    icon:'🎆', price:300, lvlReq:3,
+  { id:'sea_cyber_ny',      cat:'season' , name:'🎆 Cyber NY',    icon:'🎆', price:300, lvlReq:3,
     desc:'Новогодняя киберпанк-тема с конфетти.',  special:'cyber_ny',
     preview:'linear-gradient(135deg,#000820,#4422ff)' },
-  { id:'sea_spring',    cat:'season', name:'🌸 Data Spring', icon:'🌸', price:250, lvlReq:2,
+  { id:'sea_spring',      cat:'season' , name:'🌸 Data Spring', icon:'🌸', price:250, lvlReq:2,
     desc:'Нежная весенняя палитра. Перемены.',  special:'spring',
     preview:'linear-gradient(135deg,#0d0015,#ff88cc)' },
-  { id:'sea_summer',    cat:'season', name:'☀️ Neon Summer', icon:'☀️', price:250, lvlReq:2,
+  { id:'sea_summer',      cat:'season' , name:'☀️ Neon Summer', icon:'☀️', price:250, lvlReq:2,
     desc:'Ярко и жарко. Лето 2084.',            special:'summer',
     preview:'linear-gradient(135deg,#001a00,#aaff00)' },
-  { id:'sea_winter',    cat:'season', name:'❄️ Cryo DS',     icon:'❄️', price:280, lvlReq:3,
+  { id:'sea_winter',      cat:'season' , name:'❄️ Cryo DS',     icon:'❄️', price:280, lvlReq:3,
     desc:'Ледяной синий. Холодная голова — чистые данные.',  special:'winter',
     preview:'linear-gradient(135deg,#000d1a,#00ccff)' },
+  { id:'sea_patrick',      cat:'season' , name:'🍀 St. Patrick',   icon:'🍀', price:300, lvlReq:1,
+    desc:'Зелёный праздник: ирландские цвета, кельтская атмосфера.',  special:'patrick',
+    preview:'linear-gradient(135deg,#001a08,#00cc44)' },
+  { id:'sea_whiskey',      cat:'season' , name:'🥃 Whiskey Night',  icon:'🥃', price:350, lvlReq:2,
+    desc:'Тёмно-янтарная тема. Виски, дым, благородство.',  special:'whiskey',
+    preview:'linear-gradient(135deg,#0f0800,#d4860a)' },
+  { id:'sea_newyear',      cat:'season' , name:'🎆 New Year',       icon:'🎆', price:280, lvlReq:1,
+    desc:'Полночь, фейерверк, золото и звёзды.',  special:'newyear',
+    preview:'linear-gradient(135deg,#020018,#ffd700)' },
+  { id:'sea_progday',      cat:'season' , name:'💻 Day of Coder',   icon:'💻', price:256, lvlReq:1,
+    desc:'256-й день года. Зелёный терминал, код вместо поздравлений.',  special:'progday',
+    preview:'linear-gradient(135deg,#001408,#00ff88)' },
+  { id:'sea_birthday',      cat:'season' , name:'🎂 Happy Birthday', icon:'🎂', price:0, lvlReq:1,
+    desc:'С днём рождения! Конфетти, торт, праздник.',  special:'birthday',
+    preview:'linear-gradient(135deg,#150010,#ff44cc)' },
 
   // ── ЕЩЁ АВАТАРЫ ─────────────────────────────────────────────
   { id:'av_cat',       cat:'avatar', name:'Data Cat',        icon:'🐱', price:100,
@@ -7958,18 +8034,608 @@ const SHOP_ITEMS = [
 const SHOP_CATS = [
   { id:'all',       label:'Все' },
   { id:'theme',     label:'🎨 Темы' },
-  { id:'season',    label:'🎃 Сезон' },
+  { id:'season',    label:'🎃 Сезон ✨' },
   { id:'bg_anim',   label:'🌧 Фон' },
   { id:'card_anim', label:'💓 Карточки' },
   { id:'xp_skin',   label:'⚡ XP-бар' },
   { id:'font',      label:'🔤 Шрифты' },
   { id:'cursor',    label:'🖱 Курсор' },
-  { id:'sound',     label:'🔊 Звуки' },
+  { id:'sfx',       label:'🔊 SFX-паки' },
+  { id:'music',     label:'🎵 Музыка' },
   { id:'boost',     label:'🚀 Буст XP' },
   { id:'title',     label:'🏷 Титулы' },
   { id:'avatar',    label:'👤 Аватар' },
 ];
 
+
+function renderShopAudioPanel() {
+  var sfxLabel   = _sfxOn   ? '🔊 SFX: ВКЛ'      : '🔇 SFX: ВЫКЛ';
+  var musLabel   = _musicOn ? '🎵 Музыка: ВКЛ'   : '🎵 Музыка: ВЫКЛ';
+  var sfxColor   = _sfxOn   ? 'var(--acc)'        : 'var(--fg4)';
+  var musColor   = _musicOn ? 'var(--acc)'        : 'var(--fg4)';
+  var packNames  = { cyber:'Cyber', retro:'8-bit', mech:'Mech',
+                     mario:'Mario', xfiles:'X-Files', interstellar:'Interstellar',
+                     matrix_ost:'Matrix', twinpeaks:'Twin Peaks',
+                     dialup:'Dial-Up', cyberpunk:'CP2077', spectrum:'ZX Spectrum' };
+  var packName   = packNames[_sfxPack] || _sfxPack;
+  var musicNames = { cyber:'Cyber Ambient', mario:'Super Mario',
+                     xfiles:'X-Files Theme', interstellar:'Interstellar',
+                     matrix_ost:'Matrix OST', twinpeaks:'Twin Peaks',
+                     dialup:'Dial-Up Modem', cyberpunk:'CP2077 Ambient',
+                     spectrum_load:'ZX Spectrum Load',
+                     irish:'Irish Folk' };
+  var musName    = musicNames[_musicTheme] || _musicTheme || 'Cyber Ambient';
+
+  return '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px">'
+    + '<span style="font-size:11px;color:var(--acc);letter-spacing:1px;margin-right:4px">// ЗВУК</span>'
+    + '<button onclick="toggleSFX();renderContent();" style="background:var(--bg4);border:1px solid '+ sfxColor +';border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;color:'+ sfxColor +'">'+ sfxLabel +'</button>'
+    + '<button onclick="toggleMusic();renderContent();" style="background:var(--bg4);border:1px solid '+ musColor +';border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;color:'+ musColor +'">'+ musLabel +'</button>'
+    + '<span style="font-size:11px;color:var(--fg4)">SFX-пак: <b style="color:var(--fg)">'+ packName +'</b></span>'
+    + '<span style="font-size:11px;color:var(--fg4)">Музыка: <b style="color:var(--fg)">'+ musName +'</b></span>'
+    + '</div>';
+}
+
+// Music theme selector — separate from SFX pack
+var _musicTheme = localStorage.getItem('ds_music_theme') || 'cyber';
+
+function setMusicTheme(theme) {
+  _musicTheme = theme;
+  localStorage.setItem('ds_music_theme', theme);
+  if (_musicOn) {
+    stopMusic();
+    setTimeout(function(){ startMusic(); }, 50);
+  }
+  renderContent();
+}
+
+function startMusic() {
+  if (_musicStarted || !_musicOn) return;
+  var ac = _getAC();
+  _nextBeat = ac.currentTime + 0.1;
+  _beatIdx  = 0;
+  _musicStarted = true;
+  _masterGain = ac.createGain();
+  _masterGain.gain.value = _musVol;
+  _masterGain.connect(ac.destination);
+  _schedTimer = setInterval(_scheduleMusic, _schedInt);
+}
+
+function stopMusic() {
+  if (_schedTimer) { clearInterval(_schedTimer); _schedTimer = null; }
+  if (_masterGain) {
+    try { _masterGain.gain.setValueAtTime(0, _getAC().currentTime); _masterGain.disconnect(); } catch(e){}
+    _masterGain = null;
+  }
+  _musicStarted = false;
+}
+
+function _getMusicFn(theme) {
+  var fns = {
+    cyber:         _scheduleCyber,
+    mario:         _scheduleMario,
+    xfiles:        _scheduleXFiles,
+    interstellar:  _scheduleInterstellar,
+    matrix_ost:    _scheduleMatrixOST,
+    twinpeaks:     _scheduleTwinPeaks,
+    dialup:        _scheduleDialUp,
+    cyberpunk:     _scheduleCyberpunk,
+    spectrum_load: _scheduleSpectrumLoad,
+    irish:         _scheduleIrish,
+  };
+  return fns[theme] || _scheduleCyber;
+}
+
+// ── BPM per theme ───────────────────────────
+var _themeBPM = {
+  cyber: 120, mario: 200, xfiles: 130,
+  interstellar: 72, matrix_ost: 145,
+  twinpeaks: 84, dialup: 180, cyberpunk: 128,
+  spectrum_load: 240, irish: 160
+};
+
+function _scheduleMusic() {
+  if (!_masterGain) return;
+  var ac    = _getAC();
+  var theme = _musicTheme || 'cyber';
+  var bpm   = _themeBPM[theme] || 118;
+  var beat  = 60.0 / bpm;
+  var fn    = _getMusicFn(theme);
+  while (_nextBeat < ac.currentTime + _schedAhead) {
+    fn(ac, _masterGain, _nextBeat, _beatIdx);
+    _nextBeat += beat;
+    // Loop: figure out phrase length per theme and wrap _beatIdx
+    var phraseLen = _getPhrasLen(theme);
+    _beatIdx = (_beatIdx + 1) % phraseLen;
+  }
+}
+
+function _getPhrasLen(theme) {
+  var lens = {
+    cyber: 16, mario: 32, xfiles: 32,
+    interstellar: 16, matrix_ost: 16,
+    twinpeaks: 32, dialup: 32, cyberpunk: 32, spectrum_load: 32
+  };
+  return lens[theme] || 16;
+}
+
+// ── existing cyber scheduler ─────────────────
+function _scheduleCyber(ac, dst, t, i) {
+  _scheduleBeat(ac, t, i);
+}
+
+// ── SUPER MARIO (iconic 1-1 melody approximation) ──
+var _marioNotes = [
+  659,659,0,659, 0,523,659,0, 784,0,0,0, 392,0,0,0,
+  523,0,0,392,   0,0,330,0,   349,0,0,330, 0,0,262,0
+];
+function _scheduleMario(ac, dst, t, i) {
+  var beat = 60.0 / 180;
+  var idx  = i % _marioNotes.length;
+  var freq = _marioNotes[idx];
+  if (freq > 0) {
+    _node(ac, freq, 'square', t, beat * 0.6, 0.12, dst);
+    _node(ac, freq * 2, 'sine', t, beat * 0.3, 0.04, dst);
+  }
+  if (idx % 4 === 0) {
+    _node(ac, 130, 'triangle', t, beat * 0.4, 0.14, dst);
+  }
+}
+
+// ── X-FILES (chromatic suspense melody) ──
+var _xfilesMel = [
+  // Main 4-note motif in approximate pitches
+  369,0,415,0, 466,0,415,0, 369,0,0,0, 0,0,0,0,
+  349,0,392,0, 440,0,392,0, 349,0,0,0, 0,0,0,0,
+];
+// X-Files main motif: E4→F#4→E4→D#4 (330→370→330→311)
+var _xfMotif = [
+  330,0,370,0, 330,0,311,0, 330,0,370,0, 330,0,311,0,
+  294,0,330,0, 370,0,330,0, 311,0,294,0, 262,0,  0,0,
+];
+function _scheduleXFiles(ac, dst, t, i) {
+  var beat = 60.0 / 130;
+  var idx  = i % _xfMotif.length;
+  var freq = _xfMotif[idx];
+  if (freq > 0) {
+    _node(ac, freq, 'sine', t,        beat*1.2, 0.11, dst,  0);
+    _node(ac, freq, 'sine', t,        beat*1.1, 0.07, dst,  7);
+    _node(ac, freq, 'sine', t+0.015,  beat*1.0, 0.05, dst, -7);
+    _node(ac, freq*2, 'triangle', t,  beat*0.5, 0.02, dst,  0);
+  }
+  if (idx % 8 === 0) {
+    var d = idx < 16 ? 82.4 : 73.4;
+    _node(ac, d,     'sine',     t, beat*8, 0.13, dst);
+    _node(ac, d*1.5, 'triangle', t, beat*8, 0.04, dst, 5);
+  }
+  if (idx % 8 === 4) {
+    _node(ac, 1800, 'sine', t, 0.03, 0.04, dst);
+  }
+}
+
+// ── INTERSTELLAR (Hans Zimmer — organ pads + ticking) ──
+var _interChords = [
+  [130.8, 196, 261.6],   // C-G-C
+  [146.8, 220, 293.7],   // D-A-D
+  [164.8, 246.9, 329.6], // E-B-E
+  [130.8, 174.6, 261.6], // C-F-C
+];
+var _interTick = [1,0,1,0, 1,0,0,1, 1,0,1,0, 0,1,0,0]; // ticking pattern
+// Interstellar — Hans Zimmer "Day One" / "Cornfield Chase"
+// Am → F → C → G прогрессия, 4/4, каждый аккорд = 4 бита
+// Арпеджио снизу вверх + органный пэд + тиканье часов
+// BPM ~58, очень медленно и торжественно
+var _isArp = [
+  // Am: A2 C3 E3 A3  (×4 beats)
+  110.0, 130.8, 164.8, 220.0,
+  // F: F2 A2 C3 F3
+  87.3,  110.0, 130.8, 174.6,
+  // C: C3 E3 G3 C4
+  130.8, 164.8, 196.0, 261.6,
+  // G: G2 B2 D3 G3
+  98.0,  123.5, 146.8, 196.0,
+];
+// тиканье — механические часы Зиммера
+var _isTick2 = [1,0,1,0, 1,0,0,0, 1,0,1,0, 0,0,1,0];
+function _scheduleInterstellar(ac, dst, t, i) {
+  var beat = 60.0 / 72;
+  var idx  = i % 16;
+  var arp  = _isArp[idx];
+
+  // Арпеджио — основная мелодическая линия (как на пианино/органе)
+  _node(ac, arp,     'sine',     t, beat * 0.95, 0.10, dst,  0);
+  _node(ac, arp,     'triangle', t, beat * 0.85, 0.06, dst,  5);
+  _node(ac, arp * 2, 'sine',     t, beat * 0.60, 0.03, dst, -3);
+
+  // Органный пэд — весь аккорд держится 4 бита (меняется раз в 4)
+  if (idx % 4 === 0) {
+    var base = _isArp[idx];
+    // Трезвучие
+    [1.0, 1.189, 1.498].forEach(function(ratio, ci) {
+      _node(ac, base * ratio, 'sine',     t, beat * 4.2, 0.035, dst, ci * 6);
+      _node(ac, base * ratio, 'triangle', t, beat * 3.8, 0.018, dst, -ci * 4);
+    });
+  }
+
+  // Суббас — корень аккорда, меняется каждые 4 бита
+  if (idx % 4 === 0) {
+    var sub = _isArp[idx] * 0.5;
+    _node(ac, sub,       'sine', t, beat * 4.5, 0.16, dst);
+    _node(ac, sub * 0.5, 'sine', t, beat * 3.5, 0.08, dst);
+  }
+
+  // Тиканье часов — иконический текстурный элемент
+  if (_isTick2[idx]) {
+    _node(ac, 1500, 'sine', t,       0.015, 0.08, dst);
+    _node(ac, 1000, 'sine', t+0.018, 0.010, 0.05, dst);
+  }
+}
+// ── MATRIX OST (Clubbed to Death / Spybreak feel — techno) ──
+var _matrixBass = [55, 55, 55, 73.4, 55, 55, 61.7, 55, 55, 49, 55, 55, 73.4, 55, 61.7, 49];
+// Matrix — Clubbed to Death: минималистичный бас + строчный синтез
+// Бас-паттерн E2-E2-E2-B1, атмосферные пэды, гулкий kick
+// Matrix OST — "Clubbed to Death" / "Spybreak!" / "Dissolved Girl"
+// Тяжёлый trip-hop + индастриал + атмосферные струнные
+// Ни капли деревни: тёмный, напряжённый, кинематографичный
+// Характерный бас-риф Rob Dougan: Em → Am → Bm → Em
+var _mxRiff  = [82.4,0,82.4,0, 82.4,0,110.0,98.0, 73.4,0,73.4,0, 73.4,0,82.4,73.4];
+var _mxLead  = [0,0,164.8,0, 0,196.0,0,164.8, 0,0,146.8,0, 0,164.8,0,0];
+var _mxStr   = [330,0,0,294, 0,0,262,0, 330,0,0,311, 0,0,330,0]; // струнные верх
+
+function _scheduleMatrixOST(ac, dst, t, i) {
+  var beat = 60.0 / 145;
+  var idx  = i % 16;
+
+  // ── Бас-риф — главная движущая сила ──
+  var bf = _mxRiff[idx];
+  if (bf > 0) {
+    _node(ac, bf,       'sawtooth', t, beat*0.5,  0.22, dst);
+    _node(ac, bf*0.5,   'sine',     t, beat*0.6,  0.15, dst);  // суббас
+    _node(ac, bf*2,     'sine',     t, beat*0.25, 0.04, dst);  // обертон
+  }
+
+  // ── Тяжёлый trip-hop kick (Em kick drum) ──
+  if (idx === 0 || idx === 6 || idx === 10) {
+    var ko = ac.createOscillator(); var kg = ac.createGain();
+    ko.type = 'sine';
+    ko.frequency.setValueAtTime(200, t);
+    ko.frequency.exponentialRampToValueAtTime(38, t + 0.18);
+    kg.gain.setValueAtTime(1.0, t);
+    kg.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+    ko.connect(kg); kg.connect(dst); ko.start(t); ko.stop(t+0.28);
+  }
+
+  // ── Snare — тяжёлый, с долгим хвостом ──
+  if (idx === 4 || idx === 12) {
+    _noiseHit(ac, dst, t, 0.18, 0.30, 1800);
+    _node(ac, 200, 'sine', t, 0.12, 0.14, dst);
+    _node(ac, 300, 'sine', t, 0.06, 0.06, dst);
+  }
+
+  // ── Closed hi-hat — 16th ──
+  _noiseHit(ac, dst, t, 0.022, idx%4===0 ? 0.09 : (idx%2===0 ? 0.06 : 0.04), 9500);
+
+  // ── Открытый hi-hat на offbeat ──
+  if (idx % 8 === 2 || idx % 8 === 6) {
+    _noiseHit(ac, dst, t, 0.10, 0.08, 7000);
+  }
+
+  // ── Атмосферные струнные (Rob Dougan signature) ──
+  var sf = _mxLead[idx];
+  if (sf > 0) {
+    _node(ac, sf,     'sawtooth', t, beat*0.85, 0.055, dst,  6);
+    _node(ac, sf,     'sawtooth', t+0.008, beat*0.80, 0.030, dst, -6);
+    _node(ac, sf*2,   'sine',     t, beat*0.50, 0.018, dst,  0);
+  }
+
+  // ── Верхние струнные — напряжение ──
+  var strf = _mxStr[idx];
+  if (strf > 0) {
+    _node(ac, strf,   'triangle', t, beat*1.1, 0.030, dst,  4);
+    _node(ac, strf,   'sine',     t, beat*0.9, 0.018, dst, -4);
+  }
+
+  // ── Атмосферный пэд каждые 8 — нарастающее напряжение ──
+  if (idx % 8 === 0) {
+    var padN = Math.floor(i/8) % 4;
+    var padFs = [[82.4,110,164.8],[73.4,98,146.8],[77.8,110,155.6],[82.4,123.5,164.8]][padN];
+    padFs.forEach(function(f, ci) {
+      _node(ac, f, 'sine',     t, beat*8.5, 0.020, dst, ci*5);
+      _node(ac, f, 'triangle', t, beat*7.0, 0.012, dst, -ci*3);
+    });
+  }
+
+  // ── Реверс-удар (cinematic hit) каждые 16 битов ──
+  if (idx === 14) {
+    _noiseHit(ac, dst, t, 0.06, 0.12, 3000);
+    _node(ac, 110, 'sawtooth', t, 0.08, 0.08, dst);
+  }
+}// ── TWIN PEAKS (Angelo Badalamenti — dreamy jazz) ──
+var _twinMel = [
+  // "Falling" melody approximation
+  392,0,349,330, 294,0,262,0, 294,330,349,0, 392,0,0,0,
+  440,0,392,349, 330,0,294,0, 262,294,330,0, 349,0,0,0,
+];
+function _scheduleTwinPeaks(ac, dst, t, i) {
+  var beat = 60.0 / 84;
+  var idx  = i % _twinMel.length;
+  var freq = _twinMel[idx];
+  var bassScale = [87.3, 98, 110, 123.5];
+  if (idx % 4 === 0) {
+    _node(ac, bassScale[(idx/4) % bassScale.length], 'sine', t, beat * 1.8, 0.14, dst);
+  }
+  if (freq > 0) {
+    _node(ac, freq,     'sine',     t,        beat * 1.2, 0.08, dst, 0);
+    _node(ac, freq,     'triangle', t + 0.04, beat * 1.0, 0.04, dst, 5);
+    _node(ac, freq * 2, 'sine',     t,        beat * 0.5, 0.02, dst, -3);
+  }
+  if (idx % 8 === 4) { _noiseHit(ac, dst, t, 0.12, 0.08, 1800); }
+  if (idx % 16 === 0) {
+    [220, 277.2, 329.6, 415.3].forEach(function(f, ci) {
+      _node(ac, f, 'sine', t, beat * 16, 0.025, dst, ci * 6);
+    });
+  }
+}
+
+// ── DIAL-UP MODEM (classic 56k handshake sounds) ──
+function _scheduleDialUp(ac, dst, t, i) {
+  var beat = 60.0 / 160;
+  var idx  = i % 32;
+  var carriers = [1200, 2400, 1800, 2100, 1200, 2400, 600, 1200, 2100, 1800, 2400, 300];
+  _node(ac, carriers[idx % carriers.length], 'sine', t, beat * 0.4, 0.09, dst);
+  if (idx % 3 === 0) {
+    var o = ac.createOscillator(); var g = ac.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(300 + Math.random() * 1800, t);
+    o.frequency.linearRampToValueAtTime(300 + Math.random() * 2400, t + beat * 0.3);
+    g.gain.setValueAtTime(0.07, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + beat * 0.35);
+    o.connect(g); g.connect(dst); o.start(t); o.stop(t + beat * 0.4);
+  }
+  if (idx % 8 === 0) { _noiseHit(ac, dst, t, beat * 0.5, 0.06, 3000); }
+  if (idx % 16 === 0) { _node(ac, 300, 'sine', t, beat * 0.2, 0.12, dst); }
+}
+
+// ── CYBERPUNK 2077 (Samurai / ambient Night City feel) ──
+var _cpBass  = [55, 55, 73.4, 55, 61.7, 55, 49, 61.7, 55, 55, 73.4, 73.4, 55, 61.7, 49, 55];
+var _cpMel   = [null,null,220,null, null,247,220,null, 196,null,null,220, null,196,null,null];
+// ── CYBERPUNK 2077 — Chippin' In / synthwave style ──────────
+// Характерное арпеджио em-pentatonic, грязный суббас, agressive kick
+var _cpArp  = [164.8,196,220,246.9, 261.6,246.9,220,196,
+               164.8,196,220,246.9, 293.7,261.6,246.9,220,
+               164.8,196,220,246.9, 261.6,196,164.8,130.8,
+               146.8,174.6,196,220, 246.9,220,196,174.6];
+var _cpPad  = [[82.4,110,164.8],[98,130.8,196],[110,146.8,220],[87.3,116.5,174.6]];
+
+function _scheduleCyberpunk(ac, dst, t, i) {
+  var beat = 60.0 / 128;
+  var idx  = i % 32;
+
+  // ─ Синтвейв арпеджио (главная мелодия, узнаваемо)
+  var af = _cpArp[idx];
+  _node(ac, af,     'sawtooth', t, beat * 0.35, 0.10, dst,  8);
+  _node(ac, af * 2, 'sawtooth', t, beat * 0.25, 0.04, dst, -8);
+  _node(ac, af,     'square',   t, beat * 0.3,  0.03, dst,  0);
+
+  // ─ Суббас (на каждый бит, глубокий)
+  var subFreq = _cpArp[idx < 16 ? 0 : 16] * 0.25;
+  _node(ac, subFreq, 'sine', t, beat * 0.55, 0.20, dst);
+
+  // ─ Агрессивный kick каждые 4 бита
+  if (idx % 4 === 0) {
+    var ko = ac.createOscillator(); var kg = ac.createGain();
+    ko.type = 'sine';
+    ko.frequency.setValueAtTime(220, t);
+    ko.frequency.exponentialRampToValueAtTime(38, t + 0.12);
+    kg.gain.setValueAtTime(0.9, t);
+    kg.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    ko.connect(kg); kg.connect(dst); ko.start(t); ko.stop(t + 0.22);
+  }
+
+  // ─ Snare на 8 и 24 (синтетический, жёсткий)
+  if (idx % 16 === 8) {
+    _noiseHit(ac, dst, t, 0.09, 0.28, 2000);
+    _node(ac, 220, 'sine', t, 0.07, 0.12, dst);
+  }
+
+  // ─ Closed hi-hat 16th
+  _noiseHit(ac, dst, t, 0.016, idx % 4 === 0 ? 0.08 : 0.05, 11000);
+
+  // ─ Открытый hi-hat на 6/14/22/30
+  if (idx % 8 === 6) { _noiseHit(ac, dst, t, 0.08, 0.12, 8000); }
+
+  // ─ Pad (аккорд) каждые 8 битов — грязный, насыщенный
+  if (idx % 8 === 0) {
+    var pad = _cpPad[Math.floor(idx / 8) % _cpPad.length];
+    pad.forEach(function(f, ci) {
+      _node(ac, f, 'sawtooth', t, beat * 8, 0.022, dst,  ci * 10);
+      _node(ac, f, 'sine',     t, beat * 8, 0.018, dst, -ci * 5);
+    });
+  }
+
+  // ─ Distorted lead на 4/12/20/28 — акцент
+  if (idx % 8 === 4) {
+    var lf = _cpArp[idx] * 2;
+    _node(ac, lf, 'sawtooth', t, beat * 0.6, 0.07, dst, 20);
+    _node(ac, lf, 'square',   t, beat * 0.4, 0.03, dst, -15);
+  }
+}
+
+// ── ZX Spectrum SFX pack ──────────────────────
+function _sfxSpectrum(ac, dst, t, type) {
+  // ZX Spectrum AY-3-8912: характерные свипы и трели, НЕ просто square
+  // Отличия от Retro: нисходящие свипы, быстрые трели, специфические частоты
+  if (type === 'click') {
+    // Нисходящий чирп — характерный AY-звук
+    _osc(ac, dst, 1600, 'square', t, 0.04, 0.10, 400);
+  } else if (type === 'tab') {
+    // Короткий восходящий пип
+    _osc(ac, dst, 440, 'square', t, 0.03, 0.09, 880);
+  } else if (type === 'nav') {
+    // Двойной нисходящий свип
+    _osc(ac, dst, 1200, 'square', t,        0.04, 0.10, 600);
+    _osc(ac, dst,  600, 'square', t + 0.04, 0.03, 0.06, 300);
+  } else if (type === 'module') {
+    // Восходящая трель (AY envelope effect)
+    [220, 330, 440, 330, 440, 550].forEach(function(f, i) {
+      _osc(ac, dst, f, 'square', t + i*0.03, 0.04, 0.09);
+    });
+  } else if (type === 'complete') {
+    // Fanfare — AY-style восходящая гамма с паузами
+    [262,294,330,349,392,440,494,523].forEach(function(f,i) {
+      _osc(ac, dst, f, 'square', t + i*0.06, 0.08, 0.10);
+    });
+    _osc(ac, dst, 523, 'square', t + 0.55, 0.20, 0.12);
+  } else if (type === 'achieve') {
+    // Loading complete sound — нисходящий свип как окончание загрузки
+    var freqs2 = [1200,1100,1000,900,800,700,600,500,400,300,400,500,600,800,1000,1200];
+    freqs2.forEach(function(f,i){ _osc(ac,dst,f,'square',t+i*0.04,0.055,0.09); });
+  } else if (type === 'coin') {
+    // AY coin: два чирпа вверх
+    _osc(ac, dst, 880,  'square', t,       0.05, 0.10, 1760);
+    _osc(ac, dst, 1760, 'square', t+0.06, 0.04, 0.07);
+  } else if (type === 'error') {
+    // Ошибка ZX — низкий дребезжащий buzz
+    _osc(ac, dst, 120, 'square', t,      0.08, 0.15, 80);
+    _osc(ac, dst,  80, 'square', t+0.09, 0.07, 0.12, 60);
+  } else if (type === 'level_up') {
+    // Game complete — длинная восходящая с акцентом
+    [196,220,262,294,330,392,440,523,659,784].forEach(function(f,i){
+      _osc(ac,dst,f,'square',t+i*0.06,0.10,0.10);
+    });
+    _osc(ac, dst, 1047, 'square', t + 0.65, 0.30, 0.12);
+  } else if (type === 'buy') {
+    _osc(ac, dst, 523, 'square', t,       0.05, 0.09, 784);
+    _osc(ac, dst, 784, 'square', t+0.06,  0.04, 0.07, 1047);
+  } else if (type === 'quiz_ok') {
+    _osc(ac, dst, 660, 'square', t,       0.06, 0.09, 1047);
+  } else if (type === 'quiz_fail') {
+    _osc(ac, dst, 330, 'square', t,       0.08, 0.12, 165);
+  } else {
+    _osc(ac, dst, 880, 'square', t, 0.03, 0.08, 440);
+  }
+}
+
+// ── ZX SPECTRUM LOADING — точная эмуляция загрузки с кассеты ──
+// ZX Spectrum loader: pilot tone (2400 Hz) → data (чередование 1200/2400 Hz)
+// Характерное двухтональное "трещание" которое все помнят
+var _spPhase = 0;  // internal phase tracker
+
+function _scheduleSpectrumLoad(ac, dst, t, i) {
+  var beat    = 60.0 / 240;  // очень быстро, как реальная загрузка
+  var idx     = i % 32;
+
+  // ── Pilot tone section (биты 0-7): непрерывный 2400 Hz писк ──
+  if (idx < 8) {
+    _node(ac, 2400, 'square', t, beat * 0.48, 0.13, dst);
+    // небольшой субтон для объёма
+    _node(ac, 2400, 'sawtooth', t, beat * 0.35, 0.04, dst, 10);
+  }
+
+  // ── Data section (биты 8-31): чередование 1200/2400 Hz ──
+  else {
+    // Нечётные биты — 1200 Hz (логический 0)
+    // Чётные биты — 2400 Hz (логический 1)
+    // Паттерн имитирует случайные байты данных
+    var dataPat = [1,0,1,1,0,0,1,0, 0,1,1,0,1,0,0,1,
+                   1,1,0,1,0,1,1,0];
+    var dIdx = idx - 8;
+    var freq  = dataPat[dIdx % dataPat.length] === 1 ? 2400 : 1200;
+    _node(ac, freq, 'square', t, beat * 0.46, 0.14, dst);
+
+    // Каждые 4 бита — лёгкий "клик" перехода (артефакт кассеты)
+    if (dIdx % 4 === 0) {
+      _node(ac, 800, 'square', t, 0.004, 0.08, dst);
+    }
+  }
+
+  // ── "Полосы" на экране — низкочастотный пульс раз в 8 битов ──
+  if (idx % 8 === 0) {
+    var stripFreq = idx === 0 ? 50 : (idx === 8 ? 55 : 45);
+    _node(ac, stripFreq, 'sine', t, beat * 0.2, 0.06, dst);
+  }
+
+  // ── Нарастание — лёгкий pitch drift (имитация нестабильности кассеты) ──
+  // каждые 16 битов тон слегка "плывёт"
+  if (idx % 16 === 0 && idx > 0) {
+    var drift = 2400 + (Math.random() * 40 - 20);  // ±20 Hz дрейф
+    _node(ac, drift, 'square', t + beat * 0.1, beat * 0.3, 0.03, dst);
+  }
+}
+
+
+// ── IRISH FOLK — весёлый кельтский джиг ──────────────────────
+// Тональность D major (D E F# G A B C# D)
+// Ритм: 6/8 джиг — ТАМ-та-та ТАМ-та-та
+// Инструменты: тин-вистл (флейта), скрипка, бодун-бас
+var _irishScale = [293.7,329.6,370.0,392.0,440.0,493.9,554.4,587.3]; // D maj
+// Мелодия — классический ирландский джиг паттерн
+var _irishMel = [
+  // Фраза A: D-E-F#-G-A-F#  E-D-E-F#-G-E  D-A-B-A-G-A  F#-E-D-E-F#-D
+  5,6,7,8, 7,6, 5,4,5,6,7,5, 4,7,8,7,6,7, 6,5,4,5,6,4,
+  // Фраза B: ответная
+  7,8,9,8, 7,6, 7,8,9,8,7,5, 4,5,6,7,8,7, 6,5,4,3,4,5,
+];
+// Нотные частоты по индексу (расширяем массив на октаву)
+var _irishFreqs = [
+  146.8,164.8,185.0,196.0,220.0,246.9,277.2,293.7,  // D3..D4
+  329.6,370.0,392.0,440.0,493.9,554.4,587.3,659.3   // E4..E5
+];
+
+function _scheduleIrish(ac, dst, t, i) {
+  var beat  = 60.0 / 160;  // быстрый джиг
+  var idx   = i % _irishMel.length;
+  var fIdx  = _irishMel[idx];
+  var freq  = _irishFreqs[fIdx] || 293.7;
+
+  // Тин-вистл — основная мелодия (флейта: sine + небольшой triangle)
+  _node(ac, freq,     'triangle', t, beat * 0.75, 0.13, dst,  0);
+  _node(ac, freq,     'sine',     t, beat * 0.70, 0.07, dst,  5);
+  _node(ac, freq * 2, 'sine',     t, beat * 0.40, 0.02, dst, -3);
+
+  // Скрипка — гармония (квинта выше, чуть тише и с вибрато через detune)
+  if (idx % 3 === 0) {
+    var fifth = freq * 1.5;
+    _node(ac, fifth, 'sawtooth', t, beat * 0.65, 0.045, dst, 8);
+    _node(ac, fifth, 'sawtooth', t + 0.01, beat * 0.60, 0.025, dst, -8);
+  }
+
+  // Бодун — акцент на 1-й и 4-й доле (ТАМ-та-та ТАМ-та-та)
+  if (idx % 3 === 0) {
+    var bassNote = idx < 24 ? 73.4 : 98.0;  // D2 или G2
+    _node(ac, bassNote, 'triangle', t, beat * 0.5, 0.18, dst);
+    _node(ac, bassNote * 0.5, 'sine', t, beat * 0.4, 0.10, dst);
+  }
+
+  // Орнаментация — "кат" (быстрый форшлаг) на сильных долях
+  if (idx % 6 === 0 && fIdx > 3) {
+    _node(ac, _irishFreqs[fIdx - 1], 'triangle', t, beat * 0.08, 0.06, dst);
+  }
+
+  // Бубен (bodhran) — ударный акцент на 1-й и 4-й доле
+  if (idx % 3 === 0) {
+    var accent = idx % 6 === 0 ? 0.20 : 0.10;
+    _node(ac, 160, 'sine', t, beat * 0.06, accent, dst);
+    _node(ac, 120, 'sine', t + 0.015, beat * 0.05, accent * 0.6, dst);
+  }
+}
+
+// Noise hit helper used by multiple music themes
+function _noiseHit(ac, dst, t, dur, gain, freq) {
+  try {
+    var buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate);
+    var d   = buf.getChannelData(0);
+    for (var k = 0; k < d.length; k++) d[k] = Math.random() * 2 - 1;
+    var src = ac.createBufferSource();
+    var flt = ac.createBiquadFilter();
+    var g   = ac.createGain();
+    flt.type = 'highpass'; flt.frequency.value = freq;
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.buffer = buf;
+    src.connect(flt); flt.connect(g); g.connect(dst);
+    src.start(t); src.stop(t + dur + 0.01);
+  } catch(e) {}
+}
 
 function renderShop() {
   var cat   = state.shopCat || 'all';
@@ -8026,6 +8692,7 @@ function renderShop() {
     + '<div class="shop-header">'
     + '<div><div style="font-size:10px;color:var(--acc);letter-spacing:3px;margin-bottom:6px">// МАГАЗИН</div>'
     + '<h2 class="glos-title">Магазин улучшений</h2>'
+    + renderShopAudioPanel()
     + '<div style="font-size:12px;color:var(--fg3);margin-top:4px">Трать XP на стили и эффекты</div>'
     + freeToggle + '</div>'
     + '<div class="shop-balance"><div class="shop-bal-label">Баланс XP</div>'
@@ -8046,9 +8713,9 @@ function shopDelegate(e) {
   if (!el || !el.dataset || !el.dataset.action) return;
   var action = el.dataset.action;
   if (action === 'buy')          buyItem(el.dataset.id);
-  else if (action === 'equip')   equipItem(el.dataset.id);
+  else if (action === 'equip')   { playSound('tab'); equipItem(el.dataset.id); }
   else if (action === 'unequip') unequipItem(el.dataset.slot);
-  else if (action === 'shopcat') { state.shopCat = el.dataset.cat; renderContent(); }
+  else if (action === 'shopcat') { playSound('click'); state.shopCat = el.dataset.cat; renderContent(); }
 }
 
 function shopDelegateChange(e) {
@@ -8081,6 +8748,7 @@ function shopFilter(cat) {
 
 
 function openShop() {
+  playSound('nav');
   unlockAch('shop_open');
   state.activeModuleId = 'shop';
   render();
@@ -8089,6 +8757,8 @@ function openShop() {
 function isOwned(itemId) {
   if (state.freeShop) return true;
   if (itemId === 'th_ghost' || itemId === 'th_cyber') return true;
+  if (itemId === 'sfx_cyber') return true;   // default SFX pack always free
+  if (itemId === 'mus_cyber') return true;   // default music always free
   return state.owned.has(itemId);
 }
 
@@ -8130,6 +8800,9 @@ function buyItem(itemId) {
   if (!state.freeShop && item.price > 0) {
     state.xp -= item.price;
     localStorage.setItem('ds_xp', state.xp);
+    playSound('buy');
+  } else {
+    playSound('coin');
   }
   if (!state.freeShop) {
     state.owned.add(itemId);
@@ -8156,6 +8829,7 @@ function unequipItem(slot) {
   applyEquipped();
   if (state.activeModuleId === 'shop') renderContent();
   updateHeader();
+  playSound('click');
   showBuyToast('Снято');
 }
 
@@ -8261,8 +8935,22 @@ function applyEquipped() {
   };
   document.body.style.cursor = (eq.cursor && curMap[eq.cursor]) ? curMap[eq.cursor] : '';
 
-  // Звук
-  window._sfx = eq.sound || null;
+  // SFX пак
+  if (eq.sfx) {
+    var sfxItem = SHOP_ITEMS.find(function(i){ return i.id === eq.sfx; });
+    if (sfxItem && sfxItem.sfxPack) {
+      _sfxPack = sfxItem.sfxPack;
+      localStorage.setItem('ds_sfx_pack', _sfxPack);
+    }
+  }
+
+  // Музыкальная тема
+  if (eq.music) {
+    var musItem = SHOP_ITEMS.find(function(i){ return i.id === eq.music; });
+    if (musItem && musItem.musicTheme && musItem.musicTheme !== _musicTheme) {
+      setMusicTheme(musItem.musicTheme);
+    }
+  }
 
   // Буст XP
   const now = Date.now();
@@ -8304,71 +8992,359 @@ function applyEquipped() {
     }
   }
 
-  // Сезонные темы
-  ['halloween','cyber_ny','spring','summer','winter'].forEach(function(s){
+  // Сезонные темы + уникальные партикл-эффекты
+  ['halloween','cyber_ny','spring','summer','winter','patrick','whiskey','newyear','progday','birthday'].forEach(function(s){
     document.body.classList.remove('sea-'+s);
   });
+  stopSeasonEffect();
   const seasonMap = {
     'sea_halloween':'halloween','sea_cyber_ny':'cyber_ny',
-    'sea_spring':'spring','sea_summer':'summer','sea_winter':'winter'
+    'sea_spring':'spring','sea_summer':'summer','sea_winter':'winter',
+    'sea_patrick':'patrick','sea_whiskey':'whiskey',
+    'sea_newyear':'newyear','sea_progday':'progday','sea_birthday':'birthday'
   };
   if (eq.season && seasonMap[eq.season]) {
-    document.body.classList.add('sea-' + seasonMap[eq.season]);
+    var sname = seasonMap[eq.season];
+    document.body.classList.add('sea-' + sname);
+    startSeasonEffect(sname);
   }
 }
 
 // ══════════════════════════════════════════════
 // ЗВУКИ
 // ══════════════════════════════════════════════
-function playSound(type) {
-  if (!window._sfx) return;
-  const sfxItem = SHOP_ITEMS.find(function(i){ return i.id === window._sfx; });
-  if (!sfxItem || sfxItem.sfx !== type) return;
-  try {
-    const actx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = actx.createOscillator();
-    const gain = actx.createGain();
-    osc.connect(gain); gain.connect(actx.destination);
-    if (type === 'click') {
-      osc.frequency.setValueAtTime(800, actx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(400, actx.currentTime+0.05);
-      gain.gain.setValueAtTime(0.1, actx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+0.05);
-      osc.start(); osc.stop(actx.currentTime+0.05);
-    } else if (type === 'complete') {
-      [523,659,784,1047].forEach(function(f,i) {
-        const o2 = actx.createOscillator(), g2 = actx.createGain();
-        o2.connect(g2); g2.connect(actx.destination);
-        o2.frequency.value = f;
-        g2.gain.setValueAtTime(0.12, actx.currentTime+i*0.1);
-        g2.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+i*0.1+0.2);
-        o2.start(actx.currentTime+i*0.1); o2.stop(actx.currentTime+i*0.1+0.25);
-      });
-    } else if (type === 'coin') {
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(987, actx.currentTime);
-      osc.frequency.setValueAtTime(1319, actx.currentTime+0.08);
-      gain.gain.setValueAtTime(0.08, actx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+0.2);
-      osc.start(); osc.stop(actx.currentTime+0.2);
-    } else if (type === 'error') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(200, actx.currentTime);
-      gain.gain.setValueAtTime(0.15, actx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+0.15);
-      osc.start(); osc.stop(actx.currentTime+0.15);
-    } else if (type === 'unlock') {
-      [400,600,800].forEach(function(f,i) {
-        const o2 = actx.createOscillator(), g2 = actx.createGain();
-        o2.connect(g2); g2.connect(actx.destination); o2.type = 'sine';
-        o2.frequency.value = f;
-        g2.gain.setValueAtTime(0.1, actx.currentTime+i*0.07);
-        g2.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+i*0.07+0.15);
-        o2.start(actx.currentTime+i*0.07); o2.stop(actx.currentTime+i*0.07+0.2);
-      });
-    }
-  } catch(e) {}
+
+// ══════════════════════════════════════════════
+// AUDIO ENGINE — SFX + AMBIENT MUSIC
+// ══════════════════════════════════════════════
+
+var _ac = null;       // AudioContext (lazy init)
+var _sfxOn  = localStorage.getItem('ds_sfx')   !== '0';
+// Музыка всегда выключена при старте — пользователь включает вручную
+var _musicOn = false;
+localStorage.setItem('ds_music', '0');
+var _sfxVol = parseFloat(localStorage.getItem('ds_sfx_vol')  || '0.4');
+var _musVol = parseFloat(localStorage.getItem('ds_mus_vol')  || '0.18');
+var _sfxPack= localStorage.getItem('ds_sfx_pack') || 'cyber';  // cyber | retro | mech
+var _musicNodes = null;
+var _musicStarted = false;
+
+function _getAC() {
+  if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
+  if (_ac.state === 'suspended') _ac.resume();
+  return _ac;
 }
+
+// ── SFX ──────────────────────────────────────
+function playSound(type) {
+  if (!_sfxOn) return;
+  try { _playSFX(type, _sfxPack); } catch(e) {}
+}
+
+function _playSFX(type, pack) {
+  var ac = _getAC();
+  var t  = ac.currentTime;
+  var mg = ac.createGain();
+  mg.gain.value = _sfxVol;
+  mg.connect(ac.destination);
+  if (pack === 'retro')    { _sfxRetro(ac, mg, t, type);    return; }
+  if (pack === 'mech')     { _sfxMech(ac, mg, t, type);     return; }
+  if (pack === 'spectrum') { _sfxSpectrum(ac, mg, t, type); return; }
+  _sfxCyber(ac, mg, t, type);
+}
+
+function _osc(ac, dst, freq, type, start, dur, gain, ramp) {
+  var o = ac.createOscillator();
+  var g = ac.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(freq, start);
+  if (ramp) o.frequency.exponentialRampToValueAtTime(ramp, start + dur);
+  g.gain.setValueAtTime(gain, start);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  o.connect(g); g.connect(dst);
+  o.start(start); o.stop(start + dur + 0.01);
+}
+
+function _sfxCyber(ac, dst, t, type) {
+  if (type === 'click') {
+    _osc(ac, dst, 900, 'sine', t, 0.06, 0.15, 400);
+  } else if (type === 'tab') {
+    _osc(ac, dst, 600, 'sine', t, 0.05, 0.1, 700);
+  } else if (type === 'module') {
+    _osc(ac, dst, 400, 'sine',   t,      0.08, 0.12, 600);
+    _osc(ac, dst, 800, 'sine',   t+0.04, 0.08, 0.08, 1000);
+  } else if (type === 'nav') {
+    _osc(ac, dst, 700, 'sine', t,      0.05, 0.09, 900);
+    _osc(ac, dst, 500, 'sine', t+0.04, 0.04, 0.06, 600);
+  } else if (type === 'complete') {
+    [523,659,784,1047].forEach(function(f,i) { _osc(ac, dst, f, 'sine', t+i*0.1, 0.22, 0.14); });
+  } else if (type === 'achieve') {
+    [392,523,659,784,1047,1319].forEach(function(f,i) { _osc(ac, dst, f, 'triangle', t+i*0.08, 0.25, 0.13); });
+    _osc(ac, dst, 2093, 'sine', t+0.55, 0.4, 0.1);
+  } else if (type === 'coin') {
+    _osc(ac, dst, 987,  'square', t,      0.06, 0.08);
+    _osc(ac, dst, 1319, 'square', t+0.07, 0.06, 0.08);
+  } else if (type === 'unlock') {
+    _osc(ac, dst, 300, 'sawtooth', t,      0.1, 0.1, 600);
+    _osc(ac, dst, 600, 'sine',     t+0.08, 0.1, 0.1, 900);
+    _osc(ac, dst, 900, 'sine',     t+0.16, 0.1, 0.1, 1200);
+  } else if (type === 'error') {
+    _osc(ac, dst, 220, 'sawtooth', t,      0.08, 0.15, 110);
+    _osc(ac, dst, 180, 'sawtooth', t+0.1,  0.08, 0.12, 90);
+  } else if (type === 'quiz_ok') {
+    _osc(ac, dst, 523, 'sine', t,      0.1, 0.12);
+    _osc(ac, dst, 784, 'sine', t+0.08, 0.15, 0.1);
+  } else if (type === 'quiz_fail') {
+    _osc(ac, dst, 300, 'sawtooth', t,     0.07, 0.12, 220);
+    _osc(ac, dst, 200, 'sawtooth', t+0.1, 0.07, 0.1,  180);
+  } else if (type === 'buy') {
+    _osc(ac, dst, 659, 'sine', t,      0.07, 0.1);
+    _osc(ac, dst, 880, 'sine', t+0.06, 0.07, 0.1);
+    _osc(ac, dst, 1047,'sine', t+0.12, 0.07, 0.1);
+  } else if (type === 'level_up') {
+    [262,330,392,523,659,784,1047].forEach(function(f,i) { _osc(ac, dst, f, 'triangle', t+i*0.07, 0.2, 0.12); });
+    _osc(ac, dst, 2093, 'sine', t+0.6, 0.5, 0.1);
+  }
+}
+
+function _sfxRetro(ac, dst, t, type) {
+  // 8-bit style — square waves only
+  if (type === 'click')    { _osc(ac, dst, 1200, 'square', t, 0.04, 0.1, 800); }
+  else if (type === 'tab') { _osc(ac, dst, 800, 'square', t, 0.04, 0.08, 1000); }
+  else if (type === 'nav') { _osc(ac, dst, 1000, 'square', t, 0.03, 0.09, 700); }
+  else if (type === 'module') { [440,523,659].forEach(function(f,i){ _osc(ac,dst,f,'square',t+i*0.04,0.06,0.1); }); }
+  else if (type === 'complete') { [262,330,392,523].forEach(function(f,i){ _osc(ac,dst,f,'square',t+i*0.1,0.15,0.1); }); }
+  else if (type === 'achieve')  { [523,659,784,1047,1319].forEach(function(f,i){ _osc(ac,dst,f,'square',t+i*0.07,0.18,0.1); }); }
+  else if (type === 'coin')  { _osc(ac,dst,1047,'square',t,0.05,0.1); _osc(ac,dst,1319,'square',t+0.06,0.05,0.08); }
+  else if (type === 'error') { _osc(ac,dst,110,'square',t,0.15,0.15); }
+  else { _osc(ac, dst, 660, 'square', t, 0.06, 0.08); }
+}
+
+function _sfxMech(ac, dst, t, type) {
+  // Mechanical keyboard clicks — noise bursts
+  function noise(dur, gain) {
+    try {
+      var buf = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate);
+      var data = buf.getChannelData(0);
+      for (var i=0; i<data.length; i++) data[i] = (Math.random()*2-1);
+      var src = ac.createBufferSource();
+      var g   = ac.createGain();
+      var f   = ac.createBiquadFilter();
+      f.type = 'bandpass'; f.frequency.value = type==='click'||type==='tab' ? 3000 : 1500;
+      src.buffer = buf;
+      g.gain.setValueAtTime(gain, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+      src.connect(f); f.connect(g); g.connect(dst);
+      src.start(t); src.stop(t+dur+0.01);
+    } catch(e) {}
+  }
+  if (type === 'click' || type === 'tab') { noise(0.04, 0.3); }
+  else if (type === 'nav')    { noise(0.025, 0.18); _osc(ac,dst,900,'sine',t+0.01,0.05,0.07); }
+  else if (type === 'module') { noise(0.05, 0.25); _osc(ac,dst,600,'sine',t+0.02,0.08,0.09); }
+  else if (type === 'complete') { noise(0.08, 0.4); _osc(ac,dst,880,'sine',t+0.05,0.3,0.12); }
+  else if (type === 'achieve')  { noise(0.1, 0.4);  [523,784,1047].forEach(function(f,i){ _osc(ac,dst,f,'sine',t+i*0.1,0.25,0.12); }); }
+  else if (type === 'coin')     { noise(0.03, 0.25); _osc(ac,dst,1319,'sine',t+0.02,0.08,0.08); }
+  else if (type === 'error')    { noise(0.12, 0.35); }
+  else { noise(0.04, 0.2); }
+}
+
+// ── AMBIENT MUSIC ENGINE ─────────────────────
+// Procedural techno-ambient: bass + pad chords + melody
+// Style: Daft Punk × Blade Runner × Factorio
+
+var _bpm      = 118;
+var _schedAhead = 0.12;   // seconds ahead to schedule
+var _schedInt   = 80;     // ms between scheduler calls
+var _nextBeat   = 0;
+var _beatIdx    = 0;
+var _schedTimer = null;
+var _masterGain = null;
+var _padPhase   = 0;
+
+// Scale: Dorian on D (dark, techy)
+var _scale = [146.83, 164.81, 174.61, 195.99, 220.0, 246.94, 261.63, 293.66];
+// Chord progressions (indices into _scale)
+var _chords = [
+  [0,2,4,6], [3,5,0,2], [5,0,3,6], [2,4,6,1]  // Dm7, Fmaj7, Am7, Em7
+];
+var _bassLine = [0,0,5,0, 3,3,0,5, 0,0,3,0, 5,3,0,3];
+var _melPat   = [null,null,4,null, null,6,null,4, 2,null,null,5, null,3,null,null];
+
+
+
+
+function _node(ac, freq, type, t, dur, gain, dst, detune) {
+  var o = ac.createOscillator();
+  var g = ac.createGain();
+  o.type = type;
+  o.frequency.value = freq;
+  if (detune) o.detune.value = detune;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.015);
+  g.gain.setValueAtTime(gain, t + dur - 0.05);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(dst);
+  o.start(t); o.stop(t + dur + 0.02);
+}
+
+function _scheduleBeat(ac, t, idx) {
+  var beatLen = 60.0 / _bpm;
+  var dst = _masterGain;
+
+  // ─ Bass (every beat, octave below scale)
+  var bassNote = _scale[_bassLine[idx] % _scale.length] * 0.5;
+  _node(ac, bassNote, 'sawtooth', t, beatLen * 0.7, 0.22, dst);
+  // Bass sub
+  var sub = ac.createOscillator();
+  var subG = ac.createGain();
+  sub.type = 'sine'; sub.frequency.value = bassNote * 0.5;
+  subG.gain.setValueAtTime(0.18, t);
+  subG.gain.exponentialRampToValueAtTime(0.0001, t + beatLen * 0.6);
+  sub.connect(subG); subG.connect(dst);
+  sub.start(t); sub.stop(t + beatLen + 0.02);
+
+  // ─ Kick drum (beats 0, 4, 8, 12)
+  if (idx % 4 === 0) {
+    var kickO = ac.createOscillator();
+    var kickG = ac.createGain();
+    kickO.type = 'sine';
+    kickO.frequency.setValueAtTime(180, t);
+    kickO.frequency.exponentialRampToValueAtTime(40, t + 0.12);
+    kickG.gain.setValueAtTime(0.7, t);
+    kickG.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    kickO.connect(kickG); kickG.connect(dst);
+    kickO.start(t); kickO.stop(t + 0.2);
+  }
+
+  // ─ Hi-hat (every beat, quieter on 2/3)
+  (function() {
+    try {
+      var hlen = idx % 2 === 0 ? 0.04 : 0.025;
+      var hgain = idx % 4 === 0 ? 0.09 : 0.055;
+      var buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * hlen), ac.sampleRate);
+      var d   = buf.getChannelData(0);
+      for (var i=0; i<d.length; i++) d[i] = (Math.random()*2-1);
+      var src = ac.createBufferSource();
+      var hf  = ac.createBiquadFilter();
+      var hg  = ac.createGain();
+      hf.type = 'highpass'; hf.frequency.value = 8000;
+      hg.gain.setValueAtTime(hgain, t);
+      hg.gain.exponentialRampToValueAtTime(0.0001, t + hlen);
+      src.buffer = buf;
+      src.connect(hf); hf.connect(hg); hg.connect(dst);
+      src.start(t); src.stop(t + hlen + 0.01);
+    } catch(e){}
+  })();
+
+  // ─ Chord pad (every 4 beats — slow, atmospheric)
+  if (idx % 4 === 0) {
+    var chordIdx = Math.floor(idx / 4) % _chords.length;
+    var chord = _chords[chordIdx];
+    var padDur = beatLen * 4.2;
+    chord.forEach(function(si, ci) {
+      var freq = _scale[si % _scale.length] * (ci < 2 ? 1 : 2);
+      _node(ac, freq, 'sine', t, padDur, 0.045, dst, ci * 5);
+      _node(ac, freq, 'triangle', t + 0.02, padDur * 0.9, 0.025, dst, -ci*3);
+    });
+  }
+
+  // ─ Melody (sparse, every 16-beat phrase)
+  var melNote = _melPat[idx % _melPat.length];
+  if (melNote !== null) {
+    var mfreq = _scale[melNote % _scale.length] * 2;
+    _node(ac, mfreq, 'triangle', t, beatLen * 0.6, 0.07, dst);
+    _node(ac, mfreq * 1.5, 'sine', t + 0.01, beatLen * 0.5, 0.025, dst);
+  }
+
+  // ─ Snare / rimshot (beats 4, 12)
+  if (idx % 8 === 4) {
+    (function() {
+      try {
+        var slen = 0.1;
+        var buf = ac.createBuffer(1, Math.ceil(ac.sampleRate*slen), ac.sampleRate);
+        var d   = buf.getChannelData(0);
+        for (var i=0; i<d.length; i++) d[i] = Math.random()*2-1;
+        var src = ac.createBufferSource();
+        var sf  = ac.createBiquadFilter();
+        var sg  = ac.createGain();
+        sf.type = 'bandpass'; sf.frequency.value = 2500; sf.Q.value = 0.8;
+        sg.gain.setValueAtTime(0.18, t);
+        sg.gain.exponentialRampToValueAtTime(0.0001, t + slen);
+        src.buffer = buf; src.connect(sf); sf.connect(sg); sg.connect(dst);
+        src.start(t); src.stop(t + slen + 0.01);
+        // Tone component
+        var so = ac.createOscillator();
+        var sog= ac.createGain();
+        so.type='sine'; so.frequency.value=200;
+        sog.gain.setValueAtTime(0.12, t);
+        sog.gain.exponentialRampToValueAtTime(0.0001, t+0.08);
+        so.connect(sog); sog.connect(dst);
+        so.start(t); so.stop(t+0.1);
+      } catch(e){}
+    })();
+  }
+}
+
+// ── CONTROLS ─────────────────────────────────
+function setVolume(val) {
+  _sfxVol = Math.round(val) / 100 * 0.8;  // 0..0.8 range
+  _musVol = _sfxVol * 0.45;               // music always quieter
+  localStorage.setItem('ds_sfx_vol', _sfxVol);
+  localStorage.setItem('ds_mus_vol', _musVol);
+  // Update live music gain if playing
+  if (_masterGain) {
+    _masterGain.gain.setTargetAtTime(_musVol, _getAC().currentTime, 0.05);
+  }
+}
+
+function toggleSFX() {
+  _sfxOn = !_sfxOn;
+  localStorage.setItem('ds_sfx', _sfxOn ? '1' : '0');
+  _updateAudioButtons();
+  if (_sfxOn) setTimeout(function(){ playSound('click'); }, 50);
+  if (state.activeModuleId === 'shop') renderContent();
+}
+
+function toggleMusic() {
+  _musicOn = !_musicOn;
+  localStorage.setItem('ds_music', _musicOn ? '1' : '0');
+  _updateAudioButtons();
+  if (_musicOn) {
+    if (_musicStarted) { stopMusic(); }
+    startMusic();
+  } else {
+    stopMusic();
+  }
+  if (state.activeModuleId === 'shop') renderContent();
+}
+
+function _updateAudioButtons() {
+  var sfxBtn = document.getElementById('sfx-btn');
+  var musBtn = document.getElementById('music-btn');
+  var slider = document.getElementById('vol-slider');
+  if (sfxBtn) {
+    sfxBtn.textContent = _sfxOn ? '🔊' : '🔇';
+    sfxBtn.style.opacity = _sfxOn ? '1' : '0.4';
+    sfxBtn.title = _sfxOn ? 'Все звуки: ВКЛ (нажми чтобы выкл)' : 'Все звуки: ВЫКЛ (нажми чтобы вкл)';
+  }
+  if (musBtn) {
+    musBtn.style.opacity = _musicOn ? '1' : '0.4';
+    musBtn.title = _musicOn ? 'Музыка: ВКЛ (нажми чтобы выкл)' : 'Музыка: ВЫКЛ (нажми чтобы вкл)';
+  }
+  if (slider) {
+    slider.value = Math.round(_sfxVol / 0.8 * 100);
+    slider.style.opacity = _sfxOn ? '0.85' : '0.3';
+    slider.disabled = !_sfxOn;
+  }
+}
+
+// Start music on first user interaction (browser policy)
+function _initAudioOnInteraction() {
+  document.removeEventListener('click', _initAudioOnInteraction);
+  // Audio context needs user gesture to unlock - but we don't auto-start music
+  if (_ac && _ac.state === 'suspended') _ac.resume();
+}
+document.addEventListener('click', _initAudioOnInteraction);
 
 // ══════════════════════════════════════════════
 // GLOSSARY
@@ -8440,13 +9416,14 @@ const GLOSSARY = [
 ];
 
 function glossaryFilter(cat) {
+  playSound('click');
   state.glossaryCat = cat;
   renderContent();
 }
 
 function openGlossary() {
+  playSound('nav');
   triggerQuest('check_gloss');
-  unlockAch('gloss_open');
   unlockAch('gloss_open');
   state.activeModuleId = 'glossary';
   render();
@@ -8513,6 +9490,7 @@ function render() {
   updateHeader();
   buildSidebar();
   renderContent();
+  updateThemeIdentity(currentTheme);
 }
 
 function goHome() {
@@ -8540,12 +9518,69 @@ const THEMES = ['cyber','matrix','redteam','deepsea','ghost','retro','blood','go
 let currentTheme = localStorage.getItem('ds_theme') || 'cyber';
 
 const THEME_IDENTITY = {
-  cyber:   { logoIcon:'⬡', logoText:'DS://CORP',   sbLabel:'// CYBERPUNK OS',  sbLines:['> init neural_net.py','> load model.pkl','> acc: 0.917'],         sbDecor:'◈ ◇ ◈ ◇ ◈' },
-  matrix:  { logoIcon:'⬛', logoText:'THE.MATRIX',  sbLabel:'// SYSTEM ACCESS', sbLines:['> wake up, Neo...','> follow the white rabbit','> red pill taken'], sbDecor:'█ ▓ ▒ ░ █' },
-  redteam: { logoIcon:'☠',  logoText:'RED//TEAM',   sbLabel:'// BREACH ACTIVE', sbLines:['> pentest: running','> firewall: bypassed','> root access: YES'],  sbDecor:'▲ △ ▲ △ ▲' },
-  deepsea: { logoIcon:'◉',  logoText:'DEEP~SEA~DS', sbLabel:'// SONAR ACTIVE',  sbLines:['> depth: 3800m','> signal: acquired','> beacon: locked'],         sbDecor:'~ ≈ ~ ≈ ~' },
-  ghost:   { logoIcon:'○',  logoText:'DATA SCIENCE',sbLabel:'NAVIGATION',       sbLines:['Python · SQL · ML','Clean · Simple · Fast','No distractions'],    sbDecor:'— — — — —' },
-  retro:   { logoIcon:'★',  logoText:'PIXEL::DS★',  sbLabel:'// INSERT COIN',   sbLines:['▶ PLAYER 1 READY','▶ LEVEL: 1 / 10','▶ HI-SCORE: 9999'],         sbDecor:'♦ ♣ ♠ ♥ ♦' },
+  cyber: {
+    logoIcon:'⬡', logoText:'DS://CORP', sbLabel:'// CYBERPUNK OS',
+    sbLines:['> init neural_net.py','> load model.pkl','> acc: 0.917'], sbDecor:'◈ ◇ ◈ ◇ ◈',
+    modIcons:{ python:'⚡', visualization:'📡', pandas_numpy:'🔬', linear:'🎯', eda:'🔭', math:'🧮', sql:'🗄️', ml:'🤖', cases:'💼', projects:'💀', career:'🏙️' },
+    levelIcons:['🔌','⚡','📡','🔬','🤖','💻','🧬','⚡','🐉','💀'],
+    achIcon:'🏆', homeGreeting:'> SYSTEM ONLINE', homeSub:'Загрузка нейросети...',
+  },
+  matrix: {
+    logoIcon:'⬛', logoText:'THE.MATRIX', sbLabel:'// SYSTEM ACCESS',
+    sbLines:['> wake up, Neo...','> follow the white rabbit','> red pill taken'], sbDecor:'█ ▓ ▒ ░ █',
+    modIcons:{ python:'🐍', visualization:'👁', pandas_numpy:'📊', linear:'📐', eda:'🔍', math:'∑', sql:'🗃️', ml:'🧠', cases:'📋', projects:'💊', career:'🕶️' },
+    levelIcons:['😴','🐇','👁','💊','🕶️','🧥','🔫','📱','🐉','☎️'],
+    achIcon:'💊', homeGreeting:'> ЗАГРУЗКА МАТРИЦЫ', homeSub:'Реальность — это иллюзия...',
+  },
+  redteam: {
+    logoIcon:'☠', logoText:'RED//TEAM', sbLabel:'// BREACH ACTIVE',
+    sbLines:['> pentest: running','> firewall: bypassed','> root access: YES'], sbDecor:'▲ △ ▲ △ ▲',
+    modIcons:{ python:'🔓', visualization:'📊', pandas_numpy:'⚔️', linear:'🎯', eda:'🔭', math:'💣', sql:'🗄️', ml:'🤖', cases:'🔥', projects:'☠', career:'🏴' },
+    levelIcons:['🐣','🔓','🕵️','💣','🔥','☠','🏴','⚡','🐉','👑'],
+    achIcon:'🏴', homeGreeting:'> BREACH INITIATED', homeSub:'Цель захвачена. Начинаем...',
+  },
+  deepsea: {
+    logoIcon:'◉', logoText:'DEEP~SEA~DS', sbLabel:'// SONAR ACTIVE',
+    sbLines:['> depth: 3800m','> signal: acquired','> beacon: locked'], sbDecor:'~ ≈ ~ ≈ ~',
+    modIcons:{ python:'🐠', visualization:'🌊', pandas_numpy:'🐙', linear:'🎣', eda:'🔭', math:'🧭', sql:'⚓', ml:'🦈', cases:'🐚', projects:'🏴‍☠️', career:'🌅' },
+    levelIcons:['🐟','🐠','🐡','🦑','🐙','🦈','🐳','⚓','🐉','🌊'],
+    achIcon:'⚓', homeGreeting:'> SONAR PING...', homeSub:'Глубина: 3800м. Сигнал принят.',
+  },
+  ghost: {
+    logoIcon:'○', logoText:'DATA SCIENCE', sbLabel:'NAVIGATION',
+    sbLines:['Python · SQL · ML','Clean · Simple · Fast','No distractions'], sbDecor:'— — — — —',
+    modIcons:{ python:'Py', visualization:'Vi', pandas_numpy:'Pd', linear:'Ln', eda:'Ed', math:'Mx', sql:'SQ', ml:'ML', cases:'Cs', projects:'Pr', career:'Ca' },
+    levelIcons:['1','2','3','4','5','6','7','8','9','10'],
+    achIcon:'○', homeGreeting:'Data Science', homeSub:'Просто. Чисто. Эффективно.',
+  },
+  retro: {
+    logoIcon:'★', logoText:'PIXEL::DS★', sbLabel:'// INSERT COIN',
+    sbLines:['▶ PLAYER 1 READY','▶ LEVEL: 1 / 10','▶ HI-SCORE: 9999'], sbDecor:'♦ ♣ ♠ ♥ ♦',
+    modIcons:{ python:'🕹️', visualization:'📺', pandas_numpy:'🎮', linear:'🎯', eda:'🔍', math:'🎲', sql:'💾', ml:'🤖', cases:'🏆', projects:'👾', career:'🎪' },
+    levelIcons:['👾','🐸','🏃','🚀','⭐','💎','🔥','⚡','🐉','★'],
+    achIcon:'★', homeGreeting:'► INSERT COIN ◄', homeSub:'PRESS START TO CONTINUE',
+  },
+  blood: {
+    logoIcon:'🩸', logoText:'BLOOD.EXE', sbLabel:'// КРИТИЧЕСКИЙ РЕЖИМ',
+    sbLines:['> deadline: завтра','> кофе: закончился','> сон: опционально'], sbDecor:'▓ ░ ▓ ░ ▓',
+    modIcons:{ python:'🩸', visualization:'💀', pandas_numpy:'☠', linear:'⚰️', eda:'🔪', math:'💉', sql:'🗡️', ml:'👁', cases:'🔥', projects:'💀', career:'🏚️' },
+    levelIcons:['😵','🥴','😤','😡','🔥','💀','☠','⚡','🐉','👑'],
+    achIcon:'💀', homeGreeting:'> ВЫЖИВАНИЕ: АКТИВНО', homeSub:'Дедлайн через 8 часов...',
+  },
+  gold_cls: {
+    logoIcon:'♛', logoText:'GOLD CLASS DS', sbLabel:'// ПРЕМИУМ ДОСТУП',
+    sbLines:['> портфель: растёт','> статус: Senior DS','> зарплата: +++'], sbDecor:'◆ ◇ ◆ ◇ ◆',
+    modIcons:{ python:'♛', visualization:'📈', pandas_numpy:'💰', linear:'📊', eda:'🔭', math:'∑', sql:'💎', ml:'🏆', cases:'💼', projects:'👑', career:'🎩' },
+    levelIcons:['🥉','🥈','🥇','💎','👑','♛','⭐','✨','🐉','♛'],
+    achIcon:'♛', homeGreeting:'◆ GOLD CLASS ACCESS ◆', homeSub:'Ты инвестируешь в себя.',
+  },
+  neon_green: {
+    logoIcon:'▸', logoText:'TERMINAL_DS', sbLabel:'// TERMINAL v2.0',
+    sbLines:['$ python train.py --epochs 100','> accuracy: 0.943','$ git commit -m "done"'], sbDecor:'> > > > >',
+    modIcons:{ python:'$', visualization:'~', pandas_numpy:'%', linear:'>', eda:'?', math:'=', sql:'#', ml:'@', cases:'!', projects:'*', career:'&' },
+    levelIcons:['>','>>','>>>','$','$$','$$$','#!','/root','🐉','EOF'],
+    achIcon:'$', homeGreeting:'$ whoami', homeSub:'> data_scientist --mode=learning',
+  },
 };
 
 function updateThemeIdentity(t) {
@@ -8556,6 +9591,27 @@ function updateThemeIdentity(t) {
   if (textEl) textEl.textContent = id.logoText;
   const sb = document.getElementById('sb-identity');
   if (sb) sb.innerHTML = '<div class="sb-theme-block"><div class="sb-theme-decor">' + id.sbDecor + '</div><div class="sb-theme-label">' + id.sbLabel + '</div>' + id.sbLines.map(function(l){ return '<div class="sb-theme-line">'+l+'</div>'; }).join('') + '<div class="sb-theme-decor">' + id.sbDecor + '</div></div>';
+
+  // Apply themed module icons in sidebar
+  if (id.modIcons) {
+    document.querySelectorAll('.mod-card').forEach(function(card) {
+      var modId = card.dataset.modid;
+      if (modId && id.modIcons[modId]) {
+        var iconSpan = card.querySelector('.mod-icon');
+        if (iconSpan && !iconSpan.dataset.locked) iconSpan.textContent = id.modIcons[modId];
+      }
+    });
+  }
+
+  // Apply themed level icon in header XP text
+  if (id.levelIcons) {
+    var lvl = getCurrentLevel();
+    var lvlIcon = id.levelIcons[Math.min(lvl.lvl - 1, id.levelIcons.length - 1)];
+    var xpEl = document.getElementById('xp-text');
+    if (xpEl && lvlIcon) {
+      xpEl.textContent = lvlIcon + ' LVL ' + lvl.lvl + ' — ' + lvl.title.replace(/^[^\s]+\s/, '');
+    }
+  }
 }
 
 function setTheme(t) {
@@ -8571,7 +9627,366 @@ function setTheme(t) {
 var matrixInterval=null, particlesInterval=null, gridInterval=null, glitchInterval=null;
 var starsInterval=null, rainInterval2=null, bubblesInterval=null, waveInterval=null;
 
+// ══════════════════════════════════════════════
+// SEASONAL PARTICLE EFFECTS
+// ══════════════════════════════════════════════
+var _seasonTimer = null;
+var _seasonCanvas2 = null;
+
+function stopSeasonEffect() {
+  if (_seasonTimer) { clearInterval(_seasonTimer); _seasonTimer = null; }
+  var c2 = document.getElementById('season-canvas');
+  if (c2) { c2.getContext('2d').clearRect(0,0,c2.width,c2.height); }
+}
+
+function _getSeasonCanvas() {
+  var c2 = document.getElementById('season-canvas');
+  if (!c2) {
+    c2 = document.createElement('canvas');
+    c2.id = 'season-canvas';
+    c2.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;';
+    document.body.appendChild(c2);
+  }
+  c2.width  = window.innerWidth;
+  c2.height = window.innerHeight;
+  return c2;
+}
+
+function startSeasonEffect(name) {
+  var fns = {
+    halloween:  _seasonHalloween,
+    patrick:    _seasonPatrick,
+    newyear:    _seasonNewYear,
+    birthday:   _seasonBirthday,
+    spring:     _seasonSpring,
+    summer:     _seasonSummer,
+    winter:     _seasonWinter,
+    cyber_ny:   _seasonCyberNY,
+    whiskey:    _seasonWhiskey,
+    progday:    _seasonProgDay,
+  };
+  var fn = fns[name];
+  if (fn) fn();
+}
+
+// 🎃 Halloween — летучие мыши + оранжевые искры
+function _seasonHalloween() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var bats = Array.from({length:12}, function(){
+    return {x:Math.random()*cv.width, y:Math.random()*cv.height*0.6,
+            vx:(Math.random()-0.5)*1.2, vy:(Math.random()-0.5)*0.6,
+            phase:Math.random()*Math.PI*2, size:Math.random()*8+6};
+  });
+  var sparks = Array.from({length:30}, function(){
+    return {x:Math.random()*cv.width, y:cv.height+10,
+            vx:(Math.random()-0.5)*1, vy:-(Math.random()*2+1),
+            life:Math.random(), decay:Math.random()*0.008+0.004};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    // Bats
+    bats.forEach(function(b){
+      b.x += b.vx; b.y += b.vy + Math.sin(b.phase)*0.3; b.phase += 0.06;
+      if (b.x < -20) b.x = cv.width+10; if (b.x > cv.width+20) b.x = -10;
+      if (b.y < 0) b.vy = Math.abs(b.vy); if (b.y > cv.height*0.7) b.vy = -Math.abs(b.vy);
+      ctx.save(); ctx.translate(b.x, b.y);
+      ctx.fillStyle = '#1a0a00cc';
+      // body
+      ctx.beginPath(); ctx.ellipse(0,0,b.size*0.4,b.size*0.3,0,0,Math.PI*2); ctx.fill();
+      // wings
+      var flap = Math.sin(b.phase*3)*0.4;
+      ctx.beginPath();
+      ctx.moveTo(0,0); ctx.bezierCurveTo(-b.size,flap*b.size,-b.size*1.5,b.size*0.5,-b.size*0.2,b.size*0.2);
+      ctx.moveTo(0,0); ctx.bezierCurveTo(b.size,flap*b.size,b.size*1.5,b.size*0.5,b.size*0.2,b.size*0.2);
+      ctx.strokeStyle = '#ff660088'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
+    });
+    // Orange sparks
+    sparks.forEach(function(s){
+      s.x += s.vx; s.y += s.vy; s.vy += 0.02; s.life -= s.decay;
+      if (s.life <= 0) { s.x=Math.random()*cv.width; s.y=cv.height+10; s.vy=-(Math.random()*2+1); s.life=1; }
+      ctx.beginPath(); ctx.arc(s.x,s.y,2,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(255,'+(100+Math.floor(s.life*100))+',0,'+s.life+')'; ctx.fill();
+    });
+  }, 40);
+}
+
+// 🍀 St. Patrick — падающие клеверы
+function _seasonPatrick() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var clovers = Array.from({length:20}, function(){
+    return {x:Math.random()*cv.width, y:-20-Math.random()*cv.height,
+            vy:Math.random()*1.2+0.5, vx:(Math.random()-0.5)*0.4,
+            rot:Math.random()*Math.PI*2, rotV:(Math.random()-0.5)*0.04,
+            size:Math.random()*10+8, op:Math.random()*0.5+0.4};
+  });
+  function drawClover(ctx, x, y, r, rot) {
+    ctx.save(); ctx.translate(x,y); ctx.rotate(rot);
+    for (var p=0; p<4; p++) {
+      ctx.beginPath();
+      var a = p * Math.PI/2;
+      ctx.arc(Math.cos(a)*r*0.5, Math.sin(a)*r*0.5, r*0.55, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.fillRect(-1, 0, 2, r*1.5); // stem
+    ctx.restore();
+  }
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    clovers.forEach(function(cl){
+      cl.y += cl.vy; cl.x += cl.vx; cl.rot += cl.rotV;
+      if (cl.y > cv.height+20) { cl.y=-20; cl.x=Math.random()*cv.width; }
+      ctx.fillStyle = 'rgba(0,'+(180+Math.floor(Math.random()*40))+',60,'+cl.op+')';
+      drawClover(ctx, cl.x, cl.y, cl.size, cl.rot);
+    });
+  }, 40);
+}
+
+// 🎆 New Year — конфетти + фейерверк
+function _seasonNewYear() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var cols = ['#ffd700','#ff4488','#00ccff','#ff6600','#cc44ff','#00ff88'];
+  var confetti = Array.from({length:60}, function(){
+    return {x:Math.random()*cv.width, y:-20-Math.random()*cv.height,
+            vy:Math.random()*2+1, vx:(Math.random()-0.5)*1.5,
+            rot:Math.random()*Math.PI*2, rotV:(Math.random()-0.5)*0.1,
+            w:Math.random()*8+4, h:Math.random()*4+2,
+            col:cols[Math.floor(Math.random()*cols.length)]};
+  });
+  var sparks = [];
+  var sparkTimer = 0;
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    sparkTimer++;
+    // Firework burst every 80 frames
+    if (sparkTimer % 80 === 0) {
+      var fx = Math.random()*cv.width*0.8+cv.width*0.1;
+      var fy = Math.random()*cv.height*0.4+50;
+      var col2 = cols[Math.floor(Math.random()*cols.length)];
+      for (var s=0; s<24; s++) {
+        var a = (s/24)*Math.PI*2;
+        sparks.push({x:fx,y:fy,vx:Math.cos(a)*(Math.random()*3+1),vy:Math.sin(a)*(Math.random()*3+1),life:1,col:col2});
+      }
+    }
+    sparks = sparks.filter(function(s){ return s.life > 0; });
+    sparks.forEach(function(s){
+      s.x+=s.vx; s.y+=s.vy; s.vy+=0.05; s.life-=0.02;
+      ctx.beginPath(); ctx.arc(s.x,s.y,2,0,Math.PI*2);
+      ctx.fillStyle = s.col+(Math.floor(s.life*255).toString(16).padStart(2,'0')); ctx.fill();
+    });
+    confetti.forEach(function(p){
+      p.y+=p.vy; p.x+=p.vx; p.rot+=p.rotV;
+      if (p.y>cv.height+10){p.y=-10;p.x=Math.random()*cv.width;}
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.col+'cc'; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+  }, 30);
+}
+
+// 🎂 Birthday — разноцветное конфетти + блёстки
+function _seasonBirthday() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var cols = ['#ff44cc','#ffcc00','#44ccff','#ff4444','#44ff88','#cc44ff'];
+  var pieces = Array.from({length:80}, function(){
+    return {x:Math.random()*cv.width, y:-Math.random()*cv.height,
+            vy:Math.random()*2.5+0.8, vx:(Math.random()-0.5)*2,
+            rot:Math.random()*Math.PI*2, rotV:(Math.random()-0.5)*0.12,
+            shape:Math.floor(Math.random()*3), // 0=rect, 1=circle, 2=star
+            size:Math.random()*8+4,
+            col:cols[Math.floor(Math.random()*cols.length)]};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pieces.forEach(function(p){
+      p.y+=p.vy; p.x+=p.vx; p.rot+=p.rotV;
+      if (p.y>cv.height+10){p.y=-10;p.x=Math.random()*cv.width;p.vx=(Math.random()-0.5)*2;}
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.col+'ee';
+      if (p.shape===0) { ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2); }
+      else if (p.shape===1) { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
+      else {
+        ctx.beginPath();
+        for(var i=0;i<5;i++){
+          var a=i*Math.PI*2/5-Math.PI/2;
+          var b=a+Math.PI/5;
+          i===0?ctx.moveTo(Math.cos(a)*p.size,Math.sin(a)*p.size):ctx.lineTo(Math.cos(a)*p.size,Math.sin(a)*p.size);
+          ctx.lineTo(Math.cos(b)*p.size*0.4,Math.sin(b)*p.size*0.4);
+        }
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    });
+  }, 30);
+}
+
+// 🌸 Spring — лепестки сакуры
+function _seasonSpring() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var petals = Array.from({length:25}, function(){
+    return {x:Math.random()*cv.width, y:-20-Math.random()*cv.height,
+            vy:Math.random()*1.0+0.4, vx:(Math.random()-0.5)*0.8,
+            rot:Math.random()*Math.PI*2, rotV:(Math.random()-0.5)*0.03,
+            size:Math.random()*10+6, wobble:Math.random()*Math.PI*2};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    petals.forEach(function(p){
+      p.y+=p.vy; p.x+=p.vx+Math.sin(p.wobble)*0.5; p.rot+=p.rotV; p.wobble+=0.03;
+      if(p.y>cv.height+20){p.y=-20;p.x=Math.random()*cv.width;}
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle='rgba(255,180,200,0.75)';
+      ctx.beginPath();
+      ctx.ellipse(0,-p.size*0.5,p.size*0.4,p.size*0.6,0,0,Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle='rgba(255,210,220,0.4)';
+      ctx.beginPath();
+      ctx.ellipse(0,-p.size*0.5,p.size*0.2,p.size*0.4,0,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+  }, 40);
+}
+
+// ☀️ Summer — светлячки + солнечные блики
+function _seasonSummer() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var fireflies = Array.from({length:30}, function(){
+    return {x:Math.random()*cv.width, y:Math.random()*cv.height,
+            vx:(Math.random()-0.5)*0.6, vy:(Math.random()-0.5)*0.6,
+            phase:Math.random()*Math.PI*2, bright:Math.random()};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    fireflies.forEach(function(f){
+      f.x+=f.vx; f.y+=f.vy; f.phase+=0.05;
+      if(f.x<0)f.x=cv.width; if(f.x>cv.width)f.x=0;
+      if(f.y<0)f.y=cv.height; if(f.y>cv.height)f.y=0;
+      var glow=(Math.sin(f.phase)+1)/2;
+      var r=glow*6+2;
+      var grad=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r*3);
+      grad.addColorStop(0,'rgba(255,255,100,'+(glow*0.9)+')');
+      grad.addColorStop(1,'rgba(255,200,0,0)');
+      ctx.beginPath(); ctx.arc(f.x,f.y,r*3,0,Math.PI*2);
+      ctx.fillStyle=grad; ctx.fill();
+    });
+  }, 40);
+}
+
+// ❄️ Winter — снежинки
+function _seasonWinter() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var flakes = Array.from({length:40}, function(){
+    return {x:Math.random()*cv.width, y:-20-Math.random()*cv.height,
+            vy:Math.random()*1.2+0.4, vx:(Math.random()-0.5)*0.5,
+            size:Math.random()*4+2, rot:Math.random()*Math.PI*2, wobble:Math.random()*Math.PI*2};
+  });
+  function drawFlake(ctx,x,y,r,rot){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(rot);
+    for(var i=0;i<6;i++){
+      ctx.save(); ctx.rotate(i*Math.PI/3);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,r);
+      ctx.moveTo(0,r*0.4); ctx.lineTo(r*0.2,r*0.6);
+      ctx.moveTo(0,r*0.4); ctx.lineTo(-r*0.2,r*0.6);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='rgba(200,230,255,0.7)'; ctx.lineWidth=1;
+    flakes.forEach(function(f){
+      f.y+=f.vy; f.x+=f.vx+Math.sin(f.wobble)*0.3; f.wobble+=0.02; f.rot+=0.02;
+      if(f.y>cv.height+10){f.y=-10;f.x=Math.random()*cv.width;}
+      drawFlake(ctx,f.x,f.y,f.size,f.rot);
+    });
+  }, 40);
+}
+
+// 🎆 Cyber NY — цифровой фейерверк (матричные символы летят вверх)
+function _seasonCyberNY() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var chars2 = '01アイウ01カキ01サシ01タチ01';
+  var streams = Array.from({length:20}, function(){
+    return {x:Math.random()*cv.width, y:cv.height+20,
+            vy:-(Math.random()*3+2), col:Math.random()>0.5?'#6644ff':'#ffd700',
+            chars:Array.from({length:5},function(){return chars2[Math.floor(Math.random()*chars2.length)];}),
+            life:1, decay:Math.random()*0.005+0.003};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.font='12px monospace';
+    streams.forEach(function(s){
+      s.y+=s.vy; s.life-=s.decay;
+      if(s.life<=0||s.y<-100){s.y=cv.height+20;s.x=Math.random()*cv.width;s.life=1;s.vy=-(Math.random()*3+2);}
+      s.chars.forEach(function(ch,ci){
+        var alpha=s.life*(1-ci/s.chars.length)*0.8;
+        ctx.fillStyle=s.col+(Math.floor(alpha*255).toString(16).padStart(2,'0'));
+        ctx.fillText(ch,s.x,s.y+ci*14);
+      });
+    });
+  }, 40);
+}
+
+// 🥃 Whiskey — дым + янтарные частицы
+function _seasonWhiskey() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var smoke = Array.from({length:15}, function(){
+    return {x:Math.random()*cv.width, y:cv.height*0.8+Math.random()*cv.height*0.2,
+            vy:-(Math.random()*0.4+0.1), vx:(Math.random()-0.5)*0.2,
+            r:Math.random()*30+10, life:Math.random(), decay:Math.random()*0.003+0.001};
+  });
+  var amber = Array.from({length:20}, function(){
+    return {x:Math.random()*cv.width, y:cv.height+10,
+            vy:-(Math.random()*1.5+0.5), vx:(Math.random()-0.5)*0.8,
+            r:Math.random()*3+1, life:Math.random()*0.6+0.2, decay:0.004};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    smoke.forEach(function(s){
+      s.x+=s.vx; s.y+=s.vy; s.r+=0.3; s.life-=s.decay;
+      if(s.life<=0){s.y=cv.height*0.8+Math.random()*cv.height*0.2;s.r=Math.random()*15+5;s.life=0.6;}
+      var g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+      g.addColorStop(0,'rgba(180,120,40,'+(s.life*0.12)+')');
+      g.addColorStop(1,'rgba(100,60,20,0)');
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    });
+    amber.forEach(function(a){
+      a.x+=a.vx; a.y+=a.vy; a.life-=a.decay;
+      if(a.life<=0){a.y=cv.height+10;a.x=Math.random()*cv.width;a.life=0.8;a.vy=-(Math.random()*1.5+0.5);}
+      ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(212,'+(130+Math.floor(a.life*50))+',10,'+a.life+')'; ctx.fill();
+    });
+  }, 40);
+}
+
+// 💻 Day of Coder — падающий двоичный код
+function _seasonProgDay() {
+  var cv = _getSeasonCanvas(); var ctx = cv.getContext('2d');
+  var cols2 = Array.from({length:Math.floor(cv.width/14)}, function(_, i){
+    return {x:i*14+7, y:-Math.random()*cv.height, vy:Math.random()*2+1,
+            bits:Array.from({length:8},function(){return Math.random()>0.5?'1':'0';}),
+            col:Math.random()>0.3?'#00ff88':'#0088ff', life:Math.random()*0.5+0.3};
+  });
+  _seasonTimer = setInterval(function(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.font='11px monospace';
+    cols2.forEach(function(col){
+      col.y+=col.vy;
+      if(col.y>cv.height+80){col.y=-10;col.bits=Array.from({length:8},function(){return Math.random()>0.5?'1':'0';});}
+      if(Math.random()<0.05) col.bits[Math.floor(Math.random()*col.bits.length)]=Math.random()>0.5?'1':'0';
+      col.bits.forEach(function(b,bi){
+        var alpha=1-(bi/col.bits.length)*0.7;
+        ctx.fillStyle=col.col+(Math.floor(alpha*180).toString(16).padStart(2,'0'));
+        ctx.fillText(b, col.x, col.y+bi*12);
+      });
+    });
+  }, 60);
+}
+
 function stopAllEffects() {
+  stopSeasonEffect();
   [matrixInterval,particlesInterval,gridInterval,glitchInterval,starsInterval,rainInterval2,bubblesInterval,waveInterval].forEach(function(iv){ if(iv) clearInterval(iv); });
   matrixInterval=particlesInterval=gridInterval=glitchInterval=starsInterval=rainInterval2=bubblesInterval=waveInterval=null;
   document.body.style.filter='';
@@ -8635,6 +10050,7 @@ render();
 applyEquipped();
 setTheme(localStorage.getItem('ds_theme') || 'cyber');
 updateThemeIdentity(currentTheme);
+_updateAudioButtons();
 
 </script>
 <!-- QUIZ MODAL -->
