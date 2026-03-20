@@ -960,6 +960,7 @@ body.th-ghost .glos-term { color: var(--fg) !important; }
 .quiz-score.good{color:var(--acc);text-shadow:0 0 20px var(--acc)88}
 .quiz-score.meh{color:#f59e0b}
 .quiz-score.bad{color:#ef4444}
+.challenge-card{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -1014,17 +1015,35 @@ body.th-ghost .glos-term { color: var(--fg) !important; }
   <div id="sidebar"><div id="sb-inner">
     <div id="sb-identity"></div>
     <div class="sec-label">// МОДУЛИ</div>
+    <div class="sec-label">// МОДУЛИ</div>
     <div id="mod-list"></div>
     <div style="border-top:1px solid var(--brd);margin-top:12px;padding-top:12px">
       <button class="glossary-btn" onclick="openShop()" style="background:var(--b2bg);color:var(--b2);border-color:var(--b2b);margin-bottom:6px">🛒 Магазин</button>
       <button class="glossary-btn" onclick="openGlossary()">📚 Глоссарий DS</button>
       <button class="glossary-btn" style="margin-top:6px" onclick="openCheatsheet()">📋 Шпаргалка</button>
     </div>
-    <div style="border-top:1px solid var(--brd);margin-top:12px;padding-top:12px">
-      <div class="sec-label">// ЕЖЕДНЕВНЫЙ КВЕСТ</div>
-      <div id="quest-sidebar"></div>
+    <div style="border-top:1px solid var(--brd);margin-top:10px;padding-top:6px">
+      <button onclick="toggleAccordion('pet-acc','pet-arrow')" style="width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:2px 2px 5px">
+        <span class="sec-label" style="margin:0;color:var(--acc)">// ПИТОМЕЦ</span>
+        <span id="pet-arrow" style="font-size:10px;color:var(--fg4)">▶</span>
+      </button>
+      <div id="pet-acc" style="display:none"><div id="pet-widget"></div></div>
     </div>
-    <div style="border-top:1px solid var(--brd);margin-top:12px;padding-top:12px">
+    <div style="border-top:1px solid var(--brd);margin-top:6px;padding-top:6px">
+      <button onclick="toggleAccordion('ch-acc','ch-arrow')" style="width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:2px 2px 5px">
+        <span class="sec-label" style="margin:0;color:var(--acc)">// ЧЕЛЛЕНДЖ</span>
+        <span id="ch-arrow" style="font-size:10px;color:var(--fg4)">▶</span>
+      </button>
+      <div id="ch-acc" style="display:none"><div id="challenge-widget"></div></div>
+    </div>
+    <div style="border-top:1px solid var(--brd);margin-top:6px;padding-top:6px">
+      <button onclick="toggleAccordion('quest-acc','quest-arrow');renderQuestSidebar()" style="width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:2px 2px 5px">
+        <span class="sec-label" style="margin:0;color:var(--acc)">// КВЕСТЫ И ДЕЙЛИКИ</span>
+        <span id="quest-arrow" style="font-size:10px;color:var(--fg4)">▶</span>
+      </button>
+      <div id="quest-acc" style="display:none"><div id="quest-sidebar"></div></div>
+    </div>
+    <div style="border-top:1px solid var(--brd);margin-top:10px;padding-top:12px">
       <div class="sec-label">// ДОСТИЖЕНИЯ</div>
       <div id="ach-list"></div>
     </div>
@@ -3963,7 +3982,79 @@ for name, cols in [('Базовые', base),('FE', fe_cols)]:
     Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=.2,random_state=42,stratify=y)
     m = LogisticRegression(max_iter=1000).fit(Xtr,ytr)
     print(f"{name}: AUC={roc_auc_score(yte,m.predict_proba(Xte)[:,1]):.3f}")
-`}]},
+`},
+   {title:"Регуляризация: Ridge, Lasso, ElasticNet",visual:"linear_reg",
+    theory:`<b>Переобучение в линейных моделях — слишком много признаков = огромные коэффициенты.</b>
+
+<b>Ridge (L2) — штраф за большие веса:</b>
+<code>from sklearn.linear_model import Ridge
+ridge = Ridge(alpha=1.0)   # alpha — сила регуляризации
+ridge.fit(X_train, y_train)
+# Все веса уменьшаются, ни один не обнуляется</code>
+
+<b>Lasso (L1) — штраф + автоотбор признаков:</b>
+<code>from sklearn.linear_model import Lasso
+lasso = Lasso(alpha=0.1)
+lasso.fit(X_train, y_train)
+# Некоторые веса = ровно 0 → автоматический отбор!
+important = X.columns[lasso.coef_ != 0]</code>
+
+<b>ElasticNet — компромисс L1+L2:</b>
+<code>from sklearn.linear_model import ElasticNet
+en = ElasticNet(alpha=0.1, l1_ratio=0.5)  # 50% L1 + 50% L2</code>
+
+<b>Как выбрать alpha — кросс-валидация:</b>
+<code>from sklearn.linear_model import RidgeCV, LassoCV
+ridge_cv = RidgeCV(alphas=[0.001,0.01,0.1,1,10,100])
+ridge_cv.fit(X_train, y_train)
+print(ridge_cv.alpha_)   # → оптимальный alpha</code>
+
+<b>Правило выбора:</b>
+Много признаков, многие нерелевантны → Lasso (обнуляет лишние)
+Все признаки важны → Ridge (сглаживает все)
+Не знаешь → ElasticNet или RidgeCV/LassoCV`,
+    code:`import numpy as np
+from sklearn.linear_model import Ridge, Lasso, ElasticNet, RidgeCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+
+np.random.seed(42)
+n, p = 200, 50
+X = np.random.randn(n, p)
+true_coef = np.zeros(p)
+true_coef[:10] = np.random.randn(10) * 3   # только 10 важных!
+y = X @ true_coef + np.random.randn(n) * 2
+
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
+sc = StandardScaler()
+X_tr_s = sc.fit_transform(X_tr); X_te_s = sc.transform(X_te)
+
+print(f"{'Модель':20s} {'R²':>8s} {'Ненулевых':>10s}")
+print('-'*42)
+for name, model in [
+    ('Ridge(1.0)', Ridge(1.0)), ('Ridge(10.0)', Ridge(10.0)),
+    ('Lasso(0.1)', Lasso(0.1)), ('Lasso(1.0)', Lasso(1.0)),
+    ('ElasticNet', ElasticNet(0.1, l1_ratio=0.5)),
+]:
+    model.fit(X_tr_s, y_tr)
+    r2 = r2_score(y_te, model.predict(X_te_s))
+    nz = np.sum(model.coef_ != 0)
+    print(f"{name:20s} {r2:8.3f} {nz:10d}")
+
+ridge_cv = RidgeCV(alphas=np.logspace(-2,3,50), cv=5)
+ridge_cv.fit(X_tr_s, y_tr)
+print(f"\nRidgeCV best alpha: {ridge_cv.alpha_:.3f}")
+print(f"Lasso нашёл важные признаки: {np.where(Lasso(0.5).fit(X_tr_s,y_tr).coef_!=0)[0][:10]}")`,
+    task:`1. Создай датасет с мультиколлинеарностью. Сравни коэффициенты LinearRegression vs Ridge.
+2. LassoCV — найди оптимальный alpha. Сколько признаков осталось?
+3. Постройй график: alpha vs R² для Ridge через logspace(-3, 3).`,
+    realcase:"В задаче прогноза цен квартир 200 признаков. Lasso alpha=0.01 обнулил 150 из них → модель стала интерпретируемой: важны площадь, район, этаж, год постройки, расстояние до метро.",
+    solution:`from sklearn.linear_model import LassoCV
+lasso_cv = LassoCV(alphas=np.logspace(-3,1,50), cv=5, max_iter=10000)
+lasso_cv.fit(X_tr_s, y_tr)
+print(f"Best alpha: {lasso_cv.alpha_:.4f}")
+print(f"Ненулевых признаков: {np.sum(lasso_cv.coef_ != 0)}")`}]},
  {id:"eda",unlock:550,code:"M-05",icon:"🔍",xp:175,color:"#6dfabc",
   title:"EDA + ЧИСТКА ДАННЫХ",
   subtitle:"Пропуски, выбросы, категории, даты — 80% реальной работы DS",
@@ -4315,7 +4406,97 @@ print(f"95% CI: {b.ppf(0.025):.0f} – {b.ppf(0.975):.0f}")
 # В реальности слова зависят друг от друга — допущение "наивное", но работает
 print("\nNaive Bayes 'наивен' потому что предполагает независимость признаков.")
 print("На практике работает хорошо для текста несмотря на это допущение.")
-`}
+`},
+   {title:"Центральная предельная теорема и A/B тесты",visual:"math_clt",
+    theory:`<b>ЦПТ — почему статистика работает даже с кривыми данными.</b>
+
+<b>Центральная предельная теорема (ЦПТ):</b>
+Среднее достаточно большой выборки стремится к нормальному распределению — независимо от формы исходного распределения.
+
+n > 30 → можно применять t-test даже к равномерным, экспоненциальным, асимметричным данным.
+<code>import numpy as np
+# Исходное — равномерное (НЕ нормальное)
+population = np.random.uniform(0, 100, 100000)
+# 1000 выборок по 50 — их средние нормально распределены!
+sample_means = [np.random.choice(population, 50).mean() for _ in range(1000)]</code>
+
+<b>A/B тест — главный инструмент продуктового аналитика:</b>
+<code>from scipy import stats
+
+# Контроль: 10000 пользователей, конверсия 3.2%
+# Тест: 10000 пользователей, конверсия 3.8%
+# Статистически значимо?
+
+stat, p = stats.proportions_ztest(
+    count=[320, 380],   # количество конверсий
+    nobs=[10000, 10000] # размеры групп
+)
+print(f"p-value = {p:.4f}")  # 0.0198
+# p < 0.05 → да, внедряем новый дизайн!</code>
+
+<b>Ошибки типа I и II:</b>
+Ошибка I (ложная тревога): p < 0.05 случайно. Контроль: строгий порог (0.01).
+Ошибка II (пропуск эффекта): не обнаружили реальное улучшение. Контроль: больше выборка.
+
+<b>Минимальный размер выборки:</b>
+<code>from statsmodels.stats.power import NormalIndPower
+analysis = NormalIndPower()
+n = analysis.solve_power(effect_size=0.2, power=0.8, alpha=0.05)
+print(f"Нужно минимум {int(n)+1} наблюдений на группу")</code>`,
+    code:`from scipy import stats
+import numpy as np
+
+np.random.seed(42)
+
+# ── ЦПТ ──────────────────────────────────────────────────────
+population = np.random.exponential(scale=5, size=100000)  # асимметричное!
+print(f"Population: mean={population.mean():.2f}, skew={stats.skew(population):.2f}")
+
+sample_means = [np.random.choice(population, 50).mean() for _ in range(2000)]
+print(f"Sample means: mean={np.mean(sample_means):.2f}, skew={stats.skew(sample_means):.2f}")
+print(f"Нормально? Shapiro p={stats.shapiro(sample_means[:200]).pvalue:.4f}")
+
+# ── A/B ТЕСТ ─────────────────────────────────────────────────
+print("\n=== A/B тест ===")
+# Две группы — разные конверсии
+control = np.random.binomial(1, 0.032, 10000)
+test    = np.random.binomial(1, 0.038, 10000)
+
+# t-test для средних
+t_stat, p_val = stats.ttest_ind(control, test)
+print(f"t-статистика: {t_stat:.3f}, p-value: {p_val:.4f}")
+print(f"Результат: {'значимо ✅' if p_val < 0.05 else 'незначимо ❌'}")
+
+# proportions z-test
+stat_z, p_z = stats.proportions_ztest(
+    [control.sum(), test.sum()], [len(control), len(test)]
+)
+print(f"\nz-test: p={p_z:.4f}")
+print(f"Прирост: {(test.mean()-control.mean())/control.mean():.1%}")
+
+# ── РАЗМЕР ВЫБОРКИ ────────────────────────────────────────────
+from statsmodels.stats.power import NormalIndPower
+analysis = NormalIndPower()
+for effect in [0.1, 0.2, 0.5]:
+    n = analysis.solve_power(effect_size=effect, power=0.8, alpha=0.05)
+    print(f"Эффект {effect}: нужно {int(n)+1} на группу")`,
+    task:`1. Сгенерируй данные: группа A (mean=100, std=15), группа B (mean=105, std=15).
+   t-test: значимо ли различие при n=30? При n=200?
+2. Посчитай необходимый размер выборки для детектирования 1% улучшения конверсии (базовая 5%).
+3. Симулируй 1000 A/A тестов (обе группы одинаковые). Сколько раз получим p<0.05? Это ошибка I.`,
+    realcase:"Booking.com запускает 1000 A/B тестов в день. При alpha=0.05 и отсутствии эффекта 50 тестов дадут p<0.05 случайно (ошибка I). Решение: поправка Бонферрони или FDR контроль.",
+    solution:`# 1. t-test при разных n
+for n in [30, 200]:
+    A = np.random.normal(100, 15, n)
+    B = np.random.normal(105, 15, n)
+    t, p = stats.ttest_ind(A, B)
+    print(f"n={n}: p={p:.4f} — {'значимо' if p<0.05 else 'незначимо'}")
+
+# 3. A/A тест симуляция
+false_positives = sum(stats.ttest_ind(
+    np.random.normal(0,1,100), np.random.normal(0,1,100)
+).pvalue < 0.05 for _ in range(1000))
+print(f"Ложных открытий: {false_positives}/1000 = {false_positives/10:.1f}%")`}
   ]},
 
 
@@ -5617,7 +5798,87 @@ for features in test_cases:
     task:`1. Обучи Pipeline(StandardScaler + RandomForestClassifier) на load_wine().
 2. Сохрани через joblib.
 3. Загрузи из файла.
-4. Напиши функцию predict_wine(features_list) → возвращает название класса вина и confidence.`}
+4. Напиши функцию predict_wine(features_list) → возвращает название класса вина и confidence.`},
+   {title:"NLP: классификация текста",visual:"ml_nlp",
+    theory:`<b>Текст — самый богатый и грязный тип данных. NLP = ML для языка.</b>
+
+<b>Pipeline обработки текста:</b>
+<code>raw text → очистка → токенизация → векторизация → модель</code>
+
+<b>TF-IDF — главный инструмент:</b>
+TF = частота слова в документе. IDF = log(N/df) — редкие слова важнее.
+<code>from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf = TfidfVectorizer(max_features=10000, ngram_range=(1,2))
+X = tfidf.fit_transform(texts)   # sparse matrix (n_docs × n_features)</code>
+
+<b>Полный pipeline — sentiment analysis:</b>
+<code>from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+
+pipe = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=50000, ngram_range=(1,2))),
+    ('clf',   LogisticRegression(max_iter=1000))
+])
+pipe.fit(X_train, y_train)
+# Accuracy на задачах sentiment: 88-92% без нейросетей!</code>
+
+<b>Важно — StopWords и нормализация:</b>
+<code>tfidf = TfidfVectorizer(
+    stop_words=['и','в','на','не','с','а','но'],  # стоп-слова
+    max_df=0.95,   # игнорировать слова в >95% документов
+    min_df=2,      # игнорировать слова встречающиеся < 2 раз
+    ngram_range=(1,2)   # uni- и биграммы
+)</code>`,
+    code:`import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+np.random.seed(42)
+pos = ["отличный продукт очень доволен","прекрасное качество рекомендую",
+       "супер быстрая доставка всё отлично","хороший товар буду заказывать снова",
+       "замечательно работает доволен покупкой","качество на высоте спасибо"] * 40
+neg = ["ужасное качество не рекомендую","пришло сломанное очень расстроен",
+       "долгая доставка плохой сервис","деньги на ветер полное разочарование",
+       "не соответствует описанию верните деньги","брак полный ерунда"] * 40
+
+texts  = pos + neg
+labels = [1]*len(pos) + [0]*len(neg)
+X_tr, X_te, y_tr, y_te = train_test_split(texts, labels, test_size=0.2,
+                                            random_state=42, stratify=labels)
+
+pipe = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=2000, ngram_range=(1,2))),
+    ('clf',   LogisticRegression(max_iter=500))
+])
+pipe.fit(X_tr, y_tr)
+print("=== Sentiment Classifier ===")
+print(classification_report(y_te, pipe.predict(X_te)))
+
+# Топ признаки
+fn = pipe['tfidf'].get_feature_names_out()
+coefs = pipe['clf'].coef_[0]
+print("Топ позитивные:", [(fn[i], round(coefs[i],2)) for i in coefs.argsort()[-5:]])
+print("Топ негативные:", [(fn[i], round(coefs[i],2)) for i in coefs.argsort()[:5]])
+
+new_texts = ["отличная вещь всем рекомендую", "пришла сломанная жуть"]
+for text, pred, prob in zip(new_texts, pipe.predict(new_texts),
+                             pipe.predict_proba(new_texts)):
+    print(f"'{text}' → {'😊' if pred==1 else '😞'} ({prob[pred]:.0%})")`,
+    task:`1. Замени LogisticRegression на MultinomialNB. Сравни accuracy.
+2. Добавь max_df=0.95 и min_df=2 в TfidfVectorizer. Как изменился размер словаря?
+3. Добавь третий класс 'нейтральный'. Как изменился classification_report?`,
+    realcase:"Netflix анализирует 10М отзывов в день. TF-IDF+LogReg даёт baseline 89%. BERT даёт 94% но в 100× медленнее. В продакшн идёт TF-IDF — скорость важнее 5% точности при таком объёме.",
+    solution:`from sklearn.naive_bayes import MultinomialNB
+pipe_nb = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=2000, max_df=0.95, min_df=2)),
+    ('clf',   MultinomialNB(alpha=0.1))
+])
+pipe_nb.fit(X_tr, y_tr)
+print("NB accuracy:", pipe_nb.score(X_te, y_te))
+print("Vocab size:", len(pipe_nb['tfidf'].vocabulary_))`}
   ]},
  {id:"cases",unlock:1625,code:"M-09",icon:"💼",xp:500,color:"#f59e0b",
   title:"РЕАЛЬНЫЕ КЕЙСЫ",
@@ -6474,6 +6735,11 @@ let state = {
   questDone: localStorage.getItem('ds_quest_done') === 'true',
   questDate: localStorage.getItem('ds_quest_date') || '',
   showSolution: false,
+  petXp: parseInt(localStorage.getItem('ds_pet_xp') || '0'),
+  petStage: parseInt(localStorage.getItem('ds_pet_stage') || '0'),
+  challengeWeek: localStorage.getItem('ds_ch_week') || '',
+  challengeDone: JSON.parse(localStorage.getItem('ds_ch_done') || '[]'),
+  mapView: localStorage.getItem('ds_map_view') === '1',
 };
 
 function save() {
@@ -6591,10 +6857,134 @@ function renderQuestSidebar() {
 }
 
 
+
+function toggleAccordion(contentId, arrowId) {
+  var el = document.getElementById(contentId);
+  var arr= document.getElementById(arrowId);
+  if (!el) return;
+  var open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  if (arr) arr.textContent = open ? '▶' : '▼';
+  playSound('click');
+}
+
+// ── WEEKLY CHALLENGES ────────────────────────────────────────
+const WEEKLY_CHALLENGES = [
+  {id:'w01',title:'Неделя Python',   desc:'Заверши модуль Python',        xp:150,check:function(s){return s.completed.has('python');}},
+  {id:'w02',title:'Дата-чистильщик', desc:'Заверши модуль EDA',            xp:180,check:function(s){return s.completed.has('eda');}},
+  {id:'w03',title:'SQL-мастер',      desc:'Заверши модуль SQL',            xp:180,check:function(s){return s.completed.has('sql');}},
+  {id:'w04',title:'Пандас-гуру',     desc:'Заверши модуль Pandas+NumPy',   xp:160,check:function(s){return s.completed.has('pandas_numpy');}},
+  {id:'w05',title:'Первые модели',   desc:'Заверши Linear + EDA',          xp:220,check:function(s){return s.completed.has('linear')&&s.completed.has('eda');}},
+  {id:'w06',title:'ML-марафон',      desc:'Заверши модуль ML',             xp:300,check:function(s){return s.completed.has('ml');}},
+  {id:'w07',title:'Стрик-воин',      desc:'Заходи 5 дней подряд',          xp:120,check:function(s){return s.streak>=5;}},
+  {id:'w08',title:'500 XP за неделю',desc:'Набери 500+ earnedXP',          xp:100,check:function(s){return s.earnedXp>=500;}},
+  {id:'w09',title:'Визуализатор',    desc:'Заверши модуль Визуализация',   xp:150,check:function(s){return s.completed.has('visualization');}},
+  {id:'w10',title:'Математик',       desc:'Заверши модуль Математика',     xp:140,check:function(s){return s.completed.has('math');}},
+];
+
+function getCurrentChallenge() {
+  var d = new Date();
+  var w = Math.floor((d - new Date(d.getFullYear(),0,1)) / 604800000);
+  return WEEKLY_CHALLENGES[w % WEEKLY_CHALLENGES.length];
+}
+
+function checkChallenge() {
+  var ch   = getCurrentChallenge();
+  var week = new Date().toISOString().slice(0,7) + '-' + ch.id;
+  if (state.challengeWeek !== week) {
+    state.challengeWeek = week; state.challengeDone = [];
+    localStorage.setItem('ds_ch_week', week);
+    localStorage.setItem('ds_ch_done', '[]');
+  }
+  if (state.challengeDone.indexOf(ch.id) < 0 && ch.check(state)) {
+    state.challengeDone.push(ch.id);
+    localStorage.setItem('ds_ch_done', JSON.stringify(state.challengeDone));
+    state.xp += ch.xp; state.earnedXp += ch.xp;
+    localStorage.setItem('ds_xp', state.xp);
+    localStorage.setItem('ds_earned_xp', state.earnedXp);
+    playSound('achieve');
+    showBuyToast('🏅 Челлендж выполнен! +' + ch.xp + ' XP');
+    updateHeader();
+  }
+}
+
+function renderChallenge() {
+  var ch   = getCurrentChallenge();
+  var done = state.challengeDone.indexOf(ch.id) >= 0;
+  return '<div style="padding:4px 2px 10px">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">'
+    + '<div style="font-size:12px;font-weight:700;color:var(--fg)">' + ch.title + '</div>'
+    + '<div style="font-size:9px;color:' + (done?'#22c55e':'var(--acc)') + ';white-space:nowrap;margin-left:6px">'
+    + (done ? '✅ ГОТОВО' : '+' + ch.xp + ' XP') + '</div>'
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--fg3);margin-bottom:8px">' + ch.desc + '</div>'
+    + '<div style="height:3px;background:var(--bg4);border-radius:2px">'
+    + '<div style="width:'+(done?100:ch.check(state)?100:0)+'%;height:3px;background:'
+    + (done?'#22c55e':'var(--acc)')+';border-radius:2px;transition:width .5s"></div>'
+    + '</div></div>';
+}
+
+// ── PET COMPANION ────────────────────────────────────────────
+const PET_STAGES = [
+  {stage:0,emoji:'🥚',name:'Яйцо',     xp:0,   msg:'Учись — и я вылуплюсь!'},
+  {stage:1,emoji:'🐣',name:'Птенец',   xp:100, msg:'Я появился! Продолжай!'},
+  {stage:2,emoji:'🐥',name:'Цыплёнок', xp:300, msg:'Растём вместе!'},
+  {stage:3,emoji:'🦆',name:'Утёнок',   xp:600, msg:'SQL уже знаешь? Красавчик.'},
+  {stage:4,emoji:'🦅',name:'Орёл',     xp:1000,msg:'Паришь над данными!'},
+  {stage:5,emoji:'🐲',name:'Дракончик',xp:1800,msg:'ML не пугает нас!'},
+  {stage:6,emoji:'🐉',name:'Дракон DS',xp:3000,msg:'Легенда. Просто легенда.'},
+];
+
+function getPetStage() {
+  var pet = PET_STAGES[0];
+  PET_STAGES.forEach(function(p){ if (state.earnedXp >= p.xp) pet = p; });
+  return pet;
+}
+
+function updatePet() {
+  var pet = getPetStage();
+  if (pet.stage > state.petStage) {
+    state.petStage = pet.stage;
+    localStorage.setItem('ds_pet_stage', pet.stage);
+    playSound('achieve');
+    showBuyToast(pet.emoji + ' Питомец вырос до: ' + pet.name + '!');
+  }
+  var el = document.getElementById('pet-widget');
+  if (el) el.innerHTML = renderPet();
+}
+
+function petPoke(el) {
+  playSound('coin');
+  el.style.transform = 'scale(1.3)';
+  setTimeout(function(){ el.style.transform = ''; }, 150);
+}
+function renderPet() {
+  var pet  = getPetStage();
+  var nxt  = PET_STAGES[Math.min(pet.stage+1, PET_STAGES.length-1)];
+  var pct  = pet.stage >= PET_STAGES.length-1 ? 100
+    : Math.round((state.earnedXp - pet.xp) / (nxt.xp - pet.xp) * 100);
+  return '<div style="text-align:center;padding:8px 4px 12px">'
+    + '<div style="font-size:38px;margin-bottom:4px;cursor:pointer;display:inline-block;transition:transform .1s" '
+    + 'onclick="petPoke(this)">' 
+    + pet.emoji + '</div>'
+    + '<div style="font-size:12px;font-weight:700;color:var(--acc)">' + pet.name + '</div>'
+    + '<div style="font-size:10px;color:var(--fg4);margin:3px 0 8px;font-style:italic">"' + pet.msg + '"</div>'
+    + (pet.stage < PET_STAGES.length-1
+      ? '<div style="height:3px;background:var(--bg4);border-radius:2px;margin:0 12px">'
+        + '<div style="width:'+Math.max(0,Math.min(100,pct))+'%;height:3px;background:var(--acc);border-radius:2px"></div></div>'
+        + '<div style="font-size:9px;color:var(--fg5);margin-top:3px">до ' + nxt.emoji + ': ' + Math.max(0,nxt.xp - state.earnedXp) + ' XP</div>'
+      : '<div style="font-size:9px;color:#ffd700">★ MAX LEVEL ★</div>')
+    + '</div>';
+}
+
 function buildSidebar() {
   // modules
   const ml = document.getElementById('mod-list');
   ml.innerHTML = '';
+  if (state.mapView) {
+    ml.innerHTML = renderProgressMap();
+    return;
+  }
   MODULES.forEach(mod => {
     const active = state.activeModuleId === mod.id;
     const done   = state.completed.has(mod.id);
@@ -6626,6 +7016,10 @@ function buildSidebar() {
     al.appendChild(div);
   });
   renderQuestSidebar();
+  var petEl = document.getElementById('pet-widget');
+  if (petEl) petEl.innerHTML = renderPet();
+  var chEl = document.getElementById('challenge-widget');
+  if (chEl) chEl.innerHTML = renderChallenge();
 }
 
 // ══════════════════════════════════════════════
@@ -6988,6 +7382,8 @@ function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/
 function completeModule() {
   triggerQuest('complete_mod');
   playSound('complete');
+  setTimeout(function(){ checkChallenge(); updatePet(); buildSidebar(); }, 400);
+  setTimeout(function(){ checkChallenge(); updatePet(); }, 300);
   const mod = MODULES.find(m => m.id === state.activeModuleId);
   if (!mod || state.completed.has(mod.id)) return;
   state.completed.add(mod.id);
@@ -7078,7 +7474,12 @@ const QUIZZES = {
     { q:"Что делает df.describe()?", opts:["Показывает mean, std, min, max, квартили для числовых столбцов","Удаляет пропуски","Показывает типы столбцов","Сортирует DataFrame"], ans:0, exp:"describe() — 'рентген' числовых данных. Сразу видно выбросы (max=200 при среднем 30) и распределение." },
     { q:"В чём разница df.loc и df.iloc?", opts:["loc — по именам/меткам, iloc — по целочисленной позиции","loc быстрее","iloc работает только с числовыми индексами","Нет разницы"], ans:0, exp:"loc['age'] — по имени столбца. iloc[:, 0] — по позиции 0. Путать их — частая ошибка джунов." },
     { q:"Что делает groupby('dept')['salary'].transform('mean')?", opts:["Добавляет среднее по отделу к каждой строке не схлопывая DataFrame","Схлопывает в одну строку на отдел","Удаляет дубликаты","Сортирует по отделу"], ans:0, exp:"transform не схлопывает! Каждая строка получает среднее своего отдела. Удобно для нормализации внутри группы." },
-  ],
+  ,
+    { q:"Что делает df.groupby('dept')['salary'].transform('mean')?", opts:["Добавляет среднее отдела к каждой строке без схлопывания","Возвращает одну строку на отдел","Сортирует по отделу","Удаляет дубликаты"], ans:0, exp:"transform не схлопывает DataFrame. Каждая строка получает среднее своего отдела — удобно для нормализации внутри группы." },
+    { q:"В чём разница между df.loc и df.iloc?", opts:["loc — по именам/меткам, iloc — по целочисленной позиции","loc быстрее iloc","iloc работает только с числовыми индексами","Нет разницы, синонимы"], ans:0, exp:"df.loc['col'] — по имени. df.iloc[:, 0] — по позиции 0. Путаница loc/iloc — классическая ошибка новичков." },
+    { q:"Что такое broadcasting в NumPy?", opts:["Автоматическое растягивание массивов разных форм для поэлементных операций","Трансляция данных по сети","Копирование массива","Вещательное вычисление GPU"], ans:0, exp:"X - X.mean(axis=0) вычитает среднее каждого столбца из всех строк — без единого цикла. NumPy 'растягивает' вектор mean до формы матрицы." },
+    { q:"Как заполнить NaN в столбце медианой своей группы?", opts:["df.groupby('cat')['val'].transform(lambda x: x.fillna(x.median()))","df.fillna(df.median())","df.dropna()","df['val'] = df.median()"], ans:0, exp:"transform с fillna заполняет NaN медианой именно своей группы — умнее чем общая медиана по всему датасету." },
+    { q:"Что возвращает df.describe() для числовых столбцов?", opts:["count, mean, std, min, 25%, 50%, 75%, max","Только среднее и стандартное отклонение","Типы данных","Количество пропусков"], ans:0, exp:"describe() — 8 строк статистики. Сразу видно выбросы (max=200 при mean=30), распределение, наличие отрицательных значений." }],
   "python": [
     { q:"Что выведет: print(type([1,2,3]))?", opts:["<class 'list'>","<class 'tuple'>","<class 'array'>","list"], ans:0, exp:"list — изменяемый упорядоченный контейнер. type() возвращает тип в виде <class 'X'>." },
     { q:"Как получить срез lst с индекса 1 по 2 включительно?", opts:["lst[1:3]","lst[1:2]","lst[0:3]","lst(1,3)"], ans:0, exp:"lst[start:stop] — включает start, не включает stop. lst[1:3] = элементы с индексами 1 и 2." },
@@ -7315,6 +7716,82 @@ function renderQuizModal() {
     '<div class="quiz-opts">' + optsHTML + '</div>' +
     feedback + nav;
 }
+
+
+// ══════════════════════════════════════════════
+// WEEKLY CHALLENGES
+// ══════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════
+// PROGRESS MAP (tree/graph view)
+// ══════════════════════════════════════════════
+
+function toggleMapView() {
+  state.mapView = !state.mapView;
+  localStorage.setItem('ds_map_view', state.mapView ? '1' : '0');
+  buildSidebar();
+  playSound('tab');
+}
+
+function renderProgressMap() {
+  var W = 220, rowH = 56, pad = 16;
+  var nodes = MODULES.map(function(mod, idx) {
+    var done   = state.completed.has(mod.id);
+    var active = state.activeModuleId === mod.id;
+    var locked = isModuleLocked(mod);
+    var col    = mod.color || 'var(--acc)';
+    var x      = idx % 2 === 0 ? pad : W - pad - 80;
+    var y      = Math.floor(idx / 2) * rowH + pad;
+    return { mod:mod, done:done, active:active, locked:locked, col:col, x:x, y:y, idx:idx };
+  });
+
+  var totalH = Math.ceil(MODULES.length / 2) * rowH + pad * 2;
+
+  var svg = '<svg width="' + W + '" height="' + totalH + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // Draw connector lines
+  for (var i = 1; i < nodes.length; i++) {
+    var prev = nodes[i-1], curr = nodes[i];
+    var px = prev.x + 40, py = prev.y + 18;
+    var cx = curr.x + 40, cy = curr.y + 18;
+    svg += '<line x1="'+px+'" y1="'+py+'" x2="'+cx+'" y2="'+cy+'"'
+      + ' stroke="' + (curr.done ? curr.col : 'var(--brd)') + '"'
+      + ' stroke-width="2" stroke-dasharray="' + (curr.locked ? '4,3' : 'none') + '" opacity="0.5"/>';
+  }
+
+  // Draw nodes
+  nodes.forEach(function(n) {
+    var bgCol  = n.done ? n.col : n.active ? n.col + '44' : 'var(--bg3)';
+    var border = n.active ? n.col : n.done ? n.col : 'var(--brd)';
+    var icon   = n.locked ? '🔒' : n.mod.icon;
+    // Node background
+    svg += '<rect x="'+n.x+'" y="'+n.y+'" width="80" height="36" rx="8"'
+      + ' fill="'+ bgCol +'" stroke="'+ border +'" stroke-width="'+(n.active?2:1)+'"'
+      + ' style="cursor:pointer"'
+      + ' onclick="' + (n.locked ? 'showLockToast(MODULES['+n.idx+'])' : 'openModule(\''+n.mod.id+'\')') + '"'
+      + '/>';
+    // Icon
+    svg += '<text x="'+(n.x+12)+'" y="'+(n.y+22)+'" font-size="14" dominant-baseline="middle">' + icon + '</text>';
+    // Code
+    svg += '<text x="'+(n.x+30)+'" y="'+(n.y+13)+'" font-size="8" fill="'+(n.done?'#fff':'var(--fg4)')+'">'
+      + n.mod.code + '</text>';
+    // Title (truncated)
+    var shortTitle = n.mod.title.replace(/[—–-].*/, '').trim().slice(0, 10);
+    svg += '<text x="'+(n.x+30)+'" y="'+(n.y+26)+'" font-size="9" fill="'+(n.done?'#fff':'var(--fg2)')+'">'
+      + shortTitle + (n.mod.title.length > 10 ? '…' : '') + '</text>';
+    // XP badge
+    if (n.done) {
+      svg += '<circle cx="'+(n.x+74)+'" cy="'+(n.y+4)+'" r="7" fill="#22c55e"/>';
+      svg += '<text x="'+(n.x+74)+'" y="'+(n.y+8)+'" font-size="8" fill="#fff" text-anchor="middle">✓</text>';
+    }
+  });
+
+  svg += '</svg>';
+
+  return '<div style="overflow-y:auto;max-height:calc(100vh - 280px)">' + svg + '</div>';
+}
+
 
 // ══════════════════════════════════════════════
 function renderContent() {
@@ -7883,15 +8360,19 @@ const SHOP_ITEMS = [
   { id:'mus_mario',       cat:'music', name:'🎵 Super Mario',    icon:'🍄', price:400,
     desc:'Главная мелодия уровня 1-1. Квадратные волны, MIDI-бас.',
     musicTheme:'mario' },
+  { id:'mus_xfiles_new',   cat:'music', name:'🎵 X-Files New Theme',  icon:'🛸', price:0,
+    desc:'Новая версия: свист-лид, атмосфера, точный темп 95 BPM.',
+    musicTheme:'xfiles_new' },
   { id:'mus_xfiles',      cat:'music', name:'🎵 X-Files Theme',  icon:'🛸', price:450,
     desc:'Жуткий хроматический мотив Марка Сноу. Дрон-бас, расстроенные синусы.',
     musicTheme:'xfiles' },
+  { id:'mus_inter_main',  cat:'music', name:'🎵 Interstellar Main Theme', icon:'🪐', price:0,
+    desc:'Минималистичный орган. Та самая тема. Медленно, торжественно.',
+    musicTheme:'interstellar_main' },
   { id:'mus_interstellar',cat:'music', name:'🎵 Interstellar',   icon:'🪐', price:500,
-    desc:'Hans Zimmer: органные пэды, тиканье часов, нарастающий суббас.',
+    desc:'Поиск внеземных цивилизаций. Пульсары, SETI-сигналы, тишина космоса.',
     musicTheme:'interstellar' },
-  { id:'mus_matrix',      cat:'music', name:'🎵 Matrix OST',     icon:'💊', price:500,
-    desc:'Clubbed to Death feel. Жёсткий индастриал-техно, driving bass.',
-    musicTheme:'matrix_ost' },
+
   { id:'mus_twinpeaks',   cat:'music', name:'🎵 Twin Peaks',     icon:'🦉', price:450,
     desc:'Badalamenti: джазовый бас, тёплый лид, сновидческие пэды.',
     musicTheme:'twinpeaks' },
@@ -8059,11 +8540,12 @@ function renderShopAudioPanel() {
                      dialup:'Dial-Up', cyberpunk:'CP2077', spectrum:'ZX Spectrum' };
   var packName   = packNames[_sfxPack] || _sfxPack;
   var musicNames = { cyber:'Cyber Ambient', mario:'Super Mario',
-                     xfiles:'X-Files Theme', interstellar:'Interstellar',
-                     matrix_ost:'Matrix OST', twinpeaks:'Twin Peaks',
+                     xfiles:'X-Files Theme', interstellar:'Interstellar', twinpeaks:'Twin Peaks',
                      dialup:'Dial-Up Modem', cyberpunk:'CP2077 Ambient',
                      spectrum_load:'ZX Spectrum Load',
-                     irish:'Irish Folk' };
+                     irish:'Irish Folk',
+                     interstellar_main:'Interstellar Main',
+                     xfiles_new:'X-Files New Theme' };
   var musName    = musicNames[_musicTheme] || _musicTheme || 'Cyber Ambient';
 
   return '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px">'
@@ -8115,12 +8597,13 @@ function _getMusicFn(theme) {
     mario:         _scheduleMario,
     xfiles:        _scheduleXFiles,
     interstellar:  _scheduleInterstellar,
-    matrix_ost:    _scheduleMatrixOST,
     twinpeaks:     _scheduleTwinPeaks,
     dialup:        _scheduleDialUp,
     cyberpunk:     _scheduleCyberpunk,
     spectrum_load: _scheduleSpectrumLoad,
     irish:         _scheduleIrish,
+    interstellar_main: _scheduleInterstellarMain,
+    xfiles_new:       _scheduleXFilesNew,
   };
   return fns[theme] || _scheduleCyber;
 }
@@ -8128,9 +8611,9 @@ function _getMusicFn(theme) {
 // ── BPM per theme ───────────────────────────
 var _themeBPM = {
   cyber: 120, mario: 200, xfiles: 130,
-  interstellar: 72, matrix_ost: 145,
+  interstellar: 52,
   twinpeaks: 84, dialup: 180, cyberpunk: 128,
-  spectrum_load: 240, irish: 160
+  spectrum_load: 240, irish: 160, interstellar_main: 120, xfiles_new: 95
 };
 
 function _scheduleMusic() {
@@ -8152,8 +8635,8 @@ function _scheduleMusic() {
 function _getPhrasLen(theme) {
   var lens = {
     cyber: 16, mario: 32, xfiles: 32,
-    interstellar: 16, matrix_ost: 16,
-    twinpeaks: 32, dialup: 32, cyberpunk: 32, spectrum_load: 32
+    interstellar: 32,
+    twinpeaks: 32, dialup: 32, cyberpunk: 32, spectrum_load: 32, interstellar_main: 32, xfiles_new: 16
   };
   return lens[theme] || 16;
 }
@@ -8166,8 +8649,8 @@ function _scheduleCyber(ac, dst, t, i) {
 // ── SUPER MARIO (iconic 1-1 melody approximation) ──
 var _marioNotes = [
   659,659,0,659, 0,523,659,0, 784,0,0,0, 392,0,0,0,
-  523,0,0,392,   0,0,330,0,   349,0,0,330, 0,0,262,0
-];
+  523,0,0,392,   0,0,330,0,   349,0,0,330, 0,659,0,0
+]; // ends → 659 = starts → seamless
 function _scheduleMario(ac, dst, t, i) {
   var beat = 60.0 / 180;
   var idx  = i % _marioNotes.length;
@@ -8190,8 +8673,8 @@ var _xfilesMel = [
 // X-Files main motif: E4→F#4→E4→D#4 (330→370→330→311)
 var _xfMotif = [
   330,0,370,0, 330,0,311,0, 330,0,370,0, 330,0,311,0,
-  294,0,330,0, 370,0,330,0, 311,0,294,0, 262,0,  0,0,
-];
+  294,0,330,0, 370,0,330,0, 311,0,294,0, 330,0,  0,0,
+]; // ends on 330 = starts on 330 → seamless
 function _scheduleXFiles(ac, dst, t, i) {
   var beat = 60.0 / 130;
   var idx  = i % _xfMotif.length;
@@ -8212,7 +8695,7 @@ function _scheduleXFiles(ac, dst, t, i) {
   }
 }
 
-// ── INTERSTELLAR (Hans Zimmer — organ pads + ticking) ──
+// ── INTERSTELLAR DATA (old, unused) ──
 var _interChords = [
   [130.8, 196, 261.6],   // C-G-C
   [146.8, 220, 293.7],   // D-A-D
@@ -8220,140 +8703,108 @@ var _interChords = [
   [130.8, 174.6, 261.6], // C-F-C
 ];
 var _interTick = [1,0,1,0, 1,0,0,1, 1,0,1,0, 0,1,0,0]; // ticking pattern
-// Interstellar — Hans Zimmer "Day One" / "Cornfield Chase"
-// Am → F → C → G прогрессия, 4/4, каждый аккорд = 4 бита
-// Арпеджио снизу вверх + органный пэд + тиканье часов
-// BPM ~58, очень медленно и торжественно
-var _isArp = [
-  // Am: A2 C3 E3 A3  (×4 beats)
-  110.0, 130.8, 164.8, 220.0,
-  // F: F2 A2 C3 F3
-  87.3,  110.0, 130.8, 174.6,
-  // C: C3 E3 G3 C4
-  130.8, 164.8, 196.0, 261.6,
-  // G: G2 B2 D3 G3
-  98.0,  123.5, 146.8, 196.0,
+// Interstellar — Deep Space / SETI Search
+// Поиск сигналов от далёких цивилизаций. Тишина. Ожидание. Пульс.
+// Am pentatonic (A C D E G) — начало и конец на A110 → бесшовная петля
+
+var _isGalaxy = [110.0,130.8,146.8,164.8,196.0]; // A2 C3 D3 E3 G3
+
+// Мелодия — одинокие сигналы из пустоты (редко, неожиданно)
+var _isMelody = [
+  0,0,0,0,  0,0,2,0,   // ...D3
+  0,0,0,0,  3,0,0,1,   // ...E3..C3
+  0,0,2,0,  0,0,0,0,   // D3...
+  0,4,0,0,  3,0,1,0,   // G3..E3..C3
 ];
-// тиканье — механические часы Зиммера
-var _isTick2 = [1,0,1,0, 1,0,0,0, 1,0,1,0, 0,0,1,0];
+
+// SETI-сигналы: нарастающие тоны — как Will Contact (Контакт, Земля зовёт)
+// Паттерн простых чисел: 2,3,5,7,11 — первый признак разума
+var _setiPrimes = [2,3,5,7,11];
+var _setiFreqs  = [220,330,440,550,660,770]; // чистые обертоны
+
 function _scheduleInterstellar(ac, dst, t, i) {
-  var beat = 60.0 / 72;
-  var idx  = i % 16;
-  var arp  = _isArp[idx];
+  var beat = 60.0 / 52;
+  var idx  = i % _isMelody.length;
 
-  // Арпеджио — основная мелодическая линия (как на пианино/органе)
-  _node(ac, arp,     'sine',     t, beat * 0.95, 0.10, dst,  0);
-  _node(ac, arp,     'triangle', t, beat * 0.85, 0.06, dst,  5);
-  _node(ac, arp * 2, 'sine',     t, beat * 0.60, 0.03, dst, -3);
-
-  // Органный пэд — весь аккорд держится 4 бита (меняется раз в 4)
-  if (idx % 4 === 0) {
-    var base = _isArp[idx];
-    // Трезвучие
-    [1.0, 1.189, 1.498].forEach(function(ratio, ci) {
-      _node(ac, base * ratio, 'sine',     t, beat * 4.2, 0.035, dst, ci * 6);
-      _node(ac, base * ratio, 'triangle', t, beat * 3.8, 0.018, dst, -ci * 4);
+  // ── Основной космический пэд — Am тянется бесконечно ──
+  if (idx % 16 === 0) {
+    var chords = [
+      [110.0,130.8,164.8],  // Am  — начало
+      [87.3, 110.0,130.8],  // F   — уход вдаль
+      [130.8,164.8,196.0],  // C   — возврат
+      [110.0,146.8,164.8],  // Am7 — снова дом
+    ];
+    var chord = chords[Math.floor(i/16) % chords.length];
+    chord.forEach(function(f, ci) {
+      _node(ac, f,     'sine',     t, beat*17.5, 0.042-ci*0.009, dst, ci*2);
+      _node(ac, f,     'triangle', t, beat*15,   0.020-ci*0.004, dst, -ci*2);
+      _node(ac, f*0.5, 'sine',     t, beat*13,   0.014, dst);
     });
   }
 
-  // Суббас — корень аккорда, меняется каждые 4 бита
-  if (idx % 4 === 0) {
-    var sub = _isArp[idx] * 0.5;
-    _node(ac, sub,       'sine', t, beat * 4.5, 0.16, dst);
-    _node(ac, sub * 0.5, 'sine', t, beat * 3.5, 0.08, dst);
+  // ── Инфрабас — пульс вселенной ──
+  if (idx % 8 === 0) {
+    _node(ac, 55.0, 'sine', t, beat*9.5, 0.16, dst);
+    _node(ac, 27.5, 'sine', t, beat*7,   0.08, dst);
   }
 
-  // Тиканье часов — иконический текстурный элемент
-  if (_isTick2[idx]) {
-    _node(ac, 1500, 'sine', t,       0.015, 0.08, dst);
-    _node(ac, 1000, 'sine', t+0.018, 0.010, 0.05, dst);
+  // ── Одинокая мелодическая нота — сигнал из космоса ──
+  var mel = _isMelody[idx];
+  if (mel > 0) {
+    var mf = _isGalaxy[mel % _isGalaxy.length];
+    _node(ac, mf,   'sine',     t,      beat*3.0, 0.09, dst,  0);
+    _node(ac, mf,   'sine',     t+0.04, beat*2.5, 0.04, dst,  6);
+    _node(ac, mf*2, 'triangle', t,      beat*1.8, 0.02, dst, -3);
+  }
+
+  // ── SETI-сигнал — нарастающая серия тонов (простые числа) ──
+  // Звучит раз за цикл, в разных местах — непредсказуемо
+  if (idx === 5 || idx === 19) {
+    var seqLen = idx === 5 ? 4 : 5;
+    for (var p = 0; p < seqLen; p++) {
+      var sf  = _setiFreqs[p % _setiFreqs.length];
+      var dur = 0.03 * _setiPrimes[p % _setiPrimes.length]; // длина пропорциональна простому числу
+      var delay = p * 0.18;
+      _node(ac, sf,   'sine',     t+delay, dur, 0.07, dst,  0);
+      _node(ac, sf*2, 'triangle', t+delay, dur*0.6, 0.03, dst, 0);
+    }
+  }
+
+  // ── Ответный сигнал — эхо через 13 битов (простое число) ──
+  if (idx === 18) {
+    _node(ac, 440, 'sine', t, 0.06, 0.05, dst);
+    _node(ac, 550, 'sine', t+0.12, 0.05, 0.04, dst);
+    _node(ac, 660, 'sine', t+0.22, 0.04, 0.03, dst);
+  }
+
+  // ── Радиошум глубокого космоса — тихий, постоянный ──
+  if (idx % 8 === 0) {
+    try {
+      var buf = ac.createBuffer(1, Math.ceil(ac.sampleRate*beat*8), ac.sampleRate);
+      var d   = buf.getChannelData(0);
+      for (var k=0; k<d.length; k++) d[k] = (Math.random()*2-1) * 0.006;
+      var src = ac.createBufferSource();
+      var flt = ac.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=3000; flt.Q.value=0.3;
+      var gg  = ac.createGain();
+      gg.gain.setValueAtTime(0.05, t); gg.gain.exponentialRampToValueAtTime(0.0001, t+beat*8);
+      src.buffer=buf; src.connect(flt); flt.connect(gg); gg.connect(dst);
+      src.start(t); src.stop(t+beat*8+0.01);
+    } catch(e){}
+  }
+
+  // ── Пульсар — равномерные далёкие клики (период = простое число × beat) ──
+  if (idx % 7 === 0) {
+    _node(ac, 2800, 'sine', t, 0.010, 0.040, dst);
+  }
+  if (idx % 11 === 0) {
+    _node(ac, 1800, 'sine', t, 0.015, 0.030, dst);
   }
 }
-// ── MATRIX OST (Clubbed to Death / Spybreak feel — techno) ──
-var _matrixBass = [55, 55, 55, 73.4, 55, 55, 61.7, 55, 55, 49, 55, 55, 73.4, 55, 61.7, 49];
-// Matrix — Clubbed to Death: минималистичный бас + строчный синтез
-// Бас-паттерн E2-E2-E2-B1, атмосферные пэды, гулкий kick
-// Matrix OST — "Clubbed to Death" / "Spybreak!" / "Dissolved Girl"
-// Тяжёлый trip-hop + индастриал + атмосферные струнные
-// Ни капли деревни: тёмный, напряжённый, кинематографичный
-// Характерный бас-риф Rob Dougan: Em → Am → Bm → Em
-var _mxRiff  = [82.4,0,82.4,0, 82.4,0,110.0,98.0, 73.4,0,73.4,0, 73.4,0,82.4,73.4];
-var _mxLead  = [0,0,164.8,0, 0,196.0,0,164.8, 0,0,146.8,0, 0,164.8,0,0];
-var _mxStr   = [330,0,0,294, 0,0,262,0, 330,0,0,311, 0,0,330,0]; // струнные верх
 
-function _scheduleMatrixOST(ac, dst, t, i) {
-  var beat = 60.0 / 145;
-  var idx  = i % 16;
-
-  // ── Бас-риф — главная движущая сила ──
-  var bf = _mxRiff[idx];
-  if (bf > 0) {
-    _node(ac, bf,       'sawtooth', t, beat*0.5,  0.22, dst);
-    _node(ac, bf*0.5,   'sine',     t, beat*0.6,  0.15, dst);  // суббас
-    _node(ac, bf*2,     'sine',     t, beat*0.25, 0.04, dst);  // обертон
-  }
-
-  // ── Тяжёлый trip-hop kick (Em kick drum) ──
-  if (idx === 0 || idx === 6 || idx === 10) {
-    var ko = ac.createOscillator(); var kg = ac.createGain();
-    ko.type = 'sine';
-    ko.frequency.setValueAtTime(200, t);
-    ko.frequency.exponentialRampToValueAtTime(38, t + 0.18);
-    kg.gain.setValueAtTime(1.0, t);
-    kg.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-    ko.connect(kg); kg.connect(dst); ko.start(t); ko.stop(t+0.28);
-  }
-
-  // ── Snare — тяжёлый, с долгим хвостом ──
-  if (idx === 4 || idx === 12) {
-    _noiseHit(ac, dst, t, 0.18, 0.30, 1800);
-    _node(ac, 200, 'sine', t, 0.12, 0.14, dst);
-    _node(ac, 300, 'sine', t, 0.06, 0.06, dst);
-  }
-
-  // ── Closed hi-hat — 16th ──
-  _noiseHit(ac, dst, t, 0.022, idx%4===0 ? 0.09 : (idx%2===0 ? 0.06 : 0.04), 9500);
-
-  // ── Открытый hi-hat на offbeat ──
-  if (idx % 8 === 2 || idx % 8 === 6) {
-    _noiseHit(ac, dst, t, 0.10, 0.08, 7000);
-  }
-
-  // ── Атмосферные струнные (Rob Dougan signature) ──
-  var sf = _mxLead[idx];
-  if (sf > 0) {
-    _node(ac, sf,     'sawtooth', t, beat*0.85, 0.055, dst,  6);
-    _node(ac, sf,     'sawtooth', t+0.008, beat*0.80, 0.030, dst, -6);
-    _node(ac, sf*2,   'sine',     t, beat*0.50, 0.018, dst,  0);
-  }
-
-  // ── Верхние струнные — напряжение ──
-  var strf = _mxStr[idx];
-  if (strf > 0) {
-    _node(ac, strf,   'triangle', t, beat*1.1, 0.030, dst,  4);
-    _node(ac, strf,   'sine',     t, beat*0.9, 0.018, dst, -4);
-  }
-
-  // ── Атмосферный пэд каждые 8 — нарастающее напряжение ──
-  if (idx % 8 === 0) {
-    var padN = Math.floor(i/8) % 4;
-    var padFs = [[82.4,110,164.8],[73.4,98,146.8],[77.8,110,155.6],[82.4,123.5,164.8]][padN];
-    padFs.forEach(function(f, ci) {
-      _node(ac, f, 'sine',     t, beat*8.5, 0.020, dst, ci*5);
-      _node(ac, f, 'triangle', t, beat*7.0, 0.012, dst, -ci*3);
-    });
-  }
-
-  // ── Реверс-удар (cinematic hit) каждые 16 битов ──
-  if (idx === 14) {
-    _noiseHit(ac, dst, t, 0.06, 0.12, 3000);
-    _node(ac, 110, 'sawtooth', t, 0.08, 0.08, dst);
-  }
-}// ── TWIN PEAKS (Angelo Badalamenti — dreamy jazz) ──
+// ── TWIN PEAKS (Angelo Badalamenti — dreamy jazz) ──────────
 var _twinMel = [
-  // "Falling" melody approximation
   392,0,349,330, 294,0,262,0, 294,330,349,0, 392,0,0,0,
-  440,0,392,349, 330,0,294,0, 262,294,330,0, 349,0,0,0,
+  440,0,392,349, 330,0,294,0, 262,294,330,0, 392,0,0,0,
 ];
 function _scheduleTwinPeaks(ac, dst, t, i) {
   var beat = 60.0 / 84;
@@ -8376,9 +8827,9 @@ function _scheduleTwinPeaks(ac, dst, t, i) {
   }
 }
 
-// ── DIAL-UP MODEM (classic 56k handshake sounds) ──
+// ── DIAL-UP MODEM (classic 56k handshake) ─────────────────
 function _scheduleDialUp(ac, dst, t, i) {
-  var beat = 60.0 / 160;
+  var beat = 60.0 / 180;
   var idx  = i % 32;
   var carriers = [1200, 2400, 1800, 2100, 1200, 2400, 600, 1200, 2100, 1800, 2400, 300];
   _node(ac, carriers[idx % carriers.length], 'sine', t, beat * 0.4, 0.09, dst);
@@ -8403,7 +8854,7 @@ var _cpMel   = [null,null,220,null, null,247,220,null, 196,null,null,220, null,1
 var _cpArp  = [164.8,196,220,246.9, 261.6,246.9,220,196,
                164.8,196,220,246.9, 293.7,261.6,246.9,220,
                164.8,196,220,246.9, 261.6,196,164.8,130.8,
-               146.8,174.6,196,220, 246.9,220,196,174.6];
+               146.8,174.6,196,220, 246.9,220,196,164.8]; // ends on root → seamless
 var _cpPad  = [[82.4,110,164.8],[98,130.8,196],[110,146.8,220],[87.3,116.5,174.6]];
 
 function _scheduleCyberpunk(ac, dst, t, i) {
@@ -8619,6 +9070,62 @@ function _scheduleIrish(ac, dst, t, i) {
   }
 }
 
+// ── INTERSTELLAR MAIN THEME (minimal organ) ──────────────
+var _interMel = [
+  440,0,440,0, 440,0,440,0,
+  659,0,659,0, 659,0,659,0,
+  587,0,587,0, 587,0,587,0,
+  523,0,523,0, 523,0,523,0,
+];
+function _scheduleInterstellarMain(ac, dst, t, i) {
+  var beat = 60.0 / 120;
+  var idx  = i % _interMel.length;
+  var freq = _interMel[idx];
+  var bass = [110, 98, 87, 73];
+  if (idx % 8 === 0) {
+    _node(ac, bass[(idx/8) % bass.length], 'sine', t, beat * 4, 0.15, dst);
+  }
+  if (freq > 0) {
+    _node(ac, freq, 'triangle', t, beat * 2, 0.12, dst);
+    _node(ac, freq * 2, 'sine', t, beat * 1, 0.04, dst);
+    _node(ac, freq * 0.5, 'sine', t, beat * 2, 0.05, dst);
+  }
+  if (idx % 16 === 8) { _noiseHit(ac, dst, t, 0.2, 0.05, 1200); }
+  if (idx % 32 === 0) {
+    [220, 277, 330].forEach(function(f, ci) {
+      _node(ac, f, 'sine', t, beat * 16, 0.03, dst, ci * 5);
+    });
+  }
+}
+
+// ── X-FILES NEW THEME (whistle lead) ─────────────────────
+var _xfilesMel = [
+  1046,0,  988,0,  880,0,  784,0,
+  880,0,   988,0,  1046,0, 988,0,
+  1046,0,  988,0,  880,0,  784,0,
+  880,0,   988,0,  784,0,  0,0,
+];
+function _scheduleXFilesNew(ac, dst, t, i) {
+  var beat = 60.0 / 95;
+  var idx  = i % _xfilesMel.length;
+  var freq = _xfilesMel[idx];
+  var bass = [110, 98, 87, 82];
+  if (idx % 8 === 0) {
+    _node(ac, bass[(idx/8) % bass.length], 'sine', t, beat * 4, 0.05, dst);
+  }
+  if (freq > 0) {
+    _node(ac, freq, 'triangle', t, beat * 1.5, 0.12, dst);
+    _node(ac, freq * 1.01, 'sine', t, beat * 1.5, 0.05, dst);
+    _node(ac, freq * 2, 'sine', t, beat * 0.7, 0.02, dst);
+  }
+  if (idx % 16 === 8) { _noiseHit(ac, dst, t, 0.15, 0.04, 2000); }
+  if (idx % 32 === 0) {
+    [220, 262, 330].forEach(function(f, ci) {
+      _node(ac, f, 'sine', t, beat * 16, 0.025, dst, ci * 7);
+    });
+  }
+}
+
 // Noise hit helper used by multiple music themes
 function _noiseHit(ac, dst, t, dur, gain, freq) {
   try {
@@ -8758,7 +9265,9 @@ function isOwned(itemId) {
   if (state.freeShop) return true;
   if (itemId === 'th_ghost' || itemId === 'th_cyber') return true;
   if (itemId === 'sfx_cyber') return true;   // default SFX pack always free
-  if (itemId === 'mus_cyber') return true;   // default music always free
+  if (itemId === 'mus_cyber') return true;
+  if (itemId === 'mus_inter_main') return true;
+  if (itemId === 'mus_xfiles_new') return true;   // default music always free
   return state.owned.has(itemId);
 }
 
